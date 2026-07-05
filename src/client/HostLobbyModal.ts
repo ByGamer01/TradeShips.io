@@ -10,6 +10,7 @@ import {
 import { EventBus } from "../core/EventBus";
 import {
   Difficulty,
+  DISABLED_ARSENAL,
   GameMapSize,
   GameMapType,
   GameMode,
@@ -85,7 +86,7 @@ export class HostLobbyModal extends BaseModal {
   @state() private lobbyUrlSuffix = "";
   @state() private clients: ClientInfo[] = [];
   @state() private useRandomMap: boolean = false;
-  @state() private disabledUnits: UnitType[] = [];
+  @state() private disabledUnits: UnitType[] = [...DISABLED_ARSENAL];
   @state() private hostCheatsEnabled: boolean = false;
   @state() private hostCheatInfiniteGold: boolean = false;
   @state() private hostCheatInfiniteTroops: boolean = false;
@@ -574,7 +575,7 @@ export class HostLobbyModal extends BaseModal {
     this.randomSpawn = false;
     this.compactMap = false;
     this.useRandomMap = false;
-    this.disabledUnits = [];
+    this.disabledUnits = [...DISABLED_ARSENAL];
     this.lobbyId = "";
     this.clients = [];
     this.lobbyCreatorClientID = "";

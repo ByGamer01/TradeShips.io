@@ -5,6 +5,7 @@ import { UserMeResponse } from "../core/ApiSchemas";
 import { assetUrl } from "../core/AssetUrls";
 import {
   Difficulty,
+  DISABLED_ARSENAL,
   GameMapSize,
   GameMapType,
   GameMode,
@@ -56,7 +57,7 @@ const DEFAULT_OPTIONS = {
   goldMultiplierValue: undefined as number | undefined,
   startingGold: false,
   startingGoldValue: undefined as number | undefined,
-  disabledUnits: [] as UnitType[],
+  disabledUnits: [...DISABLED_ARSENAL] as UnitType[],
   disableAlliances: false,
   waterNukes: false,
 } as const;
@@ -377,7 +378,7 @@ export class SinglePlayerModal extends BaseModal {
       this.startingGold !== DEFAULT_OPTIONS.startingGold ||
       this.disableAlliances !== DEFAULT_OPTIONS.disableAlliances ||
       this.waterNukes !== DEFAULT_OPTIONS.waterNukes ||
-      this.disabledUnits.length > 0
+      this.disabledUnits.length !== DEFAULT_OPTIONS.disabledUnits.length
     );
   }
 
