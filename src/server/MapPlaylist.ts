@@ -2,6 +2,7 @@ import { SAM_CONSTRUCTION_TICKS } from "../core/configuration/Config";
 import {
   maps as allMaps,
   Difficulty,
+  DISABLED_ARSENAL,
   Duos,
   GameMapSize,
   GameMapType,
@@ -177,7 +178,7 @@ export class MapPlaylist {
       playerTeams,
       bots: isCompact ? 100 : 400,
       spawnImmunityDuration: this.getSpawnImmunityDuration(playerTeams),
-      disabledUnits: [],
+      disabledUnits: [...DISABLED_ARSENAL],
       disableClanTags: mode === GameMode.FFA ? true : undefined,
     } satisfies GameConfig;
   }
@@ -421,7 +422,7 @@ export class MapPlaylist {
       gameMode: GameMode.FFA,
       bots: isCompact ? 100 : 400,
       spawnImmunityDuration: 30 * 10,
-      disabledUnits: [],
+      disabledUnits: [...DISABLED_ARSENAL],
     } satisfies GameConfig;
   }
 
