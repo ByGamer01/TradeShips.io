@@ -73,13 +73,13 @@ type ModifierKey =
   | "goldMultiplier"
   | "isAlliancesDisabled"
   | "isPortsDisabled"
-  | "isNukesDisabled"
-  | "isSAMsDisabled"
-  | "isPeaceTime"
-  | "isWaterNukes";
+  | "isPeaceTime";
 
 // Each entry represents one "ticket" in the pool. More tickets = higher chance of selection.
 // Weights are roughly informed by the community "favorite modifier" poll.
+// Note: isNukesDisabled/isSAMsDisabled/isWaterNukes tickets were retired —
+// the naval-trim arsenal lock (DISABLED_ARSENAL) always disables nukes/SAMs
+// and never allows water nukes, so those tickets would have been no-ops.
 const SPECIAL_MODIFIER_POOL: ModifierKey[] = [
   ...Array<ModifierKey>(4).fill("isRandomSpawn"),
   ...Array<ModifierKey>(4).fill("isCompact"),
@@ -91,29 +91,8 @@ const SPECIAL_MODIFIER_POOL: ModifierKey[] = [
   ...Array<ModifierKey>(6).fill("goldMultiplier"),
   ...Array<ModifierKey>(1).fill("isAlliancesDisabled"),
   ...Array<ModifierKey>(1).fill("isPortsDisabled"),
-  ...Array<ModifierKey>(1).fill("isNukesDisabled"),
-  ...Array<ModifierKey>(1).fill("isSAMsDisabled"),
   ...Array<ModifierKey>(1).fill("isPeaceTime"),
-  ...Array<ModifierKey>(4).fill("isWaterNukes"),
 ];
-
-// Maps where water nukes have a higher chance on top of the normal pool
-// Water nukes are especially fun here
-const WATER_NUKES_BOOSTED_MAPS: ReadonlySet<GameMapType> = new Set([
-  GameMapType.FourIslands,
-  GameMapType.Baikal,
-  GameMapType.Luna,
-  GameMapType.ArchipelagoSea,
-  GameMapType.ChoppingBlock,
-]);
-
-// Maps that are entirely land.
-// - Water nukes forced on 75% of the time (overrides WATER_NUKES_BOOSTED_MAPS)
-// - The "ports disabled" modifier is only allowed when water nukes is on
-const FULL_LAND_MAPS: ReadonlySet<GameMapType> = new Set([
-  GameMapType.TheBox,
-  GameMapType.Alps,
-]);
 
 // Modifiers that cannot be active at the same time.
 const MUTUALLY_EXCLUSIVE_MODIFIERS: [ModifierKey, ModifierKey][] = [
@@ -121,8 +100,6 @@ const MUTUALLY_EXCLUSIVE_MODIFIERS: [ModifierKey, ModifierKey][] = [
   ["startingGold5M", "startingGold1M"],
   ["startingGold25M", "startingGold1M"],
   ["isHardNations", "startingGold25M"],
-  ["isNukesDisabled", "isSAMsDisabled"],
-  ["isNukesDisabled", "isWaterNukes"],
 ];
 
 export class MapPlaylist {
@@ -218,39 +195,12 @@ export class MapPlaylist {
       excludedModifiers.push("isHardNations");
     }
 
-    // On special team maps nukes-disabled makes cross-water attacks
-    // nearly impossible (extreme warship spam).
-    if (mode === GameMode.Team && SPECIAL_TEAM_MAPS.has(map)) {
-      excludedModifiers.push("isNukesDisabled");
-    }
-
     if (playerTeams === HumansVsNations) {
       excludedModifiers.push("startingGold25M"); // Nations are disabled if that modifier is active (Because of PVP immunity)
       excludedModifiers.push("isPeaceTime"); // Nations don't have PVP immunity
     }
 
-    // Boost water nukes chance
-    // When boosted, water nukes is forced on and takes one modifier slot.
-    const waterNukesBoostChance = FULL_LAND_MAPS.has(map)
-      ? 0.75
-      : WATER_NUKES_BOOSTED_MAPS.has(map)
-        ? 0.5
-        : 0;
-    const boostWaterNukes = Math.random() < waterNukesBoostChance;
-    if (boostWaterNukes) {
-      excludedModifiers.push("isWaterNukes", "isNukesDisabled");
-    }
-
-    // On full-land maps, ports-disabled is only allowed alongside water nukes
-    if (FULL_LAND_MAPS.has(map) && !boostWaterNukes) {
-      excludedModifiers.push("isPortsDisabled");
-    }
-
-    const poolResult = this.getRandomSpecialGameModifiers(
-      excludedModifiers,
-      undefined,
-      boostWaterNukes ? 1 : 0,
-    );
+    const poolResult = this.getRandomSpecialGameModifiers(excludedModifiers);
     let {
       isCrowded,
       startingGold,
@@ -260,14 +210,8 @@ export class MapPlaylist {
       isAlliancesDisabled,
       isHardNations,
       isPortsDisabled,
-      isNukesDisabled,
-      isSAMsDisabled,
       isPeaceTime,
-      isWaterNukes,
     } = poolResult;
-    if (boostWaterNukes) {
-      isWaterNukes = true;
-    }
 
     // Crowded modifier: if the map's biggest player count (first number of calculateMapPlayerCounts) is 60 or lower (small maps),
     // set player count to MAX_PLAYER_COUNT (or 60 if compact map is also enabled)
@@ -288,10 +232,7 @@ export class MapPlaylist {
           goldMultiplier === undefined &&
           !isAlliancesDisabled &&
           !isPortsDisabled &&
-          !isNukesDisabled &&
-          !isSAMsDisabled &&
-          !isPeaceTime &&
-          !isWaterNukes
+          !isPeaceTime
         ) {
           excludedModifiers.push("isCrowded");
           const fallback = this.getRandomSpecialGameModifiers(
@@ -305,10 +246,7 @@ export class MapPlaylist {
             goldMultiplier,
             isAlliancesDisabled,
             isPortsDisabled,
-            isNukesDisabled,
-            isSAMsDisabled,
             isPeaceTime,
-            isWaterNukes,
           } = fallback);
           ({ isHardNations } = fallback);
         }
@@ -328,22 +266,11 @@ export class MapPlaylist {
         ? "disabled"
         : "default";
 
-    // Build disabledUnits from modifiers
-    const disabledUnits: UnitType[] = [];
+    // Seed disabledUnits from the arsenal lock (always on), then layer the
+    // "ports disabled" modifier on top.
+    const disabledUnits: UnitType[] = [...DISABLED_ARSENAL];
     if (isPortsDisabled) {
       disabledUnits.push(UnitType.Port);
-    }
-    if (isNukesDisabled) {
-      disabledUnits.push(
-        UnitType.MissileSilo,
-        UnitType.AtomBomb,
-        UnitType.HydrogenBomb,
-        UnitType.MIRV,
-        UnitType.SAMLauncher,
-      );
-    }
-    if (isSAMsDisabled) {
-      disabledUnits.push(UnitType.SAMLauncher);
     }
 
     // 4min peace = 240s = 2400 ticks
@@ -365,10 +292,7 @@ export class MapPlaylist {
         goldMultiplier,
         isAlliancesDisabled,
         isPortsDisabled,
-        isNukesDisabled,
-        isSAMsDisabled,
         isPeaceTime,
-        isWaterNukes,
       },
       startingGold,
       goldMultiplier,
@@ -390,7 +314,6 @@ export class MapPlaylist {
         peaceTimeDuration ??
         this.getSpawnImmunityDuration(playerTeams, startingGold),
       disabledUnits,
-      waterNukes: isWaterNukes ? true : undefined,
       disableClanTags: mode === GameMode.FFA ? true : undefined,
     } satisfies GameConfig;
   }
@@ -531,13 +454,12 @@ export class MapPlaylist {
   private getRandomSpecialGameModifiers(
     excludedModifiers: ModifierKey[] = [],
     count?: number,
-    countReduction: number = 0,
   ): PublicGameModifiers {
     // Roll how many modifiers to pick: 30% → 1, 50% → 2, 20% → 3
     const modifierCounts = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3];
     const rolled =
       modifierCounts[Math.floor(Math.random() * modifierCounts.length)];
-    const k = Math.max(0, (count ?? rolled) - countReduction);
+    const k = count ?? rolled;
 
     // Shuffle the pool, then pick the first k unique modifier keys.
     const pool = SPECIAL_MODIFIER_POOL.filter(
@@ -570,10 +492,7 @@ export class MapPlaylist {
       goldMultiplier: selected.has("goldMultiplier") ? 2 : undefined,
       isAlliancesDisabled: selected.has("isAlliancesDisabled") || undefined,
       isPortsDisabled: selected.has("isPortsDisabled") || undefined,
-      isNukesDisabled: selected.has("isNukesDisabled") || undefined,
-      isSAMsDisabled: selected.has("isSAMsDisabled") || undefined,
       isPeaceTime: selected.has("isPeaceTime") || undefined,
-      isWaterNukes: selected.has("isWaterNukes") || undefined,
     };
   }
 
