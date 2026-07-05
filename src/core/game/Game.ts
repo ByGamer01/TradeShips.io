@@ -181,6 +181,17 @@ export enum UnitType {
   Factory = "Factory",
 }
 
+export const DISABLED_ARSENAL: readonly UnitType[] = [
+  UnitType.AtomBomb,
+  UnitType.HydrogenBomb,
+  UnitType.MIRV,
+  UnitType.MIRVWarhead,
+  UnitType.MissileSilo,
+  UnitType.SAMLauncher,
+  UnitType.SAMMissile,
+  UnitType.DefensePost,
+] as const;
+
 export enum TrainType {
   Engine = "Engine",
   TailEngine = "TailEngine",
