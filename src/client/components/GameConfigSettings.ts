@@ -9,6 +9,7 @@ import {
 import { customElement, property, state } from "lit/decorators.js";
 import {
   Difficulty,
+  DISABLED_ARSENAL,
   Duos,
   GameMapType,
   GameMode,
@@ -96,7 +97,7 @@ function renderSection(
   `;
 }
 
-const unitOptions: { type: UnitType; translationKey: string }[] = [
+const ALL_UNIT_OPTIONS: { type: UnitType; translationKey: string }[] = [
   { type: UnitType.City, translationKey: "unit_type.city" },
   { type: UnitType.DefensePost, translationKey: "unit_type.defense_post" },
   { type: UnitType.Port, translationKey: "unit_type.port" },
@@ -109,6 +110,14 @@ const unitOptions: { type: UnitType; translationKey: string }[] = [
   { type: UnitType.MIRV, translationKey: "unit_type.mirv" },
   { type: UnitType.Factory, translationKey: "unit_type.factory" },
 ];
+
+// naval-trim: the arsenal is a config-locked floor (DISABLED_ARSENAL) that
+// can never be re-enabled, so its toggles are pruned from the UI entirely
+// rather than shown disabled. Deriving this filter from DISABLED_ARSENAL
+// keeps the UI in sync automatically if the arsenal list ever changes.
+const unitOptions = ALL_UNIT_OPTIONS.filter(
+  (option) => !DISABLED_ARSENAL.includes(option.type),
+);
 
 const MAP_ICON = svg`<path
   d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z"
