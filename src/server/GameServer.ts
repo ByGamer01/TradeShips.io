@@ -26,6 +26,7 @@ import {
 } from "../core/Schemas";
 import { createPartialGameRecord } from "../core/Util";
 import { archive, finalizeGameRecord } from "./Archive";
+import { enforceArsenalLock } from "./ArsenalLock";
 import { Client } from "./Client";
 import { ClientMsgRateLimiter } from "./ClientMsgRateLimiter";
 import { ServerEnv } from "./ServerEnv";
@@ -107,6 +108,7 @@ export class GameServer {
     private publicGameType?: PublicGameType,
   ) {
     this.log = log_.child({ gameID: id });
+    this.gameConfig = enforceArsenalLock(gameConfig);
     if (startsAt !== undefined) {
       this.visibleAt = Date.now();
     }
@@ -185,6 +187,7 @@ export class GameServer {
       this.gameConfig.waterNukes = gameConfig.waterNukes ?? undefined;
     }
     this.gameConfig.hostCheats = gameConfig.hostCheats;
+    this.gameConfig = enforceArsenalLock(this.gameConfig);
   }
 
   private isKicked(clientID: ClientID): boolean {

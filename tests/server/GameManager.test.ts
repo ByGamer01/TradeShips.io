@@ -44,11 +44,17 @@ describe("GameManager arsenal lock defaults", () => {
     }
   });
 
-  it("documents current behavior: an explicit empty disabledUnits override is honored pre-server-guard (WU-3 revisits this)", () => {
+  it("re-locks the arsenal even when the caller explicitly passes an empty disabledUnits override (server authority guard, ADR-4)", () => {
+    // Behavior change from WU-3: GameServer's constructor now runs
+    // enforceArsenalLock on every incoming config, so an explicit
+    // `disabledUnits: []` override (e.g. a manipulated client) is no longer
+    // honored verbatim — the arsenal floor always wins.
     const manager = new GameManager(mockLogger);
     const game = manager.createGame("id2", { disabledUnits: [] } as any);
 
     expect(game).not.toBeNull();
-    expect(game!.gameConfig.disabledUnits).toEqual([]);
+    for (const unit of DISABLED_ARSENAL) {
+      expect(game!.gameConfig.disabledUnits).toContain(unit);
+    }
   });
 });
