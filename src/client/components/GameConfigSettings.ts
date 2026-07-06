@@ -115,7 +115,7 @@ const ALL_UNIT_OPTIONS: { type: UnitType; translationKey: string }[] = [
 // can never be re-enabled, so its toggles are pruned from the UI entirely
 // rather than shown disabled. Deriving this filter from DISABLED_ARSENAL
 // keeps the UI in sync automatically if the arsenal list ever changes.
-const unitOptions = ALL_UNIT_OPTIONS.filter(
+export const unitOptions = ALL_UNIT_OPTIONS.filter(
   (option) => !DISABLED_ARSENAL.includes(option.type),
 );
 
