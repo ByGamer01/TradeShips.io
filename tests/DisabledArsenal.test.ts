@@ -1,3 +1,5 @@
+import { NationExecution } from "../src/core/execution/NationExecution";
+import { SpawnExecution } from "../src/core/execution/SpawnExecution";
 import {
   Difficulty,
   DISABLED_ARSENAL,
@@ -6,6 +8,7 @@ import {
   GameMapType,
   GameMode,
   GameType,
+  Nation,
   Player,
   PlayerInfo,
   PlayerType,
@@ -117,23 +120,47 @@ describe("Arsenal lock regression (core simulation)", () => {
     }
   });
 
-  test("3.1 — a Nation-type player is gated identically and never accumulates arsenal units across ticks", () => {
-    game.addPlayer(
-      new PlayerInfo("nation", PlayerType.Nation, null, "nation_id"),
-    );
-    const nation = game.player("nation_id");
-    nation.addGold(BigInt(1_000_000));
+  test(
+    "3.1 — a live Nation AI with abundant gold never builds arsenal units across many ticks",
+    () => {
+      const nationInfo = new PlayerInfo(
+        "nation",
+        PlayerType.Nation,
+        null,
+        "nation_id",
+      );
+      game.addPlayer(nationInfo);
+      game.addExecution(new SpawnExecution("game_id", nationInfo, 10));
+      executeTicks(game, 2);
 
-    for (const unit of DISABLED_ARSENAL) {
-      expect(() => nation.buildUnit(unit, game.ref(0, 0), {})).toThrow();
-    }
+      const nation = game.player("nation_id");
+      expect(nation.isAlive()).toBe(true);
+      nation.addGold(BigInt(1_000_000_000));
 
-    executeTicks(game, 20);
+      // Direct gate: buildUnit throws for every arsenal type even for Nations.
+      for (const unit of DISABLED_ARSENAL) {
+        expect(() => nation.buildUnit(unit, game.ref(0, 0), {})).toThrow();
+      }
 
-    for (const unit of DISABLED_ARSENAL) {
-      expect(game.units(unit)).toHaveLength(0);
-    }
-  });
+      // Real AI: NationExecution drives NationStructureBehavior,
+      // NationNukeBehavior, NationMIRVBehavior and NationWarshipBehavior.
+      // With this much gold it would normally build silos/SAMs/defense posts;
+      // the config lock must keep the arsenal at zero while the AI stays alive.
+      game.addExecution(
+        new NationExecution("game_id", new Nation(undefined, nationInfo)),
+      );
+      executeTicks(game, 150);
+
+      expect(nation.isAlive()).toBe(true);
+      for (const unit of DISABLED_ARSENAL) {
+        expect(game.units(unit)).toHaveLength(0);
+        expect(nation.unitsOwned(unit)).toBe(0);
+      }
+    },
+    // 150 full simulation ticks with a live AI can exceed the default 5s
+    // timeout under full-suite CPU contention.
+    20_000,
+  );
 
   test("children invariant — SAMMissile and MIRVWarhead stay disabled alongside their parents", () => {
     const config = game.config();
