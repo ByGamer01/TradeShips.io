@@ -1,44 +1,38 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="proprietary/images/OpenFrontLogoDark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="proprietary/images/OpenFrontLogo.svg">
-    <img src="proprietary/images/OpenFrontLogo.svg" alt="OpenFrontIO Logo" width="300">
-  </picture>
-</p>
+<h1 align="center">⚓ TradeShips.io</h1>
 
-[OpenFront.io](https://openfront.io/) is an online real-time strategy game focused on territorial control and alliance building. Players compete to expand their territory, build structures, and form strategic alliances in various maps based on real-world geography.
+<p align="center"><em>Real-time naval strategy: trade routes, ports, and sea power.</em></p>
 
-This is a fork/rewrite of WarFront.io. Credit to https://github.com/WarFrontIO.
+**TradeShips.io** is an online real-time strategy game focused on **naval commerce and sea control**. Players expand their territory, build ports and cities, run trade routes with merchant ships, and fight for the seas with warships — across maps based on real-world geography.
 
-![CI](https://github.com/openfrontio/OpenFrontIO/actions/workflows/ci.yml/badge.svg)
-[![Crowdin](https://badges.crowdin.net/openfront-mls/localized.svg)](https://crowdin.com/project/openfront-mls)
-[![CLA assistant](https://cla-assistant.io/readme/badge/openfrontio/OpenFrontIO)](https://cla-assistant.io/openfrontio/OpenFrontIO)
+This project is a fork of [OpenFront.io](https://github.com/openfrontio/OpenFrontIO) (itself a fork/rewrite of [WarFront.io](https://github.com/WarFrontIO)). Credit and thanks to both projects and their contributors.
+
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Assets: CC BY-SA 4.0](https://img.shields.io/badge/Assets-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-## License
+## 🧭 What makes TradeShips different
 
-OpenFront source code is licensed under the **GNU Affero General Public License v3.0**
+TradeShips.io reshapes the original land-conquest formula into a **naval-economic experience**:
 
-Current copyright notices appear in:
+- **No strategic arsenal** — nukes, MIRVs, missile silos, SAMs, and defense posts are permanently disabled in every game mode. Conflict happens at sea, not from orbit.
+- **Trade first** — ports, trade ships, and gold flow are the heart of the game.
+- **Sea power decides** — warships, transports, and naval positioning are how you project force.
 
-- Footer: "© OpenFront and Contributors"
-- Loading screen: "© OpenFront and Contributors"
+### Roadmap
 
-Modified versions must preserve these notices in reasonably visible locations.
-
-See the [LICENSE](LICENSE) for complete requirements.
-
-For asset licensing, see [LICENSE-ASSETS](LICENSE-ASSETS).  
-For license history, see [LICENSING.md](LICENSING.md).
+| Status | Feature |
+| ------ | ------- |
+| ✅ | Arsenal lock — land/strategic weapons removed from all modes |
+| 🔜 | New naval units: submarines, torpedoes, helicopters, aircraft carriers |
+| 🔜 | Submarine mines (the DefensePost, reborn at sea) |
+| 🔜 | Full rebranding with original sprites and visual identity |
 
 ## 🌟 Features
 
-- **Real-time Strategy Gameplay**: Expand your territory and engage in strategic battles
-- **Alliance System**: Form alliances with other players for mutual defense
-- **Multiple Maps**: Play across various geographical regions including Europe, Asia, Africa, and more
-- **Resource Management**: Balance your expansion with defensive capabilities
-- **Cross-platform**: Play in any modern web browser
+- **Real-time Strategy Gameplay**: expand your territory and fight for control of the seas
+- **Trade & Economy**: build ports, run trade routes, and out-earn your rivals
+- **Alliance System**: form alliances with other players for mutual defense
+- **Multiple Maps**: play across various geographical regions including Europe, Asia, Africa, and more
+- **Cross-platform**: play in any modern web browser
 
 ## 📋 Prerequisites
 
@@ -50,8 +44,8 @@ For license history, see [LICENSING.md](LICENSING.md).
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/openfrontio/OpenFrontIO.git
-   cd OpenFrontIO
+   git clone https://github.com/ByGamer01/TradeShips.io.git
+   cd TradeShips.io
    ```
 
 2. **Install dependencies**
@@ -74,13 +68,11 @@ npm run dev
 
 This will:
 
-- Start the webpack dev server for the client
+- Start the dev server for the client
 - Launch the game server with development settings
 - Open the game in your default browser (to disable this behavior, set `SKIP_BROWSER_OPEN=true` in your environment)
 
 ### Client Only
-
-To run just the client with hot reloading:
 
 ```bash
 npm run start:client
@@ -88,29 +80,8 @@ npm run start:client
 
 ### Server Only
 
-To run just the server with development settings:
-
 ```bash
 npm run start:server-dev
-```
-
-### Connecting to staging or production backends
-
-Sometimes it's useful to connect to production servers when replaying a game, testing user profiles, purchases, or login flow.
-
-> To replay a production game, make sure you're on the same commit that the game you want to replay was executed on, you can find the `gitCommit` value via `https://api.openfront.io/game/[gameId]`.
-> Unfinished games cannot be replayed on localhost.
-
-To connect to staging api servers:
-
-```bash
-npm run dev:staging
-```
-
-To connect to production api servers:
-
-```bash
-npm run dev:prod
 ```
 
 ## 🛠️ Development Tools
@@ -145,6 +116,19 @@ npm run dev:prod
 - `/src/server` - Backend game server
 - `/resources` - Static assets (images, maps, etc.)
 
+## 📜 License
+
+TradeShips.io source code is licensed under the **GNU Affero General Public License v3.0**, inherited from OpenFront.
+
+As a modified version of OpenFront, this project preserves the upstream copyright notices ("© OpenFront and Contributors") in the footer and loading screen, as required by the license.
+
+See the [LICENSE](LICENSE) for complete requirements.
+
+For asset licensing, see [LICENSE-ASSETS](LICENSE-ASSETS).
+For license history, see [LICENSING.md](LICENSING.md).
+
+> **Note on assets**: files under `/proprietary` come from upstream OpenFront and are **not** freely licensed. They are being replaced with original TradeShips.io assets as part of the rebranding effort.
+
 ## 🤝 Contributing
 
-Contributions and translations are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, the approved-issue process, project governance, and translation info.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
