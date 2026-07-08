@@ -14,7 +14,8 @@
     "railroad": true,
     "fx": true,
     "bar": true,
-    "nameDebug": false
+    "nameDebug": false,
+    "tradeRoute": true
   },
   "terrain": {
     "oceanColor": "#4785b5"
@@ -282,6 +283,33 @@
     "lineWidth": 2,
     "duration": 800,
     "converge": 0.7
+  },
+  "tradeRoute": {
+    "lineWidth": 1.75,
+    "dashLen": 6,
+    "gapLen": 5,
+    "flowSpeed": 10,
+    "endFade": 8,
+    "ownR": 1,
+    "ownG": 0.84,
+    "ownB": 0.35,
+    "ownAlpha": 0.55,
+    "friendlyR": 0.35,
+    "friendlyG": 0.8,
+    "friendlyB": 0.75,
+    "friendlyAlpha": 0.4,
+    "foreignR": 0.85,
+    "foreignG": 0.85,
+    "foreignB": 0.8,
+    "foreignAlpha": 0.18,
+    "contestedR": 1,
+    "contestedG": 0.55,
+    "contestedB": 0.2,
+    "contestedBlend": 0.6,
+    "dangerousR": 1,
+    "dangerousG": 0.25,
+    "dangerousB": 0.2,
+    "dangerousBlend": 0.85
   },
   "samRadius": {
     "strokeWidth": 1.5,
