@@ -90,6 +90,7 @@ describe("TradeShipExecution", () => {
       isMarkedForDeletion: vi.fn(() => false),
     } as any;
 
+    let odometer = 0;
     tradeShip = {
       isActive: vi.fn(() => true),
       owner: vi.fn(() => origOwner),
@@ -100,6 +101,10 @@ describe("TradeShipExecution", () => {
       touch: vi.fn(),
       delete: vi.fn(),
       tile: vi.fn(() => 32),
+      tilesTraveled: vi.fn(() => odometer),
+      setTilesTraveled: vi.fn((tiles: number) => {
+        odometer = tiles;
+      }),
     } as any;
 
     tradeShipExecution = new TradeShipExecution(origOwner, srcPort, dstPort);
