@@ -1,6 +1,11 @@
 import EventEmitter from "events";
 import { describe, expect, it, vi } from "vitest";
+import type {
+  MasterCreateGame,
+  MasterMessage,
+} from "../../src/server/IPCBridgeSchema";
 import { MasterLobbyService } from "../../src/server/MasterLobbyService";
+import { startPolling } from "../../src/server/PollingLoop";
 import { ServerEnv } from "../../src/server/ServerEnv";
 
 vi.mock("../../src/server/Logger", () => ({
@@ -114,5 +119,46 @@ describe("MasterLobbyService.isHealthy", () => {
 
     service.removeWorker(2);
     expect(service.isHealthy()).toBe(false);
+  });
+});
+
+describe("MasterLobbyService public lobby scheduling", () => {
+  it("schedules one shared public lobby from the special maritime rotation", async () => {
+    vi.mocked(startPolling).mockClear();
+    vi.spyOn(ServerEnv, "numWorkers").mockReturnValue(1);
+    vi.spyOn(ServerEnv, "workerIndex").mockReturnValue(0);
+    vi.spyOn(ServerEnv, "gameCreationRate").mockReturnValue(5_000);
+
+    const playlist = {
+      gameConfig: vi.fn(async (type: string) => ({ type })),
+    };
+    const log = { info: vi.fn(), error: vi.fn() } as any;
+    const service = new MasterLobbyService(playlist as any, log);
+    const worker = createMockWorker();
+
+    service.registerWorker(0, worker as any);
+    sendWorkerReady(worker, 0);
+
+    const scheduleCallback = vi
+      .mocked(startPolling)
+      .mock.calls.find(([, intervalMs]) => intervalMs === 1000)?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    expect(scheduleCallback).toBeDefined();
+
+    await scheduleCallback!();
+
+    const sentMessages = (
+      vi.mocked((worker as any).send).mock.calls as Array<[MasterMessage]>
+    ).map(([msg]) => msg);
+    const createMessages = sentMessages.filter(
+      (msg): msg is MasterCreateGame => msg.type === "createGame",
+    );
+
+    expect(createMessages).toHaveLength(1);
+    expect(createMessages[0].publicGameType).toBe("ffa");
+    expect(createMessages[0].gameConfig).toEqual({ type: "special" });
+    expect(playlist.gameConfig).toHaveBeenCalledTimes(1);
+    expect(playlist.gameConfig).toHaveBeenCalledWith("special");
   });
 });
