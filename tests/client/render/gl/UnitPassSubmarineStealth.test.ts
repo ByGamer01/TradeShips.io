@@ -32,6 +32,7 @@ function unit(overrides: Partial<UnitState> = {}): UnitState {
     underConstruction: false,
     targetUnitId: null,
     targetTile: null,
+    tilesTraveled: null,
     troops: 0,
     missileTimerQueue: [],
     level: 1,
