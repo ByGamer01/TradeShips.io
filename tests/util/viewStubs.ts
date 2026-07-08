@@ -55,6 +55,7 @@ export function stubConfig(overrides: Partial<Config> = {}): Config {
     spawnImmunityDuration: () => 0,
     nationSpawnImmunityDuration: () => 0,
     unitInfo: () => ({ maxHealth: 100, constructionDuration: 20 }),
+    tradeShipGold: (distanceTiles: number) => BigInt(distanceTiles * 1_000),
     disableAlliances: () => false,
     allianceDuration: () => 100,
     deletionMarkDuration: () => 300,
