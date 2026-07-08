@@ -41,6 +41,7 @@ import { TrailManager } from "../render/frame/TrailManager";
 import type { FrameData, NameEntry, TilePair } from "../render/types";
 import { STRUCTURE_TYPES } from "../render/types";
 import { PlayerView } from "./PlayerView";
+import { TradeLedger } from "./TradeLedger";
 import { UnitView } from "./UnitView";
 
 const TRAIL_TYPES: ReadonlySet<UnitType> = new Set<UnitType>([
@@ -105,6 +106,24 @@ export class GameView implements GameMap {
   private _firstPopulate = true;
 
   private _myPlayer: PlayerView | null = null;
+
+  /** Session-long trade accounting for the local player (HUD consumer). */
+  private readonly _tradeLedger = new TradeLedger({
+    localPlayerID: () => this._myPlayer?.smallID() ?? 0,
+    estimateGold: (tilesTraveled, ownerID) => {
+      const owner = this.playerBySmallID(ownerID);
+      return owner.isPlayer()
+        ? Number(this._config.tradeShipGold(tilesTraveled, owner))
+        : 0;
+    },
+    portOwnerID: (unitId) => {
+      const port = this._units.get(unitId);
+      return port !== undefined && port.state.unitType === UnitType.Port
+        ? port.state.ownerID
+        : null;
+    },
+    portTile: (unitId) => this._units.get(unitId)?.state.pos ?? null,
+  });
 
   // ── populateFrame dirty flags ──────────────────────────────────────────
   // The derived structures below only depend on rarely-changing player
@@ -447,6 +466,9 @@ export class GameView implements GameMap {
     }
     gu.updates[GameUpdateType.Unit].forEach((update) => {
       let unit = this._units.get(update.id);
+      // Feed the ledger before the in-place state mutation below — it needs
+      // the pre-update state to detect captures and deactivations.
+      this._tradeLedger.onUnitUpdate(update, unit?.state ?? null);
       const isStructure = STRUCTURE_TYPES.has(update.unitType);
       if (unit !== undefined) {
         // Structure changes that affect rendering: owner changed (captured),
@@ -681,6 +703,11 @@ export class GameView implements GameMap {
   /** Public accessor: the renderer reads this and uploads to the GPU. */
   frameData(): FrameData {
     return this._frame;
+  }
+
+  /** Session-long trade accounting for the local player. */
+  tradeLedger(): TradeLedger {
+    return this._tradeLedger;
   }
 
   private advanceMotionPlannedUnits(currentTick: Tick): void {
