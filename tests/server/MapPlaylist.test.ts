@@ -1,5 +1,33 @@
-import { DISABLED_ARSENAL, UnitType } from "../../src/core/game/Game";
+import fs from "fs";
+import path from "path";
+import {
+  DISABLED_ARSENAL,
+  GameMapType,
+  UnitType,
+} from "../../src/core/game/Game";
+import { maps } from "../../src/core/game/Maps.gen";
 import { MapPlaylist } from "../../src/server/MapPlaylist";
+
+const ROOT = path.join(__dirname, "..", "..");
+
+function waterRatio(map: GameMapType): number {
+  const info = maps.find((m) => m.type === map);
+  if (!info) throw new Error(`Unknown map ${map}`);
+  const manifest = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        ROOT,
+        "resources",
+        "maps",
+        info.id.toLowerCase(),
+        "manifest.json",
+      ),
+      "utf8",
+    ),
+  ) as { map: { width: number; height: number; num_land_tiles: number } };
+  const totalTiles = manifest.map.width * manifest.map.height;
+  return (totalTiles - manifest.map.num_land_tiles) / totalTiles;
+}
 
 function expectSupersetOfArsenal(disabledUnits: unknown[] | undefined) {
   expect(disabledUnits).toBeDefined();
@@ -64,5 +92,52 @@ describe("MapPlaylist special mode never reintroduces the arsenal", () => {
     // 5s timeout under full-suite CPU contention even though each draw is
     // fast in isolation.
     20_000,
+  );
+});
+
+describe("MapPlaylist maritime map curation", () => {
+  test.each(["ffa", "team", "special"] as const)(
+    "%s playlist only contains water-majority maps",
+    (type) => {
+      const playlist = new MapPlaylist();
+      const mapsForType = new Set<GameMapType>(
+        (playlist as any).buildMapsList(type),
+      );
+
+      expect(mapsForType.size).toBeGreaterThan(0);
+      expect(mapsForType).not.toContain(GameMapType.Alps);
+      expect(mapsForType).not.toContain(GameMapType.World);
+
+      for (const map of mapsForType) {
+        expect(waterRatio(map)).toBeGreaterThanOrEqual(0.6);
+      }
+    },
+  );
+
+  it("promotes Archipelago Sea into the regular maritime rotation", () => {
+    const playlist = new MapPlaylist();
+
+    expect(new Set((playlist as any).buildMapsList("ffa"))).toContain(
+      GameMapType.ArchipelagoSea,
+    );
+  });
+});
+
+describe("MapPlaylist public starting gold", () => {
+  test(
+    "every special maritime rotation draw is forced to 25M starting gold",
+    async () => {
+      const playlist = new MapPlaylist();
+
+      for (let i = 0; i < 40; i++) {
+        const config = await playlist.gameConfig("special");
+
+        expect(config.startingGold).toBe(25_000_000);
+        expect(config.publicGameModifiers?.startingGold).toBe(25_000_000);
+        expect(config.publicGameModifiers?.isHardNations).toBeFalsy();
+        expect(config.nations).toBe("disabled");
+      }
+    },
+    15_000,
   );
 });
