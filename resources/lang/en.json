@@ -53,6 +53,7 @@
   },
   "build_menu": {
     "desc": {
+      "aircraft_carrier": "Long-range aircraft strike platform",
       "atom_bomb": "Small explosion",
       "city": "Increases max population",
       "defense_post": "Increases defenses of nearby borders",
@@ -60,12 +61,23 @@
       "hydrogen_bomb": "Large explosion",
       "mirv": "Huge explosion, only targets selected player",
       "missile_silo": "Used to launch nukes",
+      "naval_mine": "Single-use naval explosive",
       "port": "Sends trade ships to generate gold",
       "sam_launcher": "Defends against incoming nukes",
+      "submarine": "Stealth torpedo raider",
       "warship": "Captures trade ships, destroys ships and boats"
     },
     "not_enough_money": "Not enough money",
     "warship_shift_hint": "Hold Shift and drag to select multiple warships at once"
+  },
+  "trade_routes": {
+    "contested": "Contested",
+    "danger": "Danger",
+    "escorts": "Escorts",
+    "risk": "Risk",
+    "routes": "Routes",
+    "summary_title": "Active merchant routes, contested sea lanes, and naval escorts",
+    "value": "Value"
   },
   "chat": {
     "attack": {
@@ -825,7 +837,7 @@
     "solo": "Solo",
     "store": "Store",
     "terms_of_service": "Terms of Service",
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips.io (ALPHA)",
     "troubleshooting": "Troubleshooting",
     "user_avatar_alt": "{username}'s avatar",
     "wiki": "Wiki"
@@ -989,7 +1001,7 @@
   },
   "news_box": {
     "dismiss": "Dismiss",
-    "firefox_warning": "OpenFront.io doesn't perform well with [Firefox-based browsers](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). We recommend you to use a [Chromium-based browser](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) for best performance.",
+    "firefox_warning": "TradeShips.io doesn't perform well with [Firefox-based browsers](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). We recommend you to use a [Chromium-based browser](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) for best performance.",
     "go_to_item": "Go to item {num}",
     "news": "NEWS",
     "tournament": "TOURNAMENT",
@@ -1298,6 +1310,8 @@
     "yes": "Yes"
   },
   "unit_type": {
+    "aircraft": "Aircraft",
+    "aircraft_carrier": "Aircraft Carrier",
     "atom_bomb": "Atom Bomb",
     "boat": "Boat",
     "city": "City",
@@ -1306,8 +1320,11 @@
     "hydrogen_bomb": "Hydrogen Bomb",
     "mirv": "MIRV",
     "missile_silo": "Missile Silo",
+    "naval_mine": "Naval Mine",
     "port": "Port",
     "sam_launcher": "SAM Launcher",
+    "submarine": "Submarine",
+    "torpedo": "Torpedo",
     "warship": "Warship"
   },
   "user_setting": {
@@ -1333,6 +1350,8 @@
     "boat_attack_desc": "Send a boat attack to the tile under your cursor.",
     "break_alliance": "Break Alliance (Betray)",
     "break_alliance_desc": "Break alliance with the player whose tile is under your cursor.",
+    "build_aircraft_carrier": "Build Aircraft Carrier",
+    "build_aircraft_carrier_desc": "Build an Aircraft Carrier under your cursor.",
     "build_atom_bomb": "Build Atom Bomb",
     "build_atom_bomb_desc": "Build an Atom Bomb under your cursor.",
     "build_city": "Build City",
@@ -1350,10 +1369,14 @@
     "build_mirv_desc": "Build a MIRV under your cursor.",
     "build_missile_silo": "Build Missile Silo",
     "build_missile_silo_desc": "Build a Missile Silo under your cursor.",
+    "build_naval_mine": "Build Naval Mine",
+    "build_naval_mine_desc": "Build a Naval Mine under your cursor.",
     "build_port": "Build Port",
     "build_port_desc": "Build a Port under your cursor.",
     "build_sam_launcher": "Build SAM Launcher",
     "build_sam_launcher_desc": "Build a SAM Launcher under your cursor.",
+    "build_submarine": "Build Submarine",
+    "build_submarine_desc": "Build a Submarine under your cursor.",
     "build_warship": "Build Warship",
     "build_warship_desc": "Build a Warship under your cursor.",
     "camera_movement": "Camera Movement",
