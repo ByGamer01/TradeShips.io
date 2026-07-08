@@ -24,6 +24,7 @@ import type {
   PlayerStatusData,
   RendererConfig,
   TilePair,
+  TradeRouteData,
   UnitState,
 } from "../types";
 import { Camera } from "./Camera";
@@ -54,6 +55,7 @@ import { StructureLevelPass } from "./passes/StructureLevelPass";
 import { StructurePass } from "./passes/StructurePass";
 import { TerrainPass } from "./passes/TerrainPass";
 import { TerritoryPass } from "./passes/TerritoryPass";
+import { TradeRoutePass } from "./passes/TradeRoutePass";
 import { TrailPass } from "./passes/TrailPass";
 import { UnitPass } from "./passes/UnitPass";
 import { WorldTextPass } from "./passes/WorldTextPass";
@@ -124,6 +126,7 @@ export class GPURenderer {
   private moveIndicatorPass: MoveIndicatorPass;
   private nukeTrajectoryPass: NukeTrajectoryPass;
   private nukeTelegraphPass: NukeTelegraphPass;
+  private tradeRoutePass: TradeRoutePass;
   private heatManager: HeatManager;
   private affiliationPalette: AffiliationPalette;
   private coordinateGridPass: CoordinateGridPass;
@@ -489,6 +492,7 @@ export class GPURenderer {
     this.moveIndicatorPass = new MoveIndicatorPass(gl, this.settings);
     this.nukeTrajectoryPass = new NukeTrajectoryPass(gl, this.settings);
     this.nukeTelegraphPass = new NukeTelegraphPass(gl, this.settings);
+    this.tradeRoutePass = new TradeRoutePass(gl, this.settings, this.mapW);
 
     // --- Scene capture target (for night composite) ---
     const sceneTex = gl.createTexture()!;
@@ -898,6 +902,10 @@ export class GPURenderer {
     this.nukeTelegraphPass.update(data);
   }
 
+  updateTradeRoutes(data: TradeRouteData[]): void {
+    this.tradeRoutePass.update(data);
+  }
+
   updateSpawnOverlay(inSpawnPhase: boolean, centers: SpawnCenter[]): void {
     this.inSpawnPhase = inSpawnPhase;
     this.spawnOverlayPass.update(inSpawnPhase, centers);
@@ -1150,6 +1158,7 @@ export class GPURenderer {
     this.spawnOverlayPass.draw(cam);
     if (pe.borderStamp) this.borderStampPass.draw(cam);
     if (pe.railroad) this.railroadPass.draw(cam, zoom);
+    if (pe.tradeRoute) this.tradeRoutePass.draw(cam);
     if (pe.unit) this.unitPass.drawGround(cam);
     if (pe.falloutBloom) this.bloomPass.draw(cam, this.frameTick);
     this.samRadiusPass.draw(cam);
@@ -1220,6 +1229,7 @@ export class GPURenderer {
     this.moveIndicatorPass.dispose();
     this.nukeTrajectoryPass.dispose();
     this.nukeTelegraphPass.dispose();
+    this.tradeRoutePass.dispose();
     this.barPass.dispose();
     disposeGPUResources(this.gl, this.res);
     this.gl.deleteTexture(this.paletteTex);
