@@ -17,6 +17,7 @@
     "perf:game": "npx tsx tests/perf/fullgame/FullGamePerf.ts",
     "perf:client": "npx tsx tests/perf/client/ClientUpdatePerf.ts",
     "test:coverage": "vitest run --coverage",
+    "gen-unit-atlas": "node scripts/generate-unit-atlas.mjs",
     "format": "prettier --ignore-unknown --write .",
     "format:map-generator": "cd map-generator && go fmt .",
     "lint": "eslint",
