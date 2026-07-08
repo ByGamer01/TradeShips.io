@@ -14,8 +14,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   flickerHashByte,
+  unitAtlasColumnForType,
   UnitPass,
 } from "../../../../src/client/render/gl/passes/UnitPass";
+import {
+  UT_MIRV_WARHEAD,
+  UT_NAVAL_MINE,
+  UT_SHELL,
+  UT_TORPEDO,
+} from "../../../../src/client/render/types/UnitType";
 
 const FLOATS_PER_INSTANCE = 4;
 const TICK_MS = 100;
@@ -183,5 +190,19 @@ describe("flickerHashByte", () => {
       // byte/255 should reproduce the original fract phase to within one step.
       expect(flickerHashByte(x, y) / 255).toBeCloseTo(fract(x, y), 2);
     }
+  });
+});
+
+describe("unitAtlasColumnForType", () => {
+  it("uses dedicated atlas columns for naval unit sprites", () => {
+    expect(unitAtlasColumnForType(UT_TORPEDO)).not.toBe(
+      unitAtlasColumnForType(UT_SHELL),
+    );
+    expect(unitAtlasColumnForType(UT_NAVAL_MINE)).not.toBe(
+      unitAtlasColumnForType(UT_MIRV_WARHEAD),
+    );
+    expect(unitAtlasColumnForType(UT_TORPEDO)).not.toBe(
+      unitAtlasColumnForType(UT_NAVAL_MINE),
+    );
   });
 });
