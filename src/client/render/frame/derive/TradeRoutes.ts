@@ -263,7 +263,12 @@ export function deriveTradeRoutes(
       riskLevel: riskLevel(enemyThreats),
     };
     if (estimateGold !== undefined) {
-      route.estimatedGold = estimateGold(routeDistanceTiles, unit.ownerID);
+      // Arrival gold depends on tiles actually traveled: odometer so far
+      // plus the remaining straight-line distance to the destination port.
+      route.estimatedGold = estimateGold(
+        (unit.tilesTraveled ?? 0) + routeDistanceTiles,
+        unit.ownerID,
+      );
     }
     routes.push(route);
   }
