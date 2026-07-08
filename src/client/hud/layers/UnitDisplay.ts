@@ -26,6 +26,14 @@ const atomBombIcon = assetUrl("images/NukeIconWhite.svg");
 const portIcon = assetUrl("images/PortIcon.svg");
 const samLauncherIcon = assetUrl("images/SamLauncherIconWhite.svg");
 const defensePostIcon = assetUrl("images/ShieldIconWhite.svg");
+const submarineIcon = assetUrl("images/SubmarineIconWhite.svg");
+const aircraftCarrierIcon = assetUrl("images/AircraftCarrierIconWhite.svg");
+const navalMineIcon = assetUrl("images/NavalMineIconWhite.svg");
+
+function translateWithFallback(key: string, fallback: string): string {
+  const translated = translateText(key);
+  return translated === key ? fallback : translated;
+}
 
 @customElement("unit-display")
 export class UnitDisplay extends LitElement implements Controller {
@@ -41,6 +49,9 @@ export class UnitDisplay extends LitElement implements Controller {
   private _port = 0;
   private _defensePost = 0;
   private _samLauncher = 0;
+  private _submarines = 0;
+  private _carriers = 0;
+  private _navalMines = 0;
   private allDisabled = false;
   private _hoveredUnit: PlayerBuildableUnitType | null = null;
 
@@ -79,6 +90,9 @@ export class UnitDisplay extends LitElement implements Controller {
           (player?.units(UnitType.MissileSilo).length ?? 0) > 0
         );
       case UnitType.Warship:
+      case UnitType.Submarine:
+      case UnitType.AircraftCarrier:
+      case UnitType.NavalMine:
         return (
           this.cost(item) <= (player?.gold() ?? 0n) &&
           (player?.units(UnitType.Port).length ?? 0) > 0
@@ -101,6 +115,9 @@ export class UnitDisplay extends LitElement implements Controller {
     this._samLauncher = player.totalUnitLevels(UnitType.SAMLauncher);
     this._factories = player.totalUnitLevels(UnitType.Factory);
     this._warships = player.totalUnitLevels(UnitType.Warship);
+    this._submarines = player.totalUnitLevels(UnitType.Submarine);
+    this._carriers = player.totalUnitLevels(UnitType.AircraftCarrier);
+    this._navalMines = player.totalUnitLevels(UnitType.NavalMine);
     this.requestUpdate();
   }
 
@@ -173,27 +190,115 @@ export class UnitDisplay extends LitElement implements Controller {
             this.keybinds["buildWarship"]?.key ?? "7",
           )}
           ${this.renderUnitItem(
+            submarineIcon,
+            this._submarines,
+            UnitType.Submarine,
+            "submarine",
+            this.keybinds["buildSubmarine"]?.key ?? "8",
+          )}
+          ${this.renderUnitItem(
+            aircraftCarrierIcon,
+            this._carriers,
+            UnitType.AircraftCarrier,
+            "aircraft_carrier",
+            this.keybinds["buildAircraftCarrier"]?.key ?? "9",
+          )}
+          ${this.renderUnitItem(
+            navalMineIcon,
+            this._navalMines,
+            UnitType.NavalMine,
+            "naval_mine",
+            this.keybinds["buildNavalMine"]?.key ?? "0",
+          )}
+          ${this.renderUnitItem(
             atomBombIcon,
             null,
             UnitType.AtomBomb,
             "atom_bomb",
-            this.keybinds["buildAtomBomb"]?.key ?? "8",
+            this.keybinds["buildAtomBomb"]?.key ?? "Shift+8",
           )}
           ${this.renderUnitItem(
             hydrogenBombIcon,
             null,
             UnitType.HydrogenBomb,
             "hydrogen_bomb",
-            this.keybinds["buildHydrogenBomb"]?.key ?? "9",
+            this.keybinds["buildHydrogenBomb"]?.key ?? "Shift+9",
           )}
           ${this.renderUnitItem(
             mirvIcon,
             null,
             UnitType.MIRV,
             "mirv",
-            this.keybinds["buildMIRV"]?.key ?? "0",
+            this.keybinds["buildMIRV"]?.key ?? "Shift+0",
           )}
         </div>
+        ${this.renderTradeRouteSummary()}
+      </div>
+    `;
+  }
+
+  private renderTradeRouteSummary() {
+    const routes = this.game?.frameData?.().tradeRoutes ?? [];
+    const ownRoutes = routes.filter((route) => route.relation === "own");
+    if (ownRoutes.length === 0) {
+      return null;
+    }
+    const riskyRoutes = ownRoutes.filter(
+      (route) => route.riskLevel !== "safe",
+    ).length;
+    const contestedRoutes = ownRoutes.filter(
+      (route) => route.riskLevel === "contested",
+    ).length;
+    const dangerousRoutes = ownRoutes.filter(
+      (route) => route.riskLevel === "dangerous",
+    ).length;
+    const escortCount = ownRoutes.reduce(
+      (total, route) => total + route.escortCount,
+      0,
+    );
+    const estimatedGold = ownRoutes.reduce(
+      (total, route) => total + (route.estimatedGold ?? 0),
+      0,
+    );
+
+    return html`
+      <div
+        class="mt-0.5 text-[10px] text-cyan-200 text-center leading-none"
+        title=${translateWithFallback(
+          "trade_routes.summary_title",
+          "Active merchant routes, contested sea lanes, and naval escorts",
+        )}
+      >
+        ${translateWithFallback("trade_routes.routes", "Routes")}:
+        ${ownRoutes.length}
+        <span class=${riskyRoutes > 0 ? "text-amber-300" : "text-slate-400"}>
+          · ${translateWithFallback("trade_routes.risk", "Risk")}:
+          ${riskyRoutes}
+        </span>
+        ${estimatedGold > 0
+          ? html`<span class="text-yellow-300">
+              · ${translateWithFallback("trade_routes.value", "Value")}:
+              ${renderNumber(estimatedGold)}
+            </span>`
+          : null}
+        ${contestedRoutes > 0
+          ? html`<span class="text-amber-200">
+              · ${translateWithFallback("trade_routes.contested", "Contested")}:
+              ${contestedRoutes}
+            </span>`
+          : null}
+        ${dangerousRoutes > 0
+          ? html`<span class="text-red-300">
+              · ${translateWithFallback("trade_routes.danger", "Danger")}:
+              ${dangerousRoutes}
+            </span>`
+          : null}
+        ${escortCount > 0
+          ? html`<span class="text-emerald-300">
+              · ${translateWithFallback("trade_routes.escorts", "Escorts")}:
+              ${escortCount}
+            </span>`
+          : null}
       </div>
     `;
   }
@@ -282,6 +387,9 @@ export class UnitDisplay extends LitElement implements Controller {
                 );
                 break;
               case UnitType.Warship:
+              case UnitType.Submarine:
+              case UnitType.AircraftCarrier:
+              case UnitType.NavalMine:
                 this.eventBus?.emit(new ToggleStructureEvent([UnitType.Port]));
                 break;
               default:
