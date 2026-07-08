@@ -18,7 +18,6 @@ export class TradeShipExecution implements Execution {
   private tradeShip: Unit | undefined;
   private wasCaptured = false;
   private pathFinder: WaterPathFinder;
-  private tilesTraveled = 0;
   private motionPlanId = 1;
   private motionPlanDst: TileRef | null = null;
 
@@ -158,7 +157,9 @@ export class TradeShipExecution implements Execution {
           this.tradeShip.setSafeFromPirates();
         }
         this.tradeShip.move(result.node);
-        this.tilesTraveled++;
+        // The unit is the authoritative odometer: it drives arrival gold and
+        // is synced to clients on every unit update.
+        this.tradeShip.setTilesTraveled(this.tradeShip.tilesTraveled() + 1);
         break;
       case PathStatus.COMPLETE:
         this.complete();
@@ -178,7 +179,7 @@ export class TradeShipExecution implements Execution {
     this.tradeShip!.delete(false);
     const gold = this.mg
       .config()
-      .tradeShipGold(this.tilesTraveled, this.tradeShip!.owner());
+      .tradeShipGold(this.tradeShip!.tilesTraveled(), this.tradeShip!.owner());
 
     if (this.wasCaptured) {
       this.tradeShip!.owner().addGold(gold, this._dstPort.tile());
