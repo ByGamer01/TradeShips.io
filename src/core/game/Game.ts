@@ -165,7 +165,12 @@ function unitTypeGroup<T extends readonly UnitType[]>(types: T) {
 export enum UnitType {
   TransportShip = "Transport",
   Warship = "Warship",
+  Submarine = "Submarine",
+  AircraftCarrier = "Aircraft Carrier",
+  Aircraft = "Aircraft",
   Shell = "Shell",
+  Torpedo = "Torpedo",
+  NavalMine = "Naval Mine",
   SAMMissile = "SAMMissile",
   Port = "Port",
   AtomBomb = "Atom Bomb",
@@ -210,6 +215,8 @@ export const BuildableAttacks = unitTypeGroup([
   UnitType.HydrogenBomb,
   UnitType.MIRV,
   UnitType.Warship,
+  UnitType.Submarine,
+  UnitType.AircraftCarrier,
 ] as const);
 
 export const Structures = unitTypeGroup([
@@ -224,6 +231,7 @@ export const Structures = unitTypeGroup([
 export const BuildMenus = unitTypeGroup([
   ...Structures.types,
   ...BuildableAttacks.types,
+  UnitType.NavalMine,
 ] as const);
 
 export const PlayerBuildable = unitTypeGroup([
@@ -252,6 +260,16 @@ export interface UnitParamsMap {
   };
 
   [UnitType.Shell]: Record<string, never>;
+
+  [UnitType.Torpedo]: Record<string, never>;
+
+  [UnitType.NavalMine]: Record<string, never>;
+
+  [UnitType.Submarine]: Record<string, never>;
+
+  [UnitType.AircraftCarrier]: Record<string, never>;
+
+  [UnitType.Aircraft]: Record<string, never>;
 
   [UnitType.SAMMissile]: Record<string, never>;
 
@@ -468,6 +486,11 @@ export interface Unit {
   trainType(): TrainType | undefined;
   isLoaded(): boolean | undefined;
   setLoaded(loaded: boolean): void;
+
+  // Trade
+  /** Tiles actually traveled along the route (drives trade gold on arrival). */
+  tilesTraveled(): number;
+  setTilesTraveled(tiles: number): void;
 
   // Targeting
   setTargetTile(cell: TileRef | undefined): void;
