@@ -98,6 +98,7 @@ describe("TradeShipExecution", () => {
       move: vi.fn(),
       setTargetUnit: vi.fn(),
       setSafeFromPirates: vi.fn(),
+      setReachedTarget: vi.fn(),
       touch: vi.fn(),
       delete: vi.fn(),
       tile: vi.fn(() => 32),
