@@ -66,6 +66,33 @@ describe("Warship", () => {
     expect(warship.health()).toBe(maxHealth - 9);
   });
 
+  test("Warship passively repairs near an owned aircraft carrier", async () => {
+    const maxHealth = game.config().unitInfo(UnitType.Warship).maxHealth;
+    if (typeof maxHealth !== "number") {
+      expect(typeof maxHealth).toBe("number");
+      throw new Error("unreachable");
+    }
+    game.config().warshipPassiveHealing = () => 4;
+    game.config().warshipPassiveHealingRange = () => 10;
+
+    player1.buildUnit(UnitType.AircraftCarrier, game.ref(coastX + 2, 10), {});
+    const warship = player1.buildUnit(
+      UnitType.Warship,
+      game.ref(coastX + 3, 10),
+      {
+        patrolTile: game.ref(coastX + 3, 10),
+      },
+    );
+    game.addExecution(new WarshipExecution(warship));
+    game.executeNextTick();
+
+    warship.modifyHealth(-12);
+
+    game.executeNextTick();
+
+    expect(warship.health()).toBe(maxHealth - 8);
+  });
+
   test("Warship captures trade if player has port", async () => {
     const portTile = game.ref(coastX, 10);
     player1.buildUnit(UnitType.Port, portTile, {});
@@ -231,6 +258,90 @@ describe("Warship", () => {
     }
 
     expect(selectedType).toBe(UnitType.TransportShip);
+  });
+
+  test("Warship fires torpedoes at reachable enemy warships", async () => {
+    game.config().warshipTorpedoAttackRate = () => -1;
+    game.config().warshipTargettingRange = () => 10;
+
+    const warship = player1.buildUnit(
+      UnitType.Warship,
+      game.ref(coastX + 1, 10),
+      {
+        patrolTile: game.ref(coastX + 1, 10),
+      },
+    );
+    const enemyWarship = player2.buildUnit(UnitType.Warship, game.ref(coastX + 5, 10), {
+      patrolTile: game.ref(coastX + 5, 10),
+    });
+    const healthBefore = enemyWarship.health();
+
+    game.addExecution(new WarshipExecution(warship));
+    executeTicks(game, 5);
+
+    expect(enemyWarship.health()).toBeLessThan(healthBefore);
+    expect(game.units(UnitType.Shell)).toHaveLength(0);
+  });
+
+  test("Warship does not fire torpedoes at warships in different water components", async () => {
+    game.config().warshipTorpedoAttackRate = () => 0;
+    game.config().warshipTargettingRange = () => 10;
+
+    const warshipTile = game.ref(coastX + 1, 2);
+    const enemyWarshipTile = game.ref(coastX + 1, 12);
+    const warship = player1.buildUnit(UnitType.Warship, warshipTile, {
+      patrolTile: warshipTile,
+    });
+    const enemyWarship = player2.buildUnit(UnitType.Warship, enemyWarshipTile, {
+      patrolTile: enemyWarshipTile,
+    });
+
+    game.getWaterComponent = (tile: TileRef) => {
+      if (tile === warshipTile) return 1;
+      if (tile === enemyWarshipTile) return 2;
+      return null;
+    };
+
+    game.hasWaterComponent = (tile: TileRef, component: number) => {
+      return game.getWaterComponent(tile) === component;
+    };
+
+    game.addExecution(new WarshipExecution(warship));
+    executeTicks(game, 5);
+
+    expect(warship.targetUnit()).not.toBe(enemyWarship);
+    expect(game.units(UnitType.Torpedo)).toHaveLength(0);
+  });
+
+  test("Warship targets ships reachable through any adjacent water component", async () => {
+    game.config().warshipTargettingRange = () => 10;
+
+    const warshipTile = game.ref(coastX + 1, 2);
+    const transportTile = game.ref(coastX + 1, 4);
+    const warship = player1.buildUnit(UnitType.Warship, warshipTile, {
+      patrolTile: warshipTile,
+    });
+    const transport = player2.buildUnit(UnitType.TransportShip, transportTile, {
+      targetTile: transportTile,
+    });
+
+    game.getWaterComponent = (tile: TileRef) => {
+      if (tile === warshipTile) return 1;
+      if (tile === transportTile) return 2;
+      return null;
+    };
+
+    game.hasWaterComponent = (tile: TileRef, component: number) => {
+      return tile === transportTile && component === 1;
+    };
+
+    const execution = new WarshipExecution(warship);
+    const executionInternals = execution as unknown as {
+      findTargetUnit: () => typeof transport | undefined;
+    };
+    execution.init(game, game.ticks());
+
+    expect(executionInternals.findTargetUnit()).toBe(transport);
   });
 
   test("Warship does not target trade ships in different water components", async () => {
