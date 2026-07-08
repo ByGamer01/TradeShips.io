@@ -29,6 +29,7 @@ import { archive, finalizeGameRecord } from "./Archive";
 import { enforceArsenalLock } from "./ArsenalLock";
 import { Client } from "./Client";
 import { ClientMsgRateLimiter } from "./ClientMsgRateLimiter";
+import { lobbyBotFillCount } from "./LobbyBotFill";
 import { ServerEnv } from "./ServerEnv";
 export enum GamePhase {
   Lobby = "LOBBY",
@@ -656,6 +657,28 @@ export class GameServer {
     return this.activeClients.length;
   }
 
+  /**
+   * Player count advertised to the lobby list: real humans topped up with
+   * phantom bots that trickle in as startsAt approaches. Only applies to
+   * public games; private lobbies always show real counts.
+   */
+  public displayedClientCount(now: number = Date.now()): number {
+    const humans = this.activeClients.length;
+    if (
+      this.gameConfig.gameType !== GameType.Public ||
+      this.gameConfig.maxPlayers === undefined
+    ) {
+      return humans;
+    }
+    return lobbyBotFillCount({
+      humans,
+      maxPlayers: this.gameConfig.maxPlayers,
+      visibleAt: this.visibleAt,
+      startsAt: this.startsAt,
+      now,
+    });
+  }
+
   public numDesyncedClients(): number {
     return this.outOfSyncClients.size;
   }
@@ -749,11 +772,12 @@ export class GameServer {
 
     const friendsFor = this.buildFriendsLookup();
 
+    const startGameConfig = this.startGameConfig();
     const result = GameStartInfoSchema.safeParse({
       gameID: this.id,
       lobbyCreatedAt: this.createdAt,
       visibleAt: this.visibleAt,
-      config: this.gameConfig,
+      config: startGameConfig,
       players: this.activeClients.map((c) => ({
         username: c.username,
         clanTag: c.clanTag ?? null,
@@ -790,6 +814,28 @@ export class GameServer {
       });
       this.sendStartGameMsg(c.ws, 0);
     });
+  }
+
+  private startGameConfig(): GameConfig {
+    if (
+      this.gameConfig.gameType !== GameType.Public ||
+      this.gameConfig.maxPlayers === undefined ||
+      typeof this.gameConfig.bots !== "number" ||
+      this.gameConfig.bots <= 0
+    ) {
+      return this.gameConfig;
+    }
+
+    return {
+      ...this.gameConfig,
+      bots: Math.max(
+        0,
+        Math.min(
+          this.gameConfig.bots,
+          this.gameConfig.maxPlayers - this.activeClients.length,
+        ),
+      ),
+    };
   }
 
   private addIntent(intent: StampedIntent) {
