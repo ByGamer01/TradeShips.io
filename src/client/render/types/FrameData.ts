@@ -6,6 +6,7 @@ import type {
   PlayerState,
   PlayerStatusData,
   TilePair,
+  TradeRouteData,
   UnitState,
 } from "./Renderer";
 
@@ -67,6 +68,7 @@ export interface FrameData {
   readonly allianceClusters: ReadonlyMap<number, number>;
   readonly nukeTelegraphs: NukeTelegraphData[];
   readonly attackRings: AttackRingInput[];
+  readonly tradeRoutes: TradeRouteData[];
   /** True when structures changed this tick (added/removed/level change). */
   readonly structuresDirty: boolean;
 }
