@@ -37,6 +37,9 @@ const atomBombIcon = assetUrl("images/NukeIconWhite.svg");
 const portIcon = assetUrl("images/PortIcon.svg");
 const samlauncherIcon = assetUrl("images/SamLauncherIconWhite.svg");
 const shieldIcon = assetUrl("images/ShieldIconWhite.svg");
+const submarineIcon = assetUrl("images/SubmarineIconWhite.svg");
+const aircraftCarrierIcon = assetUrl("images/AircraftCarrierIconWhite.svg");
+const navalMineIcon = assetUrl("images/NavalMineIconWhite.svg");
 
 export interface BuildItemDisplay {
   unitType: PlayerBuildableUnitType;
@@ -74,6 +77,27 @@ export const buildTable: BuildItemDisplay[][] = [
       icon: warshipIcon,
       description: "build_menu.desc.warship",
       key: "unit_type.warship",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Submarine,
+      icon: submarineIcon,
+      description: "build_menu.desc.submarine",
+      key: "unit_type.submarine",
+      countable: true,
+    },
+    {
+      unitType: UnitType.AircraftCarrier,
+      icon: aircraftCarrierIcon,
+      description: "build_menu.desc.aircraft_carrier",
+      key: "unit_type.aircraft_carrier",
+      countable: true,
+    },
+    {
+      unitType: UnitType.NavalMine,
+      icon: navalMineIcon,
+      description: "build_menu.desc.naval_mine",
+      key: "unit_type.naval_mine",
       countable: true,
     },
     {
