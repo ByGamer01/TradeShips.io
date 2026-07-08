@@ -26,6 +26,7 @@ import type {
   PlayerStatusData,
   RendererConfig,
   TilePair,
+  TradeRouteData,
   UnitState,
 } from "../types";
 import type { SpawnCenter } from "./passes/SpawnOverlayPass";
@@ -215,6 +216,10 @@ export class MapRenderer {
   /** Update in-flight nuke target telegraph circles. */
   updateNukeTelegraphs(data: NukeTelegraphData[]): void {
     this.renderer?.updateNukeTelegraphs(data);
+  }
+
+  updateTradeRoutes(data: TradeRouteData[]): void {
+    this.renderer?.updateTradeRoutes(data);
   }
 
   /** Update spawn phase overlay (tile highlights + breathing rings). */
