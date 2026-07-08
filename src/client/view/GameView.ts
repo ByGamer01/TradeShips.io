@@ -695,14 +695,19 @@ export class GameView implements GameMap {
 
       const oldTile = unit.tile();
       const dt = currentTick - plan.startTick;
-      const stepIndex =
-        dt <= 0 ? 0 : Math.floor(dt / Math.max(1, plan.ticksPerStep));
+      const ticksPerStep = Math.max(1, plan.ticksPerStep);
+      const stepIndex = dt <= 0 ? 0 : Math.floor(dt / ticksPerStep);
       const lastIndex = plan.path.length - 1;
       const idx = Math.max(0, Math.min(lastIndex, stepIndex));
       const newTile = plan.path[idx] as TileRef;
 
       if (newTile !== oldTile) {
-        unit.applyDerivedPosition(newTile);
+        // Steps advanced since last tick — feeds the client-side odometer
+        // (tilesTraveled) so it stays live between authoritative updates.
+        const prevDt = dt - 1;
+        const prevStepIndex = prevDt <= 0 ? 0 : Math.floor(prevDt / ticksPerStep);
+        const prevIdx = Math.max(0, Math.min(lastIndex, prevStepIndex));
+        unit.applyDerivedPosition(newTile, idx - prevIdx);
         this.unitGrid.updateUnitCell(unit);
         continue;
       }
