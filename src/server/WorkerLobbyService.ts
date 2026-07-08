@@ -98,18 +98,17 @@ export class WorkerLobbyService {
   }
 
   private sendMyLobbiesToMaster() {
-    const lobbies = this.gm
-      .publicLobbies()
-      .map((g) => g.gameInfo())
-      .map((gi) => {
-        return {
-          gameID: gi.gameID,
-          numClients: gi.clients?.length ?? 0,
-          startsAt: gi.startsAt,
-          gameConfig: gi.gameConfig,
-          publicGameType: gi.publicGameType!,
-        } satisfies PublicGameInfo;
-      });
+    const lobbies = this.gm.publicLobbies().map((g) => {
+      const gi = g.gameInfo();
+      return {
+        gameID: gi.gameID,
+        // Advertised count includes phantom bots ramping toward startsAt.
+        numClients: g.displayedClientCount(),
+        startsAt: gi.startsAt,
+        gameConfig: gi.gameConfig,
+        publicGameType: gi.publicGameType!,
+      } satisfies PublicGameInfo;
+    });
     process.send?.({ type: "lobbyList", lobbies } satisfies WorkerLobbyList);
   }
 
