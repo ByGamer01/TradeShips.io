@@ -35,6 +35,7 @@ describe("DISABLED_ARSENAL", () => {
         UnitType.DefensePost,
       ]),
     );
+    expect(DISABLED_ARSENAL).not.toContain(UnitType.NavalMine);
   });
 
   test("never disables a child projectile without its parent (parent-child invariant)", () => {
