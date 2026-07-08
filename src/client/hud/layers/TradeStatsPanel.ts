@@ -1,6 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { EventBus } from "../../../core/EventBus";
+import { UnitType } from "../../../core/game/Game";
 import type { TradeRouteData } from "../../render/types";
 import { Controller } from "../../Controller";
 import { renderNumber, translateText } from "../../Utils";
@@ -64,11 +65,17 @@ export class TradeStatsPanel extends LitElement implements Controller {
     ).length;
     this._escorted = this._ownRoutes.filter((r) => r.escortCount > 0).length;
     this._summary = this.game.tradeLedger().summary();
+    const ownsPort = me.units(UnitType.Port).length > 0;
 
     this._hasTradePresence =
+      ownsPort ||
       this._ownRoutes.length > 0 ||
       this._summary.arrivals > 0 ||
+      this._summary.piratedArrivals > 0 ||
       this._summary.shipsLost > 0 ||
+      this._summary.shipsCaptured > 0 ||
+      this._summary.capturesByMe > 0 ||
+      this._summary.goldFromMyShips > 0 ||
       this._summary.goldAtMyPorts > 0;
 
     this.requestUpdate();
@@ -130,6 +137,13 @@ export class TradeStatsPanel extends LitElement implements Controller {
           "text-yellow-300",
         )}
         ${this.row(translateText("trade_stats.arrivals"), `${s.arrivals}`)}
+        ${s.piratedArrivals > 0
+          ? this.row(
+              translateText("trade_stats.pirated_arrivals"),
+              `${s.piratedArrivals}`,
+              "text-emerald-400",
+            )
+          : nothing}
         ${s.shipsLost > 0
           ? this.row(
               translateText("trade_stats.ships_lost"),
