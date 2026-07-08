@@ -296,6 +296,44 @@ export class Config {
           damage: 250,
         };
         break;
+      case UnitType.Torpedo:
+        info = {
+          cost: () => 0n,
+          damage: 300,
+        };
+        break;
+      case UnitType.Submarine:
+        info = {
+          cost: this.costWrapper(
+            (numUnits: number) => Math.min(800_000, (numUnits + 1) * 200_000),
+            UnitType.Submarine,
+          ),
+          maxHealth: 500,
+        };
+        break;
+      case UnitType.AircraftCarrier:
+        info = {
+          cost: this.costWrapper(
+            (numUnits: number) => Math.min(1_600_000, (numUnits + 1) * 400_000),
+            UnitType.AircraftCarrier,
+          ),
+          maxHealth: 1500,
+        };
+        break;
+      case UnitType.Aircraft:
+        info = {
+          cost: () => 0n,
+          damage: 200,
+        };
+        break;
+      case UnitType.NavalMine:
+        info = {
+          cost: this.costWrapper(
+            (numUnits: number) => Math.min(300_000, 50_000 + numUnits * 25_000),
+            UnitType.NavalMine,
+          ),
+        };
+        break;
       case UnitType.SAMMissile:
         info = {
           cost: () => 0n,
@@ -896,6 +934,30 @@ export class Config {
     return 50;
   }
 
+  torpedoLifetime(): number {
+    return 70;
+  }
+
+  torpedoStepsPerTick(): number {
+    return 2;
+  }
+
+  navalMinePortRange(): number {
+    return 24;
+  }
+
+  navalMineMaxPerPlayer(): number {
+    return 12;
+  }
+
+  navalMineDetectionRange(): number {
+    return 2;
+  }
+
+  navalMineBlastRange(): number {
+    return 2;
+  }
+
   warshipPatrolRange(): number {
     return 100;
   }
@@ -906,6 +968,35 @@ export class Config {
 
   warshipShellAttackRate(): number {
     return 20;
+  }
+
+  warshipTorpedoAttackRate(): number {
+    return this.warshipShellAttackRate() * 2;
+  }
+
+  /** Max distance at which surface warships can target a submerged submarine. */
+  submarineEngagementRange(): number {
+    return 20;
+  }
+
+  submarineTorpedoAttackRate(): number {
+    return 20;
+  }
+
+  carrierStrikeRange(): number {
+    return 70;
+  }
+
+  carrierAircraftAttackRate(): number {
+    return 40;
+  }
+
+  aircraftStepsPerTick(): number {
+    return 3;
+  }
+
+  aircraftLifetime(): number {
+    return 100;
   }
 
   warshipDockingRange(): number {
