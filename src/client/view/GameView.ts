@@ -32,6 +32,10 @@ import { extractAttackRings } from "../render/frame/derive/AttackRings";
 import { extractNukeTelegraphs } from "../render/frame/derive/NukeTelegraphs";
 import { computePlayerStatus } from "../render/frame/derive/PlayerStatus";
 import { buildRelationMatrix } from "../render/frame/derive/RelationMatrix";
+import {
+  deriveTradeRoutes,
+  friendlyOwnersFromRelations,
+} from "../render/frame/derive/TradeRoutes";
 import { RailroadCache } from "../render/frame/RailroadCache";
 import { TrailManager } from "../render/frame/TrailManager";
 import type { FrameData, NameEntry, TilePair } from "../render/types";
@@ -41,6 +45,7 @@ import { UnitView } from "./UnitView";
 
 const TRAIL_TYPES: ReadonlySet<UnitType> = new Set<UnitType>([
   UnitType.TransportShip,
+  UnitType.TradeShip,
   UnitType.AtomBomb,
   UnitType.HydrogenBomb,
   UnitType.MIRV,
@@ -199,6 +204,7 @@ export class GameView implements GameMap {
       allianceClusters: new Map(),
       nukeTelegraphs: [],
       attackRings: [],
+      tradeRoutes: [],
       structuresDirty: false,
     };
   }
@@ -596,6 +602,23 @@ export class GameView implements GameMap {
           this._myPlayer.smallID(),
         )
       : [];
+    f.tradeRoutes = deriveTradeRoutes(
+      this._unitStates,
+      this._map.width(),
+      this._myPlayer?.smallID() ?? 0,
+      friendlyOwnersFromRelations(
+        f.relationMatrix,
+        f.relationSize,
+        this._myPlayer?.smallID() ?? 0,
+      ),
+      (distanceTiles, ownerID) => {
+        const owner = this.playerBySmallID(ownerID);
+        if (!owner.isPlayer()) {
+          return 0;
+        }
+        return Number(this._config.tradeShipGold(distanceTiles, owner));
+      },
+    );
     f.structuresDirty = this._structuresDirty;
 
     // First populate: signal "full upload required" by nulling changedTiles.
