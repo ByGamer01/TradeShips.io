@@ -22,8 +22,12 @@ TradeShips.io reshapes the original land-conquest formula into a **naval-economi
 | Status | Feature |
 | ------ | ------- |
 | ✅ | Arsenal lock — land/strategic weapons removed from all modes |
-| 🔜 | New naval units: submarines, torpedoes, helicopters, aircraft carriers |
-| 🔜 | Submarine mines (the DefensePost, reborn at sea) |
+| ✅ | New naval combat layer: submarines, torpedoes, naval mines, and aircraft carriers |
+| ✅ | Visible merchant traffic — trade ships leave active sea-route trails |
+| ✅ | Commerce telemetry — own route count, estimated route value, contested/danger lanes, and escort coverage in the HUD |
+| ✅ | Aircraft carrier phase 2a — mobile repair hub for nearby warships |
+| 🔜 | Deeper commerce: exact path-based route value, convoy orders, and port income UI |
+| 🔜 | Aircraft carrier phase 2b — mobile trade support hub |
 | 🔜 | Full rebranding with original sprites and visual identity |
 
 ## 🌟 Features
