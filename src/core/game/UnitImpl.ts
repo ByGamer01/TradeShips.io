@@ -40,6 +40,7 @@ export class UnitImpl implements Unit {
   private _targetable: boolean = true;
   private _loaded: boolean | undefined;
   private _trainType: TrainType | undefined;
+  private _tilesTraveled: number = 0; // Only for trade ships
   // Nuke only
   private _trajectoryIndex: number = 0;
   private _trajectory: TrajectoryTile[];
@@ -116,6 +117,13 @@ export class UnitImpl implements Unit {
     return this._targetTile;
   }
 
+  tilesTraveled(): number {
+    return this._tilesTraveled;
+  }
+  setTilesTraveled(tiles: number): void {
+    this._tilesTraveled = tiles;
+  }
+
   id() {
     return this._id;
   }
@@ -146,6 +154,8 @@ export class UnitImpl implements Unit {
       underConstruction: this._underConstruction,
       targetUnitId: this._targetUnit?.id() ?? undefined,
       targetTile: this.targetTile() ?? undefined,
+      tilesTraveled:
+        this._type === UnitType.TradeShip ? this._tilesTraveled : undefined,
       missileTimerQueue: this._missileTimerQueue,
       level: this.level(),
       hasTrainStation: this._hasTrainStation,
