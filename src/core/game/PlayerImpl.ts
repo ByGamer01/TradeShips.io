@@ -1231,6 +1231,13 @@ export class PlayerImpl implements Player {
     if (unitType !== UnitType.MIRVWarhead && !this.isAlive()) {
       return false;
     }
+    if (
+      unitType === UnitType.NavalMine &&
+      this.unitCount(UnitType.NavalMine) >=
+        this.mg.config().navalMineMaxPerPlayer()
+    ) {
+      return false;
+    }
     return true;
   }
 
@@ -1357,10 +1364,16 @@ export class PlayerImpl implements Player {
         return targetTile;
       case UnitType.Port:
         return this.portSpawn(targetTile, validTiles);
+      case UnitType.NavalMine:
+        return this.navalMineSpawn(targetTile);
       case UnitType.Warship:
+      case UnitType.Submarine:
+      case UnitType.AircraftCarrier:
         return this.warshipSpawn(targetTile);
       case UnitType.Shell:
+      case UnitType.Torpedo:
       case UnitType.SAMMissile:
+      case UnitType.Aircraft:
         return targetTile;
       case UnitType.TransportShip:
         return canBuildTransportShip(this.mg, this, targetTile);
@@ -1468,6 +1481,30 @@ export class PlayerImpl implements Player {
     );
 
     return bestPort?.tile() ?? false;
+  }
+
+  navalMineSpawn(tile: TileRef): TileRef | false {
+    if (!this.mg.isWater(tile)) {
+      return false;
+    }
+
+    const tileComponent = this.mg.getWaterComponent(tile);
+    if (tileComponent === null) {
+      return false;
+    }
+
+    const bestPort = findClosestBy(
+      this.units(UnitType.Port),
+      (port) => this.mg.manhattanDist(port.tile(), tile),
+      (port) =>
+        port.isActive() &&
+        !port.isUnderConstruction() &&
+        this.mg.hasWaterComponent(port.tile(), tileComponent) &&
+        this.mg.manhattanDist(port.tile(), tile) <=
+          this.mg.config().navalMinePortRange(),
+    );
+
+    return bestPort === null ? false : tile;
   }
 
   landBasedUnitSpawn(tile: TileRef): TileRef | false {
