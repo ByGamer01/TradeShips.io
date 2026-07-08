@@ -13,6 +13,10 @@ import { MapPlaylist } from "./MapPlaylist";
 import { startPolling } from "./PollingLoop";
 import { ServerEnv } from "./ServerEnv";
 
+const PUBLIC_LOBBY_TYPES: readonly PublicGameType[] = ["ffa"];
+const PUBLIC_LOBBY_CONFIG_TYPE: PublicGameType = "special";
+const TARGET_PUBLIC_LOBBIES_PER_TYPE = 1;
+
 export interface MasterLobbyServiceOptions {
   playlist: MapPlaylist;
   log: typeof logger;
@@ -131,7 +135,7 @@ export class MasterLobbyService {
   private async maybeScheduleLobby() {
     const lobbiesByType = this.getAllLobbies();
 
-    for (const type of Object.keys(lobbiesByType) as PublicGameType[]) {
+    for (const type of PUBLIC_LOBBY_TYPES) {
       const lobbies = lobbiesByType[type];
 
       // Always ensure the next lobby has a timer, even if we already have 2+
@@ -147,14 +151,14 @@ export class MasterLobbyService {
         });
       }
 
-      if (lobbies.length >= 2) {
+      if (lobbies.length >= TARGET_PUBLIC_LOBBIES_PER_TYPE) {
         continue;
       }
 
       this.sendMessageToWorker({
         type: "createGame",
         gameID: generateID(),
-        gameConfig: await this.playlist.gameConfig(type),
+        gameConfig: await this.playlist.gameConfig(PUBLIC_LOBBY_CONFIG_TYPE),
         publicGameType: type,
       } satisfies MasterCreateGame);
     }
