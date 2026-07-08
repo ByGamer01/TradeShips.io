@@ -18,6 +18,7 @@ import {
   makeNameViewData,
   makePlayerUpdate,
   makeUnitUpdate,
+  stubConfig,
 } from "../../util/viewStubs";
 
 function withPlayers(
@@ -736,6 +737,175 @@ describe("GameView.frameData() — renderer contract", () => {
     const a1 = game.frameData().events.deadUnits;
     game.update(makeEmptyGu(2));
     expect(game.frameData().events.deadUnits).toBe(a1);
+  });
+
+  it("stamps trade ship movement into trail state for visible sea routes", () => {
+    const game = makeGameView({ width: 10, height: 10 });
+
+    const gu1 = makeEmptyGu(1);
+    gu1.updates[GameUpdateType.Unit] = [
+      makeUnitUpdate({
+        id: 77,
+        unitType: UnitType.TradeShip,
+        ownerID: 3,
+        pos: 11,
+        lastPos: 11,
+      }),
+    ];
+    game.update(gu1);
+
+    const gu2 = makeEmptyGu(2);
+    gu2.updates[GameUpdateType.Unit] = [
+      makeUnitUpdate({
+        id: 77,
+        unitType: UnitType.TradeShip,
+        ownerID: 3,
+        pos: 14,
+        lastPos: 11,
+      }),
+    ];
+    game.update(gu2);
+
+    const trail = game.frameData().trailState;
+    expect([trail[11], trail[12], trail[13], trail[14]]).toEqual([
+      3, 3, 3, 3,
+    ]);
+  });
+
+  it("frame.tradeRoutes exposes live commercial route metrics", () => {
+    const game = makeGameView({ width: 10, height: 10, myClientID: "c-me" });
+    const gu = withPlayers(1, [
+      makePlayerUpdate({
+        id: "me",
+        smallID: 1,
+        clientID: "c-me",
+        allies: [3],
+      }),
+      makePlayerUpdate({ id: "ally", smallID: 3, clientID: "c-ally" }),
+    ]);
+    gu.updates[GameUpdateType.Unit] = [
+      makeUnitUpdate({
+        id: 10,
+        unitType: UnitType.Port,
+        ownerID: 1,
+        pos: 88,
+      }),
+      makeUnitUpdate({
+        id: 11,
+        unitType: UnitType.TradeShip,
+        ownerID: 1,
+        pos: 11,
+        targetUnitId: 10,
+      }),
+      makeUnitUpdate({
+        id: 12,
+        unitType: UnitType.TradeShip,
+        ownerID: 3,
+        pos: 18,
+        targetUnitId: 10,
+      }),
+    ];
+    game.update(gu);
+
+    expect(game.frameData().tradeRoutes).toEqual([
+      {
+        shipId: 11,
+        ownerID: 1,
+        from: 11,
+        to: 88,
+        distanceTiles: 10,
+        enemyThreats: 0,
+        escortCount: 0,
+        estimatedGold: 10_000,
+        relation: "own",
+        riskLevel: "safe",
+      },
+      {
+        shipId: 12,
+        ownerID: 3,
+        from: 18,
+        to: 88,
+        distanceTiles: 7,
+        enemyThreats: 0,
+        escortCount: 0,
+        estimatedGold: 7_000,
+        relation: "friendly",
+        riskLevel: "safe",
+      },
+    ]);
+  });
+
+  it("frame.tradeRoutes treats same-team merchant routes as friendly", () => {
+    const game = makeGameView({ width: 10, height: 10, myClientID: "c-me" });
+    const gu = withPlayers(1, [
+      makePlayerUpdate({
+        id: "me",
+        smallID: 1,
+        clientID: "c-me",
+        team: "red",
+      }),
+      makePlayerUpdate({
+        id: "teammate",
+        smallID: 2,
+        clientID: "c-teammate",
+        team: "red",
+      }),
+    ]);
+    gu.updates[GameUpdateType.Unit] = [
+      makeUnitUpdate({
+        id: 10,
+        unitType: UnitType.Port,
+        ownerID: 2,
+        pos: 88,
+      }),
+      makeUnitUpdate({
+        id: 11,
+        unitType: UnitType.TradeShip,
+        ownerID: 2,
+        pos: 18,
+        targetUnitId: 10,
+      }),
+    ];
+    game.update(gu);
+
+    expect(game.frameData().tradeRoutes[0]?.relation).toBe("friendly");
+  });
+
+  it("frame.tradeRoutes exposes estimated commercial route value", () => {
+    const game = makeGameView({
+      width: 10,
+      height: 10,
+      myClientID: "c-me",
+      config: stubConfig({
+        tradeShipGold: (distanceTiles: number, player: any) =>
+          BigInt(distanceTiles * 1_000 + player.smallID()),
+      }),
+    });
+    const gu = withPlayers(1, [
+      makePlayerUpdate({
+        id: "me",
+        smallID: 1,
+        clientID: "c-me",
+      }),
+    ]);
+    gu.updates[GameUpdateType.Unit] = [
+      makeUnitUpdate({
+        id: 10,
+        unitType: UnitType.Port,
+        ownerID: 1,
+        pos: 88,
+      }),
+      makeUnitUpdate({
+        id: 11,
+        unitType: UnitType.TradeShip,
+        ownerID: 1,
+        pos: 18,
+        targetUnitId: 10,
+      }),
+    ];
+    game.update(gu);
+
+    expect(game.frameData().tradeRoutes[0]?.estimatedGold).toBe(7_001);
   });
 
   it("frame.structuresDirty is true on first populate (force initial upload)", () => {
