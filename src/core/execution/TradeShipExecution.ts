@@ -176,6 +176,9 @@ export class TradeShipExecution implements Execution {
 
   private complete() {
     this.active = false;
+    // Mark arrival before deletion so clients can tell a completed trade
+    // (income) apart from a sunk ship (loss) in the final unit update.
+    this.tradeShip!.setReachedTarget();
     this.tradeShip!.delete(false);
     const gold = this.mg
       .config()
