@@ -32,10 +32,37 @@ const ARCADE_MAPS = new Set<GameMapType>([
   GameMapType.Sierpinski,
   GameMapType.Onion,
 ]);
-const SPECIAL_ONLY_MAPS = new Set<GameMapType>([GameMapType.ArchipelagoSea]);
+const SPECIAL_ONLY_MAPS = new Set<GameMapType>();
+
+const MARITIME_MAPS = new Set<GameMapType>([
+  GameMapType.Achiran,
+  GameMapType.Aegean,
+  GameMapType.ArchipelagoSea,
+  GameMapType.BajaCalifornia,
+  GameMapType.Britannia,
+  GameMapType.Caribbean,
+  GameMapType.FalklandIslands,
+  GameMapType.FaroeIslands,
+  GameMapType.FourIslands,
+  GameMapType.Hawaii,
+  GameMapType.Iceland,
+  GameMapType.Japan,
+  GameMapType.Lemnos,
+  GameMapType.NorthwestPassage,
+  GameMapType.Passage,
+  GameMapType.SoutheastAsia,
+  GameMapType.StraitOfMalacca,
+  GameMapType.Surrounded,
+  GameMapType.Svalmel,
+  GameMapType.TaiwanStrait,
+  GameMapType.TradersDream,
+  GameMapType.Venice,
+  GameMapType.WarshipWarship,
+]);
 
 // Hard cap on player count for performance. Applied after compact-map reduction.
 const MAX_PLAYER_COUNT = 125;
+const FORCED_PUBLIC_STARTING_GOLD = 25_000_000;
 
 const TEAM_WEIGHTS: { config: TeamCountConfig; weight: number }[] = [
   { config: 2, weight: 10 },
@@ -100,6 +127,12 @@ const MUTUALLY_EXCLUSIVE_MODIFIERS: [ModifierKey, ModifierKey][] = [
   ["startingGold5M", "startingGold1M"],
   ["startingGold25M", "startingGold1M"],
   ["isHardNations", "startingGold25M"],
+];
+const FORCED_STARTING_GOLD_EXCLUDED_MODIFIERS: readonly ModifierKey[] = [
+  "startingGold1M",
+  "startingGold5M",
+  "startingGold25M",
+  "isHardNations",
 ];
 
 export class MapPlaylist {
@@ -199,19 +232,20 @@ export class MapPlaylist {
       excludedModifiers.push("startingGold25M"); // Nations are disabled if that modifier is active (Because of PVP immunity)
       excludedModifiers.push("isPeaceTime"); // Nations don't have PVP immunity
     }
+    excludedModifiers.push(...FORCED_STARTING_GOLD_EXCLUDED_MODIFIERS);
 
     const poolResult = this.getRandomSpecialGameModifiers(excludedModifiers);
     let {
       isCrowded,
-      startingGold,
       isCompact,
       isRandomSpawn,
       goldMultiplier,
       isAlliancesDisabled,
-      isHardNations,
       isPortsDisabled,
       isPeaceTime,
     } = poolResult;
+    const startingGold = FORCED_PUBLIC_STARTING_GOLD;
+    const isHardNations = undefined;
 
     // Crowded modifier: if the map's biggest player count (first number of calculateMapPlayerCounts) is 60 or lower (small maps),
     // set player count to MAX_PLAYER_COUNT (or 60 if compact map is also enabled)
@@ -227,8 +261,6 @@ export class MapPlaylist {
         if (
           !isRandomSpawn &&
           !isCompact &&
-          !isHardNations &&
-          startingGold === undefined &&
           goldMultiplier === undefined &&
           !isAlliancesDisabled &&
           !isPortsDisabled &&
@@ -242,13 +274,11 @@ export class MapPlaylist {
           ({
             isRandomSpawn,
             isCompact,
-            startingGold,
             goldMultiplier,
             isAlliancesDisabled,
             isPortsDisabled,
             isPeaceTime,
           } = fallback);
-          ({ isHardNations } = fallback);
         }
       }
     }
@@ -414,6 +444,9 @@ export class MapPlaylist {
         type !== "special" &&
         (ARCADE_MAPS.has(map) || SPECIAL_ONLY_MAPS.has(map))
       ) {
+        return;
+      }
+      if (!MARITIME_MAPS.has(map)) {
         return;
       }
       let freq = mapInfo.multiplayerFrequency;
