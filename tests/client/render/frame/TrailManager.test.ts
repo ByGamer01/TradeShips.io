@@ -11,6 +11,7 @@ import { TrailManager } from "../../../../src/client/render/frame/TrailManager";
 import type { UnitState } from "../../../../src/client/render/types";
 import {
   UT_ATOM_BOMB,
+  UT_PORT,
   UT_TRADE_SHIP,
 } from "../../../../src/client/render/types";
 
@@ -87,6 +88,35 @@ describe("TrailManager", () => {
 
     // Trade ships are not interpolated, so the trail reaches the current pos.
     expect(trail[ref(4, 2)]).toBe(7);
+  });
+
+  it("stamps a trade ship's active route to its destination port", () => {
+    const tm = new TrailManager(MAP_W, MAP_H);
+    const trail = tm.getTrailState();
+
+    tm.update(
+      units(
+        unit({
+          id: 1,
+          unitType: UT_TRADE_SHIP,
+          pos: ref(2, 2),
+          lastPos: ref(2, 2),
+          targetUnitId: 9,
+        }),
+        unit({
+          id: 9,
+          unitType: UT_PORT,
+          ownerID: 4,
+          pos: ref(6, 2),
+          lastPos: ref(6, 2),
+        }),
+      ),
+      [1],
+    );
+
+    expect([trail[ref(2, 2)], trail[ref(3, 2)], trail[ref(4, 2)], trail[ref(5, 2)], trail[ref(6, 2)]]).toEqual([
+      7, 7, 7, 7, 7,
+    ]);
   });
 
   it("clears a unit's trail when it disappears", () => {
