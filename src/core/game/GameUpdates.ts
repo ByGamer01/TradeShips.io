@@ -184,6 +184,7 @@ export interface UnitUpdate {
   targetable: boolean;
   markedForDeletion: number | false;
   targetUnitId?: number; // Only for trade ships
+  tilesTraveled?: number; // Only for trade ships
   targetTile?: TileRef; // Only for nukes
   health?: number;
   underConstruction?: boolean;
