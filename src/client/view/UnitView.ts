@@ -62,6 +62,7 @@ function unitStateFromUpdate(u: UnitUpdate): UnitState {
     underConstruction: u.underConstruction ?? false,
     targetUnitId: u.targetUnitId ?? null,
     targetTile: u.targetTile ?? null,
+    tilesTraveled: u.tilesTraveled ?? null,
     troops: u.troops,
     missileTimerQueue: u.missileTimerQueue,
     level: u.level,
@@ -90,6 +91,7 @@ function applyUpdateInPlace(target: UnitState, u: UnitUpdate): void {
   target.underConstruction = u.underConstruction ?? false;
   target.targetUnitId = u.targetUnitId ?? null;
   target.targetTile = u.targetTile ?? null;
+  target.tilesTraveled = u.tilesTraveled ?? null;
   target.troops = u.troops;
   target.missileTimerQueue = u.missileTimerQueue;
   target.level = u.level;
@@ -156,12 +158,17 @@ export class UnitView {
     }
   }
 
-  applyDerivedPosition(pos: TileRef) {
+  applyDerivedPosition(pos: TileRef, traveledDelta = 0) {
     const prev = this.state.pos;
     this.lastPos.push(pos);
     this._wasUpdated = true;
     this.state.lastPos = prev;
     this.state.pos = pos;
+    // Plan-driven odometer: keep tilesTraveled live between the sparse
+    // authoritative unit updates, which resync it on arrival.
+    if (traveledDelta > 0 && this.state.tilesTraveled !== null) {
+      this.state.tilesTraveled += traveledDelta;
+    }
   }
 
   /** Plan-driven unit stayed put this tick — its previous-tick position is
@@ -241,6 +248,10 @@ export class UnitView {
   }
   targetTile(): TileRef | undefined {
     return this.state.targetTile ?? undefined;
+  }
+  /** Tiles traveled along the route (trade ships only, undefined otherwise). */
+  tilesTraveled(): number | undefined {
+    return this.state.tilesTraveled ?? undefined;
   }
 
   // How "ready" this unit is from 0 to 1.
