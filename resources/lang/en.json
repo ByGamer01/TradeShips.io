@@ -79,6 +79,21 @@
     "summary_title": "Active merchant routes, contested sea lanes, and naval escorts",
     "value": "Value"
   },
+  "trade_stats": {
+    "arrivals": "Arrivals",
+    "captures_by_me": "Captured by me",
+    "gold_earned": "Gold earned",
+    "gold_in_transit": "Gold at sea",
+    "pirated_arrivals": "Pirated arrivals",
+    "port": "Port",
+    "routes_active": "Active routes",
+    "routes_contested": "Contested routes",
+    "routes_escorted": "Escorted routes",
+    "ships_captured": "Ships captured",
+    "ships_lost": "Ships lost",
+    "title": "Trade",
+    "top_ports": "Top receiving ports"
+  },
   "chat": {
     "attack": {
       "attack": "Attack [P1]!",
