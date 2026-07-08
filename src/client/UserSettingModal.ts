@@ -473,6 +473,38 @@ export class UserSettingModal extends BaseModal {
       ></setting-keybind>
 
       <setting-keybind
+        action="buildSubmarine"
+        label=${translateText("user_setting.build_submarine")}
+        description=${translateText("user_setting.build_submarine_desc")}
+        defaultKey=${this.defaultKeybinds.buildSubmarine}
+        .value=${this.getKeyValue("buildSubmarine")}
+        .display=${this.getKeyChar("buildSubmarine")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
+        action="buildAircraftCarrier"
+        label=${translateText("user_setting.build_aircraft_carrier")}
+        description=${translateText(
+          "user_setting.build_aircraft_carrier_desc",
+        )}
+        defaultKey=${this.defaultKeybinds.buildAircraftCarrier}
+        .value=${this.getKeyValue("buildAircraftCarrier")}
+        .display=${this.getKeyChar("buildAircraftCarrier")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
+        action="buildNavalMine"
+        label=${translateText("user_setting.build_naval_mine")}
+        description=${translateText("user_setting.build_naval_mine_desc")}
+        defaultKey=${this.defaultKeybinds.buildNavalMine}
+        .value=${this.getKeyValue("buildNavalMine")}
+        .display=${this.getKeyChar("buildNavalMine")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
         action="buildAtomBomb"
         label=${translateText("user_setting.build_atom_bomb")}
         description=${translateText("user_setting.build_atom_bomb_desc")}
