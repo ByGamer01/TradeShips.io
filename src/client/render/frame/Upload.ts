@@ -9,6 +9,7 @@ import type {
   PlayerState,
   PlayerStatusData,
   TilePair,
+  TradeRouteData,
   UnitState,
 } from "../types";
 
@@ -33,6 +34,7 @@ export interface FrameUploadTarget {
   applyBonusEvents(events: BonusEvent[]): void;
   updateAttackRings(rings: AttackRingInput[]): void;
   updateNukeTelegraphs(data: NukeTelegraphData[]): void;
+  updateTradeRoutes(data: TradeRouteData[]): void;
   updateNames(
     names: ReadonlyMap<string, NameEntry>,
     players: ReadonlyMap<number, PlayerState>,
@@ -97,9 +99,10 @@ export function uploadFrameData(
     view.applyBonusEvents(frame.events.bonusEvents);
   }
 
-  // --- Attack rings + nuke telegraphs ---
+  // --- Attack rings + nuke telegraphs + trade routes ---
   view.updateAttackRings(frame.attackRings);
   view.updateNukeTelegraphs(frame.nukeTelegraphs);
+  view.updateTradeRoutes(frame.tradeRoutes);
 
   // --- Names + player status ---
   view.updateNames(frame.names, frame.players, false, frame.playerStatus);
