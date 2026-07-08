@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { DISABLED_ARSENAL, UnitType } from "../../src/core/game/Game";
 import { JoinLobbyModal } from "../../src/client/JoinLobbyModal";
 
 describe("JoinLobbyModal server time offset", () => {
@@ -70,5 +71,21 @@ describe("JoinLobbyModal server time offset", () => {
     expect(closeSpy).toHaveBeenCalledTimes(1);
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
     expect((modal as any).handledJoinTimeout).toBe(true);
+  });
+});
+
+describe("JoinLobbyModal disabled unit display", () => {
+  it("hides the locked OpenFront arsenal and only shows user-facing disabled units", () => {
+    const modal = new JoinLobbyModal();
+    (modal as any).gameConfig = {
+      disabledUnits: [...DISABLED_ARSENAL, UnitType.Port],
+    };
+
+    const rendered = JSON.stringify((modal as any).renderDisabledUnits());
+
+    expect(rendered).toContain("unit_type.port");
+    expect(rendered).not.toContain("unit_type.atom_bomb");
+    expect(rendered).not.toContain("unit_type.missile_silo");
+    expect(rendered).not.toContain("unit_type.defense_post");
   });
 });
