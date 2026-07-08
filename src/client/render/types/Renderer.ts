@@ -93,6 +93,12 @@ export interface UnitState {
   underConstruction: boolean;
   targetUnitId: number | null;
   targetTile: number | null;
+  /**
+   * Tiles traveled along the route (trade ships only, null otherwise).
+   * Authoritative on each unit update; advanced client-side between updates
+   * as motion plans play back.
+   */
+  tilesTraveled: number | null;
   troops: number;
   missileTimerQueue: number[];
   level: number;
@@ -207,6 +213,33 @@ export interface NukeTelegraphData {
   outerRadius: number;
   /** Launcher vs local player: 0 = self, 1 = ally/teammate, 2 = enemy. */
   relation: number;
+}
+
+/** Trade ship owner vs the local player. */
+export type TradeRouteRelation = "own" | "friendly" | "foreign";
+export type TradeRouteRiskLevel = "safe" | "contested" | "dangerous";
+
+/** One in-flight trade route: ship position → destination port. */
+export interface TradeRouteData {
+  shipId: number;
+  ownerID: number;
+  /** Ship's current tile. */
+  from: number;
+  /** Destination port tile. */
+  to: number;
+  /** Straight-line distance in tiles (rounded). */
+  distanceTiles: number;
+  /** Enemy naval threats close enough to contest the route segment. */
+  enemyThreats: number;
+  /** Own/allied naval escorts close enough to guard the route segment. */
+  escortCount: number;
+  /**
+   * Estimated gold payout for this in-flight route. This is projected from the
+   * visible route distance, not the server's final water-path tilesTraveled.
+   */
+  estimatedGold?: number;
+  relation: TradeRouteRelation;
+  riskLevel: TradeRouteRiskLevel;
 }
 
 /** Lean config for constructing the GPU renderer — no replay-specific fields. */
