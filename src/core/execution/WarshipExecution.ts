@@ -12,7 +12,7 @@ import { WaterPathFinder } from "../pathfinding/PathFinder";
 import { PathStatus } from "../pathfinding/types";
 import { PseudoRandom } from "../PseudoRandom";
 import { findMinimumBy } from "../Util";
-import { ShellExecution } from "./ShellExecution";
+import { TorpedoExecution } from "./TorpedoExecution";
 
 export class WarshipExecution implements Execution {
   private random: PseudoRandom;
@@ -104,8 +104,14 @@ export class WarshipExecution implements Execution {
       return;
     }
 
-    // Priority 2: Fight enemy warship if in range
-    if (this.warship.targetUnit()?.type() === UnitType.Warship) {
+    // Priority 2: Fight enemy combat ships (incl. carriers and close-range
+    // submarines) if in range
+    const combatTargetType = this.warship.targetUnit()?.type();
+    if (
+      combatTargetType === UnitType.Warship ||
+      combatTargetType === UnitType.AircraftCarrier ||
+      combatTargetType === UnitType.Submarine
+    ) {
       this.shootTarget();
       this.patrol();
       return;
@@ -128,19 +134,31 @@ export class WarshipExecution implements Execution {
       passiveHealingRange * passiveHealingRange;
     const warshipTile = this.warship.tile();
 
-    let isNearPort = false;
+    let isNearRepairHub = false;
     for (const port of owner.units(UnitType.Port)) {
       const distSquared = this.mg.euclideanDistSquared(
         warshipTile,
         port.tile(),
       );
       if (distSquared <= passiveHealingRangeSquared) {
-        isNearPort = true;
+        isNearRepairHub = true;
         break;
       }
     }
+    if (!isNearRepairHub) {
+      for (const carrier of owner.units(UnitType.AircraftCarrier)) {
+        const distSquared = this.mg.euclideanDistSquared(
+          warshipTile,
+          carrier.tile(),
+        );
+        if (distSquared <= passiveHealingRangeSquared) {
+          isNearRepairHub = true;
+          break;
+        }
+      }
+    }
 
-    if (isNearPort) {
+    if (isNearRepairHub) {
       this.warship.modifyHealth(passiveHealing);
     }
 
@@ -212,7 +230,13 @@ export class WarshipExecution implements Execution {
 
   private findTargetUnit(): Unit | undefined {
     return this.findBestTarget(
-      [UnitType.TransportShip, UnitType.Warship, UnitType.TradeShip],
+      [
+        UnitType.TransportShip,
+        UnitType.Warship,
+        UnitType.AircraftCarrier,
+        UnitType.Submarine,
+        UnitType.TradeShip,
+      ],
       true,
     );
   }
@@ -263,6 +287,32 @@ export class WarshipExecution implements Execution {
 
       const type = unit.type();
 
+      if (
+        type === UnitType.TransportShip ||
+        type === UnitType.Warship ||
+        type === UnitType.AircraftCarrier ||
+        type === UnitType.Submarine ||
+        type === UnitType.TradeShip
+      ) {
+        if (warshipComponent === undefined) {
+          warshipComponent = mg.getWaterComponent(this.warship.tile());
+        }
+        if (
+          warshipComponent !== null &&
+          !mg.hasWaterComponent(unit.tile(), warshipComponent)
+        ) {
+          continue;
+        }
+      }
+
+      // Submerged submarines can only be engaged at close range.
+      if (
+        type === UnitType.Submarine &&
+        distSquared > config.submarineEngagementRange() ** 2
+      ) {
+        continue;
+      }
+
       if (includeTradeShips && type === UnitType.TradeShip) {
         if (hasPort === undefined) {
           hasPort = owner.unitCount(UnitType.Port) > 0;
@@ -278,15 +328,6 @@ export class WarshipExecution implements Execution {
         ) {
           continue;
         }
-        if (warshipComponent === undefined) {
-          warshipComponent = mg.getWaterComponent(this.warship.tile());
-        }
-        if (
-          warshipComponent !== null &&
-          !mg.hasWaterComponent(unit.tile(), warshipComponent)
-        ) {
-          continue;
-        }
         if (
           mg.euclideanDistSquared(patrolTile, unit.tile()) > patrolRangeSquared!
         ) {
@@ -294,8 +335,7 @@ export class WarshipExecution implements Execution {
         }
       }
 
-      const typePriority =
-        type === UnitType.TransportShip ? 0 : type === UnitType.Warship ? 1 : 2;
+      const typePriority = types.indexOf(type);
 
       if (
         bestUnit === undefined ||
@@ -608,14 +648,14 @@ export class WarshipExecution implements Execution {
 
   private shootTarget() {
     this.warship.updateWarshipState({ isInCombat: true });
-    const shellAttackRate = this.mg.config().warshipShellAttackRate();
-    if (this.mg.ticks() - this.lastShellAttack > shellAttackRate) {
+    const torpedoAttackRate = this.mg.config().warshipTorpedoAttackRate();
+    if (this.mg.ticks() - this.lastShellAttack > torpedoAttackRate) {
       if (this.warship.targetUnit()?.type() !== UnitType.TransportShip) {
         // Warships don't need to reload when attacking transport ships.
         this.lastShellAttack = this.mg.ticks();
       }
       this.mg.addExecution(
-        new ShellExecution(
+        new TorpedoExecution(
           this.warship.tile(),
           this.warship.owner(),
           this.warship,
