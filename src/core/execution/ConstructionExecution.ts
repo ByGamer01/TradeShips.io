@@ -1,5 +1,6 @@
 import { Execution, Game, Player, Tick, Unit, UnitType } from "../game/Game";
 import { TileRef } from "../game/GameMap";
+import { AntiAirFrigateExecution } from "./AntiAirFrigateExecution";
 import { CarrierExecution } from "./CarrierExecution";
 import { CityExecution } from "./CityExecution";
 import { DefensePostExecution } from "./DefensePostExecution";
@@ -136,6 +137,11 @@ export class ConstructionExecution implements Execution {
       case UnitType.AircraftCarrier:
         this.mg.addExecution(new CarrierExecution(player, this.tile));
         break;
+      case UnitType.AntiAirFrigate:
+        this.mg.addExecution(
+          new AntiAirFrigateExecution({ owner: player, patrolTile: this.tile }),
+        );
+        break;
       case UnitType.Port:
         this.mg.addExecution(new PortExecution(this.structure!));
         break;
@@ -156,6 +162,8 @@ export class ConstructionExecution implements Execution {
       case UnitType.Factory:
         this.mg.addExecution(new FactoryExecution(this.structure!));
         break;
+      case UnitType.Congress:
+        break;
       default:
         console.warn(
           `unit type ${this.constructionType} cannot be constructed`,
@@ -172,6 +180,7 @@ export class ConstructionExecution implements Execution {
       case UnitType.SAMLauncher:
       case UnitType.City:
       case UnitType.Factory:
+      case UnitType.Congress:
         return true;
       default:
         return false;
