@@ -28,7 +28,9 @@ const samLauncherIcon = assetUrl("images/SamLauncherIconWhite.svg");
 const defensePostIcon = assetUrl("images/ShieldIconWhite.svg");
 const submarineIcon = assetUrl("images/SubmarineIconWhite.svg");
 const aircraftCarrierIcon = assetUrl("images/AircraftCarrierIconWhite.svg");
+const antiAirFrigateIcon = assetUrl("images/AntiAirFrigateIconWhite.svg");
 const navalMineIcon = assetUrl("images/NavalMineIconWhite.svg");
+const congressIcon = assetUrl("images/CongressIconWhite.svg");
 
 function translateWithFallback(key: string, fallback: string): string {
   const translated = translateText(key);
@@ -51,7 +53,9 @@ export class UnitDisplay extends LitElement implements Controller {
   private _samLauncher = 0;
   private _submarines = 0;
   private _carriers = 0;
+  private _antiAirFrigates = 0;
   private _navalMines = 0;
+  private _congresses = 0;
   private allDisabled = false;
   private _hoveredUnit: PlayerBuildableUnitType | null = null;
 
@@ -92,6 +96,7 @@ export class UnitDisplay extends LitElement implements Controller {
       case UnitType.Warship:
       case UnitType.Submarine:
       case UnitType.AircraftCarrier:
+      case UnitType.AntiAirFrigate:
       case UnitType.NavalMine:
         return (
           this.cost(item) <= (player?.gold() ?? 0n) &&
@@ -117,7 +122,9 @@ export class UnitDisplay extends LitElement implements Controller {
     this._warships = player.totalUnitLevels(UnitType.Warship);
     this._submarines = player.totalUnitLevels(UnitType.Submarine);
     this._carriers = player.totalUnitLevels(UnitType.AircraftCarrier);
+    this._antiAirFrigates = player.totalUnitLevels(UnitType.AntiAirFrigate);
     this._navalMines = player.totalUnitLevels(UnitType.NavalMine);
+    this._congresses = player.totalUnitLevels(UnitType.Congress);
     this.requestUpdate();
   }
 
@@ -162,53 +169,67 @@ export class UnitDisplay extends LitElement implements Controller {
             this.keybinds["buildPort"]?.key ?? "3",
           )}
           ${this.renderUnitItem(
+            congressIcon,
+            this._congresses,
+            UnitType.Congress,
+            "congress",
+            this.keybinds["buildCongress"]?.key ?? "9",
+          )}
+          ${this.renderUnitItem(
             defensePostIcon,
             this._defensePost,
             UnitType.DefensePost,
             "defense_post",
-            this.keybinds["buildDefensePost"]?.key ?? "4",
+            this.keybinds["buildDefensePost"]?.key ?? "",
           )}
           ${this.renderUnitItem(
             missileSiloIcon,
             this._missileSilo,
             UnitType.MissileSilo,
             "missile_silo",
-            this.keybinds["buildMissileSilo"]?.key ?? "5",
+            this.keybinds["buildMissileSilo"]?.key ?? "",
           )}
           ${this.renderUnitItem(
             samLauncherIcon,
             this._samLauncher,
             UnitType.SAMLauncher,
             "sam_launcher",
-            this.keybinds["buildSamLauncher"]?.key ?? "6",
+            this.keybinds["buildSamLauncher"]?.key ?? "",
           )}
           ${this.renderUnitItem(
             warshipIcon,
             this._warships,
             UnitType.Warship,
             "warship",
-            this.keybinds["buildWarship"]?.key ?? "7",
+            this.keybinds["buildWarship"]?.key ?? "4",
           )}
           ${this.renderUnitItem(
             submarineIcon,
             this._submarines,
             UnitType.Submarine,
             "submarine",
-            this.keybinds["buildSubmarine"]?.key ?? "8",
+            this.keybinds["buildSubmarine"]?.key ?? "5",
           )}
           ${this.renderUnitItem(
             aircraftCarrierIcon,
             this._carriers,
             UnitType.AircraftCarrier,
             "aircraft_carrier",
-            this.keybinds["buildAircraftCarrier"]?.key ?? "9",
+            this.keybinds["buildAircraftCarrier"]?.key ?? "6",
+          )}
+          ${this.renderUnitItem(
+            antiAirFrigateIcon,
+            this._antiAirFrigates,
+            UnitType.AntiAirFrigate,
+            "anti_air_frigate",
+            this.keybinds["buildAntiAirFrigate"]?.key ?? "7",
           )}
           ${this.renderUnitItem(
             navalMineIcon,
             this._navalMines,
             UnitType.NavalMine,
             "naval_mine",
-            this.keybinds["buildNavalMine"]?.key ?? "0",
+            this.keybinds["buildNavalMine"]?.key ?? "8",
           )}
           ${this.renderUnitItem(
             atomBombIcon,
@@ -232,7 +253,61 @@ export class UnitDisplay extends LitElement implements Controller {
             this.keybinds["buildMIRV"]?.key ?? "Shift+0",
           )}
         </div>
+        ${this.renderMaritimeObjectiveSummary()}
         ${this.renderTradeRouteSummary()}
+      </div>
+    `;
+  }
+
+  private renderMaritimeObjectiveSummary() {
+    const objective = this.game?.frameData?.().maritimeObjective;
+    if (objective === undefined || objective === null) {
+      return null;
+    }
+
+    const statusLabel =
+      objective.status === "contested"
+        ? translateWithFallback("maritime_objective.contested", "Contested")
+        : objective.status === "controlled"
+          ? translateWithFallback("maritime_objective.controlled", "Controlled")
+          : objective.status === "capturing"
+            ? translateWithFallback("maritime_objective.capturing", "Capturing")
+            : translateWithFallback("maritime_objective.neutral", "Neutral");
+
+    const statusClass =
+      objective.status === "contested"
+        ? "text-amber-300"
+        : objective.status === "controlled"
+          ? "text-emerald-300"
+          : objective.status === "capturing"
+            ? "text-cyan-200"
+            : "text-slate-400";
+    const progressText = `${Math.round(objective.controlPercent)}%`;
+    const fleetLabel = objective.leaderTeam ?? objective.controllerTeam;
+    const fleetText =
+      fleetLabel !== null && fleetLabel !== undefined
+        ? `${fleetLabel} Fleet`
+        : null;
+
+    return html`
+      <div
+        class="mt-0.5 text-[10px] text-cyan-100 text-center leading-none"
+        title=${translateWithFallback(
+          "maritime_objective.hint",
+          "Control the central sea route to win",
+        )}
+      >
+        <span class="text-slate-300">
+          ${translateWithFallback(
+            "maritime_objective.hint",
+            "Control the central sea route to win",
+          )}
+        </span>
+        <span class="text-white"> · ${objective.name}</span>
+        ${fleetText !== null
+          ? html`<span class="text-cyan-100"> · ${fleetText}</span>`
+          : null}
+        <span class=${statusClass}> · ${statusLabel}: ${progressText} </span>
       </div>
     `;
   }
@@ -389,6 +464,7 @@ export class UnitDisplay extends LitElement implements Controller {
               case UnitType.Warship:
               case UnitType.Submarine:
               case UnitType.AircraftCarrier:
+              case UnitType.AntiAirFrigate:
               case UnitType.NavalMine:
                 this.eventBus?.emit(new ToggleStructureEvent([UnitType.Port]));
                 break;
