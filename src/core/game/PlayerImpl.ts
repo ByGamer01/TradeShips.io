@@ -102,6 +102,9 @@ export class PlayerImpl implements Player {
 
   private embargoes = new Map<PlayerID, Embargo>();
 
+  /** Tariff targets → expiry tick; entries are pruned lazily on lookup. */
+  private tariffsImposed = new Map<PlayerID, Tick>();
+
   public _borderTiles: Set<TileRef> = new Set();
 
   public _units: Unit[] = [];
@@ -1040,6 +1043,20 @@ export class PlayerImpl implements Player {
     return [...this.embargoes.values()];
   }
 
+  addTariffAgainst(other: Player, expiryTick: Tick): void {
+    this.tariffsImposed.set(other.id(), expiryTick);
+  }
+
+  hasTariffAgainst(other: Player): boolean {
+    const expiry = this.tariffsImposed.get(other.id());
+    if (expiry === undefined) return false;
+    if (this.mg.ticks() >= expiry) {
+      this.tariffsImposed.delete(other.id());
+      return false;
+    }
+    return true;
+  }
+
   addEmbargo(other: Player, isTemporary: boolean): void {
     const embargo = this.embargoes.get(other.id());
     if (embargo !== undefined && !embargo.isTemporary) return;
@@ -1369,6 +1386,7 @@ export class PlayerImpl implements Player {
       case UnitType.Warship:
       case UnitType.Submarine:
       case UnitType.AircraftCarrier:
+      case UnitType.AntiAirFrigate:
         return this.warshipSpawn(targetTile);
       case UnitType.Shell:
       case UnitType.Torpedo:
@@ -1386,6 +1404,7 @@ export class PlayerImpl implements Player {
       case UnitType.SAMLauncher:
       case UnitType.City:
       case UnitType.Factory:
+      case UnitType.Congress:
         return this.landBasedStructureSpawn(targetTile, validTiles);
       default:
         assertNever(unitType);
