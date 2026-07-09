@@ -4,9 +4,9 @@ precision highp float;
 // Static quad corner: (t along segment: 0 or 1, side: -1 or +1)
 layout(location = 0) in vec2 aCorner;
 // Per-instance segment endpoints (world-space tile coordinates)
-layout(location = 1) in vec2 aP1; // ship position
-layout(location = 2) in vec2 aP2; // destination port
-// Per-instance premultiplied route color (rgb) + base alpha
+layout(location = 1) in vec2 aP1; // lane start
+layout(location = 2) in vec2 aP2; // lane end
+// Per-instance neutral lane color (rgb) + base alpha
 layout(location = 3) in vec4 aColor;
 
 uniform mat3 uCamera;
