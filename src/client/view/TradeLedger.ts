@@ -34,7 +34,11 @@ export interface TradeLedgerDeps {
   /** Local player smallID; 0 while unresolved (replay / spectator). */
   localPlayerID: () => number;
   /** Mirror of the core's tradeShipGold formula for a given owner. */
-  estimateGold: (tilesTraveled: number, ownerID: number) => number;
+  estimateGold: (
+    tilesTraveled: number,
+    ownerID: number,
+    destinationOwnerID?: number | null,
+  ) => number;
   /** Owner smallID of a port unit, or null if unknown / not a port. */
   portOwnerID: (unitId: number) => number | null;
   /** Tile of a port unit, or null if unknown. */
@@ -78,7 +82,8 @@ export class TradeLedger {
     }
 
     // Deactivation → arrival (reachedTarget) or loss.
-    const justDeactivated = (prev === null || prev.isActive) && !update.isActive;
+    const justDeactivated =
+      (prev === null || prev.isActive) && !update.isActive;
     if (!justDeactivated) return;
 
     if (update.reachedTarget) {
@@ -91,9 +96,14 @@ export class TradeLedger {
   private recordArrival(update: UnitUpdate, me: number): void {
     const wasCaptured =
       update.lastOwnerID !== undefined && update.lastOwnerID !== update.ownerID;
+    const destinationOwnerID =
+      update.targetUnitId !== undefined
+        ? this.deps.portOwnerID(update.targetUnitId)
+        : null;
     const gold = this.deps.estimateGold(
       update.tilesTraveled ?? 0,
       update.ownerID,
+      destinationOwnerID,
     );
 
     if (update.ownerID === me) {
