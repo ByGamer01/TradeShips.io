@@ -463,6 +463,41 @@ describe("Warship", () => {
     ).toBe(true);
   });
 
+  test("Low-health warship retreats to an aircraft carrier repair hub", async () => {
+    game.config().warshipPassiveHealing = () => 0;
+    game.config().warshipPortHealingBonusPerLevel = () => 6;
+    game.config().warshipDockingRange = () => 5;
+    game.config().warshipRetreatHealthThreshold = () => 900;
+
+    const carrierTile = game.ref(coastX + 4, 10);
+    player1.buildUnit(UnitType.AircraftCarrier, carrierTile, {});
+    const warship = player1.buildUnit(
+      UnitType.Warship,
+      game.ref(coastX + 1, 10),
+      {
+        patrolTile: game.ref(coastX + 1, 10),
+      },
+    );
+    const warshipExecution = new WarshipExecution(warship);
+    game.addExecution(warshipExecution);
+
+    game.executeNextTick();
+    warship.modifyHealth(-300);
+
+    for (let i = 0; i < 60; i++) {
+      game.executeNextTick();
+      if (warshipExecution.isDocked()) {
+        break;
+      }
+    }
+
+    expect(warshipExecution.isDocked()).toBe(true);
+    expect(warship.warshipState().retreatPort).toBe(carrierTile);
+    const before = warship.health();
+    game.executeNextTick();
+    expect(warship.health()).toBe(before + 6);
+  });
+
   test("Warship gets active healing when docked at a friendly port", async () => {
     const maxHealth = game.config().unitInfo(UnitType.Warship).maxHealth;
     if (typeof maxHealth !== "number") {
@@ -1057,5 +1092,37 @@ describe("Warship", () => {
     executeTicks(game, 10);
 
     expect(warship.warshipState().patrolTile).toBe(game.ref(coastX + 1, 10));
+  });
+
+  test("MoveWarshipExecution manually retasks submarines, carriers, and anti-air frigates", async () => {
+    const targetTile = game.ref(coastX + 5, 10);
+    const submarine = player1.buildUnit(
+      UnitType.Submarine,
+      game.ref(coastX + 1, 10),
+      {},
+    );
+    const carrier = player1.buildUnit(
+      UnitType.AircraftCarrier,
+      game.ref(coastX + 2, 10),
+      {},
+    );
+    const antiAirFrigate = player1.buildUnit(
+      UnitType.AntiAirFrigate,
+      game.ref(coastX + 3, 10),
+      { patrolTile: game.ref(coastX + 3, 10) },
+    );
+
+    game.addExecution(
+      new MoveWarshipExecution(
+        player1,
+        [submarine.id(), carrier.id(), antiAirFrigate.id()],
+        targetTile,
+      ),
+    );
+    game.executeNextTick();
+
+    expect(submarine.targetTile()).toBe(targetTile);
+    expect(carrier.targetTile()).toBe(targetTile);
+    expect(antiAirFrigate.warshipState().patrolTile).toBe(targetTile);
   });
 });
