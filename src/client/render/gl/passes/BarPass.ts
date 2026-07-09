@@ -56,7 +56,6 @@ export class BarPass {
   private progressCount = 0;
 
   private mapW: number;
-  private warshipMaxHealth: number;
 
   constructor(
     gl: WebGL2RenderingContext,
@@ -67,7 +66,6 @@ export class BarPass {
     this.gl = gl;
     this.settings = settings;
     this.mapW = header.mapWidth;
-    this.warshipMaxHealth = config.unitInfo(UnitType.Warship).maxHealth ?? 0;
 
     // --- Shader program ---
     this.program = createProgram(gl, barVertSrc, barFragSrc);
@@ -124,15 +122,10 @@ export class BarPass {
     this.healthCount = 0;
     this.progressCount = 0;
 
-    // --- Health bars (warships) ---
+    // --- Health bars (damaged mobile units) ---
     for (const unit of mobileUnits.values()) {
-      if (
-        unit.health === null ||
-        unit.health <= 0 ||
-        unit.health >= this.warshipMaxHealth
-      )
-        continue;
-      this.pushHealth(unit, unit.health / this.warshipMaxHealth);
+      const progress = healthProgressForUnit(unit, this.config);
+      if (progress !== null) this.pushHealth(unit, progress);
     }
 
     // --- Progress bars (structures) ---
@@ -280,4 +273,19 @@ export class BarPass {
     }
     return Math.max(0, Math.min(1, readiness));
   }
+}
+
+export function healthProgressForUnit(
+  unit: UnitState,
+  config: Config,
+): number | null {
+  if (unit.health === null || unit.health <= 0) return null;
+
+  const maxHealth =
+    config.unitInfo(unit.unitType as unknown as UnitType).maxHealth ?? null;
+  if (maxHealth === null || maxHealth <= 0 || unit.health >= maxHealth) {
+    return null;
+  }
+
+  return Math.max(0, Math.min(1, unit.health / maxHealth));
 }
