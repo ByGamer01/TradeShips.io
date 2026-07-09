@@ -10,8 +10,10 @@ import { randomPatrolTile } from "./utils/NavalPatrol";
 const CARRIER_TARGET_TYPES = [
   UnitType.TransportShip,
   UnitType.Warship,
+  UnitType.AntiAirFrigate,
   UnitType.Submarine,
 ] as const;
+const MAX_ACTIVE_AIRCRAFT_PER_CARRIER = 3;
 
 /**
  * Aircraft carrier: a slow, expensive strike platform. Patrols like a
@@ -27,6 +29,7 @@ export class CarrierExecution implements Execution {
   private pathfinder: WaterPathFinder;
   private lastAircraftLaunch = 0;
   private alreadyStruck = new Set<Unit>();
+  private activeAircraft = new Set<AircraftExecution>();
   private patrolDestination: TileRef | undefined;
 
   constructor(
@@ -90,7 +93,8 @@ export class CarrierExecution implements Execution {
         unit.owner() === owner ||
         !owner.canAttackPlayer(unit.owner(), true) ||
         this.alreadyStruck.has(unit) ||
-        (unit.type() === UnitType.Warship &&
+        ((unit.type() === UnitType.Warship ||
+          unit.type() === UnitType.AntiAirFrigate) &&
           unit.warshipState().state === "docked")
       ) {
         continue;
@@ -114,19 +118,28 @@ export class CarrierExecution implements Execution {
   }
 
   private launchAircraft(target: Unit): void {
+    for (const aircraft of this.activeAircraft) {
+      if (!aircraft.isActive()) {
+        this.activeAircraft.delete(aircraft);
+      }
+    }
+    if (this.activeAircraft.size >= MAX_ACTIVE_AIRCRAFT_PER_CARRIER) {
+      return;
+    }
+
     const attackRate = this.mg.config().carrierAircraftAttackRate();
     if (this.mg.ticks() - this.lastAircraftLaunch <= attackRate) {
       return;
     }
     this.lastAircraftLaunch = this.mg.ticks();
-    this.mg.addExecution(
-      new AircraftExecution(
-        this.carrier!.tile(),
-        this.carrier!.owner(),
-        this.carrier!,
-        target,
-      ),
+    const aircraft = new AircraftExecution(
+      this.carrier!.tile(),
+      this.carrier!.owner(),
+      this.carrier!,
+      target,
     );
+    this.activeAircraft.add(aircraft);
+    this.mg.addExecution(aircraft);
     if (!target.hasHealth()) {
       // Healthless targets die to a single strike — don't waste more.
       this.alreadyStruck.add(target);
@@ -134,6 +147,13 @@ export class CarrierExecution implements Execution {
   }
 
   private patrol(): void {
+    const manualDestination = this.carrier!.targetTile();
+    if (manualDestination !== undefined) {
+      this.patrolDestination = undefined;
+      this.moveToward(manualDestination, true);
+      return;
+    }
+
     if (this.patrolDestination === undefined) {
       this.patrolDestination = randomPatrolTile(
         this.mg,
@@ -147,20 +167,29 @@ export class CarrierExecution implements Execution {
       }
     }
 
-    const result = this.pathfinder.next(
-      this.carrier!.tile(),
-      this.patrolDestination,
-    );
+    this.moveToward(this.patrolDestination, false);
+  }
+
+  private moveToward(destination: TileRef, manual: boolean): void {
+    const result = this.pathfinder.next(this.carrier!.tile(), destination);
     switch (result.status) {
       case PathStatus.COMPLETE:
         this.carrier!.move(result.node);
-        this.patrolDestination = undefined;
+        if (manual) {
+          this.carrier!.setTargetTile(undefined);
+        } else {
+          this.patrolDestination = undefined;
+        }
         break;
       case PathStatus.NEXT:
         this.carrier!.move(result.node);
         break;
       case PathStatus.NOT_FOUND:
-        this.patrolDestination = undefined;
+        if (manual) {
+          this.carrier!.setTargetTile(undefined);
+        } else {
+          this.patrolDestination = undefined;
+        }
         break;
     }
   }
