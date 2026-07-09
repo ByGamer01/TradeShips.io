@@ -14,6 +14,7 @@ import { GameMap, TileRef } from "../../core/game/GameMap";
 import {
   GameUpdateType,
   GameUpdateViewData,
+  MaritimeObjectiveUpdate,
   SpawnPhaseEndUpdate,
 } from "../../core/game/GameUpdates";
 import { ATTACK_DELTA_OUTGOING } from "../../core/game/GameUpdateUtils";
@@ -29,12 +30,20 @@ import { formatPlayerDisplayName } from "../../core/Util";
 import { WorkerClient } from "../../core/worker/WorkerClient";
 import { computeAllianceClusters } from "../render/frame/derive/AllianceClusters";
 import { extractAttackRings } from "../render/frame/derive/AttackRings";
+import {
+  deriveMaritimeObjective,
+  maritimeObjectiveFromUpdate,
+  type MaritimeObjectiveData,
+} from "../render/frame/derive/MaritimeObjective";
 import { extractNukeTelegraphs } from "../render/frame/derive/NukeTelegraphs";
 import { computePlayerStatus } from "../render/frame/derive/PlayerStatus";
 import { buildRelationMatrix } from "../render/frame/derive/RelationMatrix";
 import {
   deriveTradeRoutes,
   friendlyOwnersFromRelations,
+  type TradeRouteData,
+  type TradeRouteRelation,
+  type TradeRouteRiskLevel,
 } from "../render/frame/derive/TradeRoutes";
 import { RailroadCache } from "../render/frame/RailroadCache";
 import { TrailManager } from "../render/frame/TrailManager";
@@ -46,7 +55,6 @@ import { UnitView } from "./UnitView";
 
 const TRAIL_TYPES: ReadonlySet<UnitType> = new Set<UnitType>([
   UnitType.TransportShip,
-  UnitType.TradeShip,
   UnitType.AtomBomb,
   UnitType.HydrogenBomb,
   UnitType.MIRV,
@@ -83,6 +91,9 @@ export class GameView implements GameMap {
     import("../render/types").PlayerState
   >();
   private _unitStates = new Map<number, import("../render/types").UnitState>();
+  private _maritimeObjective: MaritimeObjectiveData | undefined;
+  /** Latest authoritative objective from core; wins over the derived one. */
+  private _maritimeObjectiveCore: MaritimeObjectiveData | undefined;
   /** smallID → team, for the renderer's relation matrix (team games). */
   private _teams = new Map<number, string>();
   private updatedTiles: TileRef[] = [];
@@ -110,11 +121,24 @@ export class GameView implements GameMap {
   /** Session-long trade accounting for the local player (HUD consumer). */
   private readonly _tradeLedger = new TradeLedger({
     localPlayerID: () => this._myPlayer?.smallID() ?? 0,
-    estimateGold: (tilesTraveled, ownerID) => {
-      const owner = this.playerBySmallID(ownerID);
-      return owner.isPlayer()
-        ? Number(this._config.tradeShipGold(tilesTraveled, owner))
-        : 0;
+    estimateGold: (tilesTraveled, ownerID, destinationOwnerID) => {
+      const owner = this.playerViewBySmallID(ownerID);
+      if (owner === null) return 0;
+
+      let gold = Number(this._config.tradeShipGold(tilesTraveled, owner));
+      const destinationOwner =
+        destinationOwnerID !== undefined && destinationOwnerID !== null
+          ? this.playerViewBySmallID(destinationOwnerID)
+          : null;
+      if (
+        destinationOwner !== null &&
+        ownerID !== destinationOwnerID &&
+        (owner.isFriendly(destinationOwner) ||
+          destinationOwner.isFriendly(owner))
+      ) {
+        gold += Math.floor(gold * this._config.alliedTradeGoldBonus());
+      }
+      return gold;
     },
     portOwnerID: (unitId) => {
       const port = this._units.get(unitId);
@@ -224,6 +248,7 @@ export class GameView implements GameMap {
       nukeTelegraphs: [],
       attackRings: [],
       tradeRoutes: [],
+      maritimeObjective: null,
       structuresDirty: false,
     };
   }
@@ -321,6 +346,19 @@ export class GameView implements GameMap {
       | undefined;
     if (spawnPhaseEndUpdate) {
       this.startTick = spawnPhaseEndUpdate.startTick;
+    }
+
+    const maritimeUpdates = (gu.updates[GameUpdateType.MaritimeObjective] ??
+      []) as MaritimeObjectiveUpdate[];
+    const latestMaritime = maritimeUpdates[maritimeUpdates.length - 1];
+    if (latestMaritime !== undefined) {
+      const core = maritimeObjectiveFromUpdate(latestMaritime);
+      // The corridor path is static and sent on the first update only; keep
+      // the cached copy alive on later ticks (and scan the batch for it).
+      core.path ??=
+        maritimeUpdates.find((u) => u.path !== undefined)?.path ??
+        this._maritimeObjectiveCore?.path;
+      this._maritimeObjectiveCore = core;
     }
 
     const myDisplayName = formatPlayerDisplayName(
@@ -634,13 +672,24 @@ export class GameView implements GameMap {
         this._myPlayer?.smallID() ?? 0,
       ),
       (distanceTiles, ownerID) => {
-        const owner = this.playerBySmallID(ownerID);
-        if (!owner.isPlayer()) {
+        const owner = this.playerViewBySmallID(ownerID);
+        if (owner === null) {
           return 0;
         }
         return Number(this._config.tradeShipGold(distanceTiles, owner));
       },
     );
+    this._maritimeObjective =
+      this._maritimeObjectiveCore ??
+      deriveMaritimeObjective(this._unitStates, {
+        mapWidth: this._map.width(),
+        mapHeight: this._map.height(),
+        isWater: (tile) => this._map.isWater(tile),
+        teamForOwner: (ownerID) => this._teams.get(ownerID) ?? null,
+        previous: this._maritimeObjective,
+      });
+    f.maritimeObjective = this._maritimeObjective;
+    this.appendTradeLaneRoutes(f.tradeRoutes);
     f.structuresDirty = this._structuresDirty;
 
     // First populate: signal "full upload required" by nulling changedTiles.
@@ -657,6 +706,37 @@ export class GameView implements GameMap {
     // Reset transient flags for next tick.
     this.railroadCache.clearDirty();
     this._structuresDirty = false;
+  }
+
+  /**
+   * Draw the FFA trade-lane corridor by appending its spine as consecutive
+   * segments consumed by TradeRoutePass (negative shipIds mark system lanes).
+   */
+  private appendTradeLaneRoutes(routes: TradeRouteData[]): void {
+    const objective = this._maritimeObjective;
+    if (objective?.shape !== "lane" || objective.path === undefined) return;
+
+    const path = objective.path;
+    const ownerID = objective.controllerID;
+    const myID = this._myPlayer?.smallID() ?? 0;
+    const relation: TradeRouteRelation =
+      ownerID === 0 ? "neutral" : myID > 0 && ownerID === myID ? "own" : "foreign";
+    const risk: TradeRouteRiskLevel =
+      objective.status === "contested" ? "contested" : "safe";
+
+    for (let i = 0; i + 1 < path.length; i++) {
+      routes.push({
+        shipId: -(1000 + i),
+        ownerID,
+        from: path[i],
+        to: path[i + 1],
+        distanceTiles: 0,
+        enemyThreats: 0,
+        escortCount: 0,
+        relation,
+        riskLevel: risk,
+      });
+    }
   }
 
   /** Clear and repopulate _frame.events arrays from this tick's gu.updates. */
@@ -732,7 +812,8 @@ export class GameView implements GameMap {
         // Steps advanced since last tick — feeds the client-side odometer
         // (tilesTraveled) so it stays live between authoritative updates.
         const prevDt = dt - 1;
-        const prevStepIndex = prevDt <= 0 ? 0 : Math.floor(prevDt / ticksPerStep);
+        const prevStepIndex =
+          prevDt <= 0 ? 0 : Math.floor(prevDt / ticksPerStep);
         const prevIdx = Math.max(0, Math.min(lastIndex, prevStepIndex));
         unit.applyDerivedPosition(newTile, idx - prevIdx);
         this.unitGrid.updateUnitCell(unit);
@@ -1045,6 +1126,16 @@ export class GameView implements GameMap {
       throw new Error(`small id ${id} not found`);
     }
     return this.player(playerId);
+  }
+
+  /**
+   * Non-throwing lookup for smallIDs coming from render-derived data (ocean
+   * lane controllers, ledger owners): 0/unknown owners resolve to null.
+   */
+  private playerViewBySmallID(id: number): PlayerView | null {
+    const playerId = this.smallIDToID.get(id);
+    if (playerId === undefined) return null;
+    return this._players.get(playerId) ?? null;
   }
 
   playerByClientID(id: ClientID): PlayerView | null {
