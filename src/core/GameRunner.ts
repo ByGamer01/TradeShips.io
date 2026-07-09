@@ -1,13 +1,17 @@
 import { placeName, placeSpawnName } from "../client/hud/NameBoxCalculator";
 import { Config } from "./configuration/Config";
+import { EconomicMissionExecution } from "./execution/EconomicMissionExecution";
 import { Executor } from "./execution/ExecutionManager";
+import { MaritimeObjectiveExecution } from "./execution/MaritimeObjectiveExecution";
 import { RecomputeRailClusterExecution } from "./execution/RecomputeRailClusterExecution";
+import { TradeLaneObjectiveExecution } from "./execution/TradeLaneObjectiveExecution";
 import { SpawnTimerExecution } from "./execution/SpawnTimerExecution";
 import { WinCheckExecution } from "./execution/WinCheckExecution";
 import {
   AllPlayers,
   BuildableUnit,
   Game,
+  GameMode,
   GameType,
   GameUpdates,
   NameViewData,
@@ -25,6 +29,7 @@ import { createGame } from "./game/GameImpl";
 import { TileRef } from "./game/GameMap";
 import { GameMapLoader } from "./game/GameMapLoader";
 import { ErrorUpdate, GameUpdateViewData } from "./game/GameUpdates";
+import { isMaritimeMap } from "./game/MaritimeMaps";
 import { createNationsForGame } from "./game/NationCreation";
 import { loadTerrainMap as loadGameMap } from "./game/TerrainMapLoader";
 import { PseudoRandom } from "./PseudoRandom";
@@ -111,7 +116,16 @@ export class GameRunner {
         ...this.execManager.spawnTribes(this.game.config().bots()),
       );
     }
+    if (isMaritimeMap(this.game.config().gameConfig().gameMap)) {
+      // Team mode keeps the central circle; FFA captures the trade lane.
+      this.game.addExecution(
+        this.game.config().gameConfig().gameMode === GameMode.Team
+          ? new MaritimeObjectiveExecution()
+          : new TradeLaneObjectiveExecution(),
+      );
+    }
     this.game.addExecution(new WinCheckExecution());
+    this.game.addExecution(new EconomicMissionExecution());
     if (!this.game.config().isUnitDisabled(UnitType.Factory)) {
       this.game.addExecution(
         new RecomputeRailClusterExecution(this.game.railNetwork()),
@@ -251,6 +265,11 @@ export class GameRunner {
         canDonateGold: player.canDonateGold(other),
         canDonateTroops: player.canDonateTroops(other),
         canEmbargo: !player.hasEmbargoAgainst(other),
+        canTariff:
+          player !== other &&
+          !player.isFriendly(other) &&
+          !player.hasTariffAgainst(other) &&
+          this.hasActiveCongress(player),
         allianceInfo: player.allianceInfo(other) ?? undefined,
       };
     }
@@ -265,6 +284,13 @@ export class GameRunner {
     }
     return player.playerProfile();
   }
+
+  private hasActiveCongress(player: Player): boolean {
+    return player
+      .units(UnitType.Congress)
+      .some((unit) => unit.isActive() && !unit.isUnderConstruction());
+  }
+
   public playerBorderTiles(playerID: PlayerID): PlayerBorderTiles {
     const player = this.game.player(playerID);
     if (!player.isPlayer()) {
