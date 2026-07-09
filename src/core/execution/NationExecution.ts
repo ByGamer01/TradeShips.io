@@ -61,6 +61,7 @@ export class NationExecution implements Execution {
 
   init(mg: Game) {
     this.mg = mg;
+    this.tuneBehaviorRatios();
     this.attackRate = this.getAttackRate();
     this.attackTick = this.random.nextInt(0, this.attackRate);
 
@@ -77,11 +78,39 @@ export class NationExecution implements Execution {
       case Difficulty.Easy:
         return this.random.nextInt(65, 100); // Slower reactions
       case Difficulty.Medium:
-        return this.random.nextInt(55, 70);
-      case Difficulty.Hard:
         return this.random.nextInt(45, 60);
+      case Difficulty.Hard:
+        return this.random.nextInt(35, 50);
       case Difficulty.Impossible:
-        return this.random.nextInt(30, 50); // Faster reactions
+        return this.random.nextInt(25, 40); // Faster reactions
+      default:
+        assertNever(difficulty);
+    }
+  }
+
+  private tuneBehaviorRatios(): void {
+    const { difficulty } = this.mg.config().gameConfig();
+    switch (difficulty) {
+      case Difficulty.Easy:
+        this.triggerRatio = this.random.nextInt(50, 60) / 100;
+        this.reserveRatio = this.random.nextInt(30, 40) / 100;
+        this.expandRatio = this.random.nextInt(10, 20) / 100;
+        break;
+      case Difficulty.Medium:
+        this.triggerRatio = this.random.nextInt(48, 56) / 100;
+        this.reserveRatio = this.random.nextInt(28, 36) / 100;
+        this.expandRatio = this.random.nextInt(18, 28) / 100;
+        break;
+      case Difficulty.Hard:
+        this.triggerRatio = this.random.nextInt(44, 52) / 100;
+        this.reserveRatio = this.random.nextInt(24, 32) / 100;
+        this.expandRatio = this.random.nextInt(22, 34) / 100;
+        break;
+      case Difficulty.Impossible:
+        this.triggerRatio = this.random.nextInt(40, 48) / 100;
+        this.reserveRatio = this.random.nextInt(20, 28) / 100;
+        this.expandRatio = this.random.nextInt(26, 40) / 100;
+        break;
       default:
         assertNever(difficulty);
     }
