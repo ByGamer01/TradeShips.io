@@ -145,6 +145,10 @@
       "Missile Silo": {
         "scale": 1.55,
         "iconFill": 0.85
+      },
+      "Congress": {
+        "scale": 1.25,
+        "iconFill": 0.7
       }
     },
     "highlightOutlineWidth": 0.04,
