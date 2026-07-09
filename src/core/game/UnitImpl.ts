@@ -3,6 +3,7 @@ import {
   AllUnitParams,
   MessageType,
   Player,
+  PortSpecialization,
   Tick,
   TrainType,
   TrajectoryTile,
@@ -41,6 +42,7 @@ export class UnitImpl implements Unit {
   private _loaded: boolean | undefined;
   private _trainType: TrainType | undefined;
   private _tilesTraveled: number = 0; // Only for trade ships
+  private _portSpecialization: PortSpecialization | undefined; // Only for ports
   // Nuke only
   private _trajectoryIndex: number = 0;
   private _trajectory: TrajectoryTile[];
@@ -82,12 +84,14 @@ export class UnitImpl implements Unit {
 
     switch (this._type) {
       case UnitType.Warship:
+      case UnitType.AntiAirFrigate:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
       case UnitType.SAMLauncher:
       case UnitType.City:
       case UnitType.Factory:
+      case UnitType.Congress:
         this.mg.stats().unitBuild(_owner, this._type);
     }
   }
@@ -124,6 +128,18 @@ export class UnitImpl implements Unit {
     this._tilesTraveled = tiles;
   }
 
+  portSpecialization(): PortSpecialization | undefined {
+    return this._portSpecialization;
+  }
+  setPortSpecialization(spec: PortSpecialization): void {
+    if (this._type !== UnitType.Port) {
+      throw new Error("setPortSpecialization called on non-port unit");
+    }
+    if (this._portSpecialization === spec) return;
+    this._portSpecialization = spec;
+    this.mg.addUpdate(this.toUpdate());
+  }
+
   id() {
     return this._id;
   }
@@ -156,6 +172,7 @@ export class UnitImpl implements Unit {
       targetTile: this.targetTile() ?? undefined,
       tilesTraveled:
         this._type === UnitType.TradeShip ? this._tilesTraveled : undefined,
+      portSpecialization: this._portSpecialization,
       missileTimerQueue: this._missileTimerQueue,
       level: this.level(),
       hasTrainStation: this._hasTrainStation,
@@ -208,12 +225,14 @@ export class UnitImpl implements Unit {
     this.clearPendingDeletion();
     switch (this._type) {
       case UnitType.Warship:
+      case UnitType.AntiAirFrigate:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
       case UnitType.SAMLauncher:
       case UnitType.City:
       case UnitType.Factory:
+      case UnitType.Congress:
         this.mg.stats().unitCapture(newOwner, this._type);
         this.mg.stats().unitLose(this._owner, this._type);
         break;
@@ -309,7 +328,9 @@ export class UnitImpl implements Unit {
         case UnitType.Port:
         case UnitType.SAMLauncher:
         case UnitType.Warship:
+        case UnitType.AntiAirFrigate:
         case UnitType.Factory:
+        case UnitType.Congress:
           this.mg.stats().unitDestroy(destroyer, this._type);
           this.mg.stats().unitLose(this.owner(), this._type);
           break;
@@ -322,6 +343,7 @@ export class UnitImpl implements Unit {
     // else is either visible on the map or too low-stakes to surface.
     if (
       this._type !== UnitType.Warship &&
+      this._type !== UnitType.AntiAirFrigate &&
       this._type !== UnitType.TransportShip
     ) {
       return;
@@ -368,7 +390,8 @@ export class UnitImpl implements Unit {
     if (
       merged.state === this._warshipState.state &&
       merged.patrolTile === this._warshipState.patrolTile &&
-      merged.retreatPort === this._warshipState.retreatPort
+      merged.retreatPort === this._warshipState.retreatPort &&
+      merged.escortUnitId === this._warshipState.escortUnitId
     )
       return;
     this._warshipState = {
@@ -376,6 +399,7 @@ export class UnitImpl implements Unit {
       patrolTile: merged.patrolTile,
       retreatPort: merged.retreatPort,
       lastCombatTick: this._warshipState.lastCombatTick,
+      escortUnitId: merged.escortUnitId,
     };
     this.mg.addUpdate(this.toUpdate());
   }
