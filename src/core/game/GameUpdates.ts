@@ -7,6 +7,7 @@ import {
   NameViewData,
   PlayerID,
   PlayerType,
+  PortSpecialization,
   Team,
   Tick,
   TrainType,
@@ -97,6 +98,7 @@ export enum GameUpdateType {
   SpawnPhaseEnd,
   GamePaused,
   DonateEvent,
+  MaritimeObjective,
 }
 
 export type GameUpdate =
@@ -122,7 +124,8 @@ export type GameUpdate =
   | EmbargoUpdate
   | SpawnPhaseEndUpdate
   | GamePausedUpdate
-  | DonateEventUpdate;
+  | DonateEventUpdate
+  | MaritimeObjectiveUpdate;
 
 export interface BonusEventUpdate {
   type: GameUpdateType.BonusEvent;
@@ -185,6 +188,7 @@ export interface UnitUpdate {
   markedForDeletion: number | false;
   targetUnitId?: number; // Only for trade ships
   tilesTraveled?: number; // Only for trade ships
+  portSpecialization?: PortSpecialization; // Only for ports
   targetTile?: TileRef; // Only for nukes
   health?: number;
   underConstruction?: boolean;
@@ -323,6 +327,42 @@ export interface WinUpdate {
   type: GameUpdateType.Win;
   allPlayersStats: AllPlayersStats;
   winner: Winner;
+}
+
+export type MaritimeObjectiveStatus =
+  | "neutral"
+  | "capturing"
+  | "contested"
+  | "controlled";
+
+export type MaritimeObjectiveShape = "circle" | "lane";
+
+/**
+ * Authoritative central sea-route objective state, emitted once per tick by
+ * MaritimeObjectiveExecution (Team mode circle) or TradeLaneObjectiveExecution
+ * (FFA corridor) on maritime maps. smallIDs are 0 when the slot is
+ * neutral/disputed or held by a team rather than a single player.
+ */
+export interface MaritimeObjectiveUpdate {
+  type: GameUpdateType.MaritimeObjective;
+  /** Omitted by pre-corridor replays; treat undefined as "circle". */
+  shape?: MaritimeObjectiveShape;
+  center: TileRef;
+  radius: number;
+  /**
+   * Corridor spine polyline (lane shape only). Static, so it is included on
+   * the first update of the game only; clients must cache it.
+   */
+  path?: TileRef[];
+  /** Corridor half-width in tiles (lane shape only). */
+  laneHalfWidth?: number;
+  controllerSmallID: number;
+  controllerTeam: Team | null;
+  leaderSmallID: number;
+  leaderTeam: Team | null;
+  controlPercent: number;
+  status: MaritimeObjectiveStatus;
+  navalPower: { smallID: number; team: Team | null; power: number }[];
 }
 
 export interface HashUpdate {
