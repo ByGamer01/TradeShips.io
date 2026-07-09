@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import zlib from "zlib";
 import {
-  unitAtlasColumnForType,
   UNIT_ATLAS_CELL_SIZE,
+  unitAtlasColumnForType,
 } from "../../../../src/client/render/gl/passes/UnitPass";
 import {
   UT_AIRCRAFT,
@@ -76,7 +76,7 @@ function rowsForColumn(atlas: DecodedPng, column: number): string[] {
         continue;
       }
       const gray = atlas.rgba[px];
-      row += gray === 180 ? "H" : gray === 100 ? "C" : "D";
+      row += gray === 180 ? "H" : gray === 130 ? "M" : gray === 100 ? "C" : "D";
     }
     rows.push(row);
   }
@@ -93,6 +93,7 @@ describe("unit atlas asset", () => {
         unitAtlasColumnForType(UT_SUBMARINE),
         unitAtlasColumnForType(UT_CARRIER),
         unitAtlasColumnForType(UT_AIRCRAFT),
+        unitAtlasColumnForType("Anti-Air Frigate"),
       ) + 1;
 
     expect(size.height).toBe(UNIT_ATLAS_CELL_SIZE);
@@ -109,8 +110,7 @@ describe("unit atlas asset", () => {
       let opaquePixels = 0;
       for (let y = 0; y < UNIT_ATLAS_CELL_SIZE; y++) {
         for (let x = 0; x < UNIT_ATLAS_CELL_SIZE; x++) {
-          const px =
-            (y * atlas.width + col * UNIT_ATLAS_CELL_SIZE + x) * 4;
+          const px = (y * atlas.width + col * UNIT_ATLAS_CELL_SIZE + x) * 4;
           if (atlas.rgba[px + 3] === 0) continue;
           opaquePixels++;
           bands.add(atlas.rgba[px]);
@@ -148,6 +148,14 @@ describe("unit atlas asset", () => {
       opaquePixels: expect.any(Number),
     });
     expect(sampleColumn(UT_AIRCRAFT).opaquePixels).toBeGreaterThanOrEqual(18);
+
+    expect(sampleColumn("Anti-Air Frigate")).toEqual({
+      bands: [70, 100, 130, 180],
+      opaquePixels: expect.any(Number),
+    });
+    expect(
+      sampleColumn("Anti-Air Frigate").opaquePixels,
+    ).toBeGreaterThanOrEqual(40);
   });
 
   test("preserves the original OpenFront transport, trade, and warship sprites", () => {
@@ -196,6 +204,46 @@ describe("unit atlas asset", () => {
       "..HHHDDDHHH..",
       "...HHHDHHH...",
       "......H......",
+      ".............",
+    ]);
+  });
+
+  test("renders the submarine as a periscope and submerged contact without a water outline", () => {
+    const atlas = decodePng("resources/atlases/unit-atlas.png");
+
+    expect(rowsForColumn(atlas, unitAtlasColumnForType(UT_SUBMARINE))).toEqual([
+      ".............",
+      "......H......",
+      "......H......",
+      ".....DHD.....",
+      "......D......",
+      "......D......",
+      "....DMMMD....",
+      "..DMMCCCMM...",
+      ".DMMMCCCMMD..",
+      "..DMMCCCMM...",
+      "....DMMMD....",
+      ".............",
+      ".............",
+    ]);
+  });
+
+  test("renders the carrier as a long flat-top deck, not a circular blob", () => {
+    const atlas = decodePng("resources/atlases/unit-atlas.png");
+
+    expect(rowsForColumn(atlas, unitAtlasColumnForType(UT_CARRIER))).toEqual([
+      ".............",
+      ".............",
+      "....DDDDD....",
+      "..DHHHHHHHD..",
+      ".DHHCMHHHHD..",
+      "DHHHCMHHMMHHD",
+      "DHHHCMHHMMHHD",
+      ".DHHCMHHHHD..",
+      "..DHHHHHHHD..",
+      "...DDDDDDD...",
+      ".............",
+      ".............",
       ".............",
     ]);
   });
