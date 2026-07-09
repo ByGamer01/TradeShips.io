@@ -3,6 +3,7 @@ import { TileRef } from "../game/GameMap";
 
 const MINE_TARGET_TYPES = [
   UnitType.Warship,
+  UnitType.AntiAirFrigate,
   UnitType.TransportShip,
   UnitType.Submarine,
   UnitType.AircraftCarrier,
