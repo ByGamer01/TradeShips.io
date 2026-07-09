@@ -32,12 +32,34 @@ export type WarshipState = {
   retreatPort?: TileRef;
   isInCombat?: boolean;
   lastCombatTick: number;
+  /**
+   * Trade ship this warship is escorting. While set, the patrol anchor
+   * follows the convoy; cleared on manual move or when the convoy ends.
+   */
+  escortUnitId?: number;
 };
 
 export type TransportShipState = {
   isRetreating: boolean;
   troops: number;
 };
+
+/**
+ * Port identity, chosen once per port (irreversible):
+ * - "trade": trade hub — attracts commerce and pays bonus gold on arrivals.
+ * - "naval": naval base — torpedo battery vs raiders + extra repair capacity.
+ * - "watch": harbor watch — trade ships near the port are safe from pirates.
+ */
+export type PortSpecialization = "trade" | "naval" | "watch";
+export const PORT_SPECIALIZATIONS: readonly PortSpecialization[] = [
+  "trade",
+  "naval",
+  "watch",
+];
+export const isPortSpecialization = (
+  value: unknown,
+): value is PortSpecialization =>
+  PORT_SPECIALIZATIONS.includes(value as PortSpecialization);
 
 export const AllPlayers = "AllPlayers" as const;
 
@@ -167,6 +189,7 @@ export enum UnitType {
   Warship = "Warship",
   Submarine = "Submarine",
   AircraftCarrier = "Aircraft Carrier",
+  AntiAirFrigate = "Anti-Air Frigate",
   Aircraft = "Aircraft",
   Shell = "Shell",
   Torpedo = "Torpedo",
@@ -184,6 +207,7 @@ export enum UnitType {
   MIRVWarhead = "MIRV Warhead",
   Train = "Train",
   Factory = "Factory",
+  Congress = "Congress",
 }
 
 export const DISABLED_ARSENAL: readonly UnitType[] = [
@@ -217,6 +241,7 @@ export const BuildableAttacks = unitTypeGroup([
   UnitType.Warship,
   UnitType.Submarine,
   UnitType.AircraftCarrier,
+  UnitType.AntiAirFrigate,
 ] as const);
 
 export const Structures = unitTypeGroup([
@@ -226,6 +251,7 @@ export const Structures = unitTypeGroup([
   UnitType.MissileSilo,
   UnitType.Port,
   UnitType.Factory,
+  UnitType.Congress,
 ] as const);
 
 export const BuildMenus = unitTypeGroup([
@@ -256,6 +282,10 @@ export interface UnitParamsMap {
   };
 
   [UnitType.Warship]: {
+    patrolTile: TileRef;
+  };
+
+  [UnitType.AntiAirFrigate]: {
     patrolTile: TileRef;
   };
 
@@ -297,6 +327,8 @@ export interface UnitParamsMap {
   };
 
   [UnitType.Factory]: Record<string, never>;
+
+  [UnitType.Congress]: Record<string, never>;
 
   [UnitType.MissileSilo]: Record<string, never>;
 
@@ -492,6 +524,10 @@ export interface Unit {
   tilesTraveled(): number;
   setTilesTraveled(tiles: number): void;
 
+  // Port
+  portSpecialization(): PortSpecialization | undefined;
+  setPortSpecialization(spec: PortSpecialization): void;
+
   // Targeting
   setTargetTile(cell: TileRef | undefined): void;
   targetTile(): TileRef | undefined;
@@ -683,6 +719,11 @@ export interface Player {
   stopEmbargo(other: Player): void;
   endTemporaryEmbargo(other: Player): void;
   canTrade(other: Player): boolean;
+
+  // Tariffs — purchased trade taxes: while active, this player collects a
+  // cut of the target's trade-arrival gold. Expiry is tick-based and lazy.
+  addTariffAgainst(other: Player, expiryTick: Tick): void;
+  hasTariffAgainst(other: Player): boolean;
 
   // Attacking.
   canAttack(tile: TileRef): boolean;
@@ -890,6 +931,7 @@ export interface PlayerInteraction {
   canDonateGold: boolean;
   canDonateTroops: boolean;
   canEmbargo: boolean;
+  canTariff: boolean;
   allianceInfo?: AllianceInfo;
 }
 
@@ -923,6 +965,8 @@ export enum MessageType {
   DONATION_RECEIVED,
   CHAT,
   RENEW_ALLIANCE,
+  ECONOMIC_MISSION_STARTED,
+  TARIFF_IMPOSED,
 }
 
 // Message categories used for filtering events in the EventsDisplay
@@ -958,6 +1002,8 @@ export const MESSAGE_TYPE_CATEGORIES: Record<MessageType, MessageCategory> = {
   [MessageType.DONATION_SENT]: MessageCategory.TRADE,
   [MessageType.DONATION_RECEIVED]: MessageCategory.TRADE,
   [MessageType.CHAT]: MessageCategory.CHAT,
+  [MessageType.ECONOMIC_MISSION_STARTED]: MessageCategory.TRADE,
+  [MessageType.TARIFF_IMPOSED]: MessageCategory.TRADE,
 } as const;
 
 /**
