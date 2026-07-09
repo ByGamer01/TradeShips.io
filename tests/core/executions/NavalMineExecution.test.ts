@@ -45,7 +45,7 @@ describe("NavalMineExecution", () => {
     expect(UnitType.NavalMine).toBe("Naval Mine");
     expect(info.cost(game, player1)).toBe(0n);
     expect(info.constructionDuration).toBeUndefined();
-    expect(game.config().navalMinePortRange()).toBe(24);
+    expect(game.config().navalMinePortRange()).toBe(120);
     expect(game.config().navalMineMaxPerPlayer()).toBe(12);
     expect(game.config().navalMineDetectionRange()).toBe(2);
     expect(game.config().navalMineBlastRange()).toBe(2);
@@ -67,7 +67,11 @@ describe("NavalMineExecution", () => {
 
     expect(info.cost(normalGame, normalPlayer)).toBe(50_000n);
 
-    normalPlayer.buildUnit(UnitType.NavalMine, normalGame.ref(coastX + 2, 10), {});
+    normalPlayer.buildUnit(
+      UnitType.NavalMine,
+      normalGame.ref(coastX + 2, 10),
+      {},
+    );
 
     expect(info.cost(normalGame, normalPlayer)).toBe(75_000n);
   });
@@ -175,7 +179,11 @@ describe("NavalMineExecution", () => {
 
   test("does not trigger on enemy trade ships in v1", () => {
     const mineTile = game.ref(coastX + 2, 10);
-    const enemyPort = player2.buildUnit(UnitType.Port, game.ref(coastX, 11), {});
+    const enemyPort = player2.buildUnit(
+      UnitType.Port,
+      game.ref(coastX, 11),
+      {},
+    );
     const tradeShip = player2.buildUnit(
       UnitType.TradeShip,
       game.ref(coastX + 3, 11),
