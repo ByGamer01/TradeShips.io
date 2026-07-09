@@ -1,6 +1,7 @@
 import type { FrameEvents } from "./FrameEvents";
 import type {
   AttackRingInput,
+  MaritimeObjectiveData,
   NameEntry,
   NukeTelegraphData,
   PlayerState,
@@ -69,6 +70,7 @@ export interface FrameData {
   readonly nukeTelegraphs: NukeTelegraphData[];
   readonly attackRings: AttackRingInput[];
   readonly tradeRoutes: TradeRouteData[];
+  readonly maritimeObjective: MaritimeObjectiveData | null;
   /** True when structures changed this tick (added/removed/level change). */
   readonly structuresDirty: boolean;
 }
