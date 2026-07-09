@@ -433,6 +433,16 @@ export class UserSettingModal extends BaseModal {
       ></setting-keybind>
 
       <setting-keybind
+        action="buildCongress"
+        label=${translateText("user_setting.build_congress")}
+        description=${translateText("user_setting.build_congress_desc")}
+        defaultKey=${this.defaultKeybinds.buildCongress}
+        .value=${this.getKeyValue("buildCongress")}
+        .display=${this.getKeyChar("buildCongress")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
         action="buildDefensePost"
         label=${translateText("user_setting.build_defense_post")}
         description=${translateText("user_setting.build_defense_post_desc")}
@@ -485,12 +495,20 @@ export class UserSettingModal extends BaseModal {
       <setting-keybind
         action="buildAircraftCarrier"
         label=${translateText("user_setting.build_aircraft_carrier")}
-        description=${translateText(
-          "user_setting.build_aircraft_carrier_desc",
-        )}
+        description=${translateText("user_setting.build_aircraft_carrier_desc")}
         defaultKey=${this.defaultKeybinds.buildAircraftCarrier}
         .value=${this.getKeyValue("buildAircraftCarrier")}
         .display=${this.getKeyChar("buildAircraftCarrier")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
+        action="buildAntiAirFrigate"
+        label=${translateText("user_setting.build_anti_air_frigate")}
+        description=${translateText("user_setting.build_anti_air_frigate_desc")}
+        defaultKey=${this.defaultKeybinds.buildAntiAirFrigate}
+        .value=${this.getKeyValue("buildAntiAirFrigate")}
+        .display=${this.getKeyChar("buildAntiAirFrigate")}
         @change=${this.handleKeybindChange}
       ></setting-keybind>
 
