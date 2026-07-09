@@ -124,6 +124,26 @@ describe("CarrierExecution", () => {
     expect(Number(enemyWarship.health())).toBeLessThan(1000);
   });
 
+  test("limits each carrier to three active strike aircraft", () => {
+    game.config().carrierAircraftAttackRate = () => 0;
+    game.config().aircraftStepsPerTick = () => 0;
+
+    player2.buildUnit(UnitType.Warship, game.ref(coastX + 6, 10), {
+      patrolTile: game.ref(coastX + 6, 10),
+    });
+
+    game.addExecution(new CarrierExecution(player1, game.ref(coastX + 2, 10)));
+
+    let maxAircraft = 0;
+    for (let i = 0; i < 12; i++) {
+      game.executeNextTick();
+      maxAircraft = Math.max(maxAircraft, game.units(UnitType.Aircraft).length);
+    }
+
+    expect(maxAircraft).toBe(3);
+    expect(game.units(UnitType.Aircraft)).toHaveLength(3);
+  });
+
   test("does not strike targets beyond the strike range", () => {
     game.config().carrierAircraftAttackRate = () => 1;
     game.config().carrierStrikeRange = () => 2;
