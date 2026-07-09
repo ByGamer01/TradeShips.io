@@ -54,8 +54,10 @@
   "build_menu": {
     "desc": {
       "aircraft_carrier": "Long-range aircraft strike platform",
+      "anti_air_frigate": "Escorts fleets with short-range anti-air",
       "atom_bomb": "Small explosion",
       "city": "Increases max population",
+      "congress": "Unlocks tariffs against enemy trade",
       "defense_post": "Increases defenses of nearby borders",
       "factory": "Creates railroads and spawns trains",
       "hydrogen_bomb": "Large explosion",
@@ -69,30 +71,6 @@
     },
     "not_enough_money": "Not enough money",
     "warship_shift_hint": "Hold Shift and drag to select multiple warships at once"
-  },
-  "trade_routes": {
-    "contested": "Contested",
-    "danger": "Danger",
-    "escorts": "Escorts",
-    "risk": "Risk",
-    "routes": "Routes",
-    "summary_title": "Active merchant routes, contested sea lanes, and naval escorts",
-    "value": "Value"
-  },
-  "trade_stats": {
-    "arrivals": "Arrivals",
-    "captures_by_me": "Captured by me",
-    "gold_earned": "Gold earned",
-    "gold_in_transit": "Gold at sea",
-    "pirated_arrivals": "Pirated arrivals",
-    "port": "Port",
-    "routes_active": "Active routes",
-    "routes_contested": "Contested routes",
-    "routes_escorted": "Escorted routes",
-    "ships_captured": "Ships captured",
-    "ships_lost": "Ships lost",
-    "title": "Trade",
-    "top_ports": "Top receiving ports"
   },
   "chat": {
     "attack": {
@@ -439,6 +417,7 @@
     "conquered_no_gold": "Conquered {name} (didn't play, no gold awarded)",
     "duration_second": "1 second",
     "duration_seconds_plural": "{seconds} seconds",
+    "economic_mission_started": "Global Trade Boom! {count, plural, one {# trading nation received} other {# trading nations received}} a gold bonus",
     "focus": "Focus",
     "hydrogen_bomb_detonated": "{name} - hydrogen bomb detonated",
     "ignore": "Ignore",
@@ -456,6 +435,8 @@
     "sent_emoji": "Sent {name}: {emoji}",
     "sent_gold_to_player": "Sent {gold} gold to {name}",
     "sent_troops_to_player": "Sent {troops} troops to {name}",
+    "tariff_imposed": "You imposed a tariff on {name}'s trade",
+    "tariff_imposed_on_you": "{name} imposed a tariff on your trade!",
     "trade_ship_captured": "Your trade ship was captured by {name}",
     "unit_destroyed": "Your {unit} was destroyed",
     "unit_voluntarily_deleted": "Unit voluntarily deleted",
@@ -795,6 +776,7 @@
   },
   "leaderboard": {
     "cities": "Cities",
+    "control": "Control",
     "gold": "Gold",
     "launchers": "Launchers",
     "maxtroops": "Max troops",
@@ -988,6 +970,13 @@
     "search_results": "Search Results",
     "unfavorite": "Remove from favourites"
   },
+  "maritime_objective": {
+    "capturing": "Capturing",
+    "contested": "Contested",
+    "controlled": "Controlled",
+    "hint": "Control the central sea route to win",
+    "neutral": "Neutral"
+  },
   "matchmaking_button": {
     "description": "(ALPHA)",
     "login_required": "Login to play ranked!",
@@ -1071,6 +1060,8 @@
     "stop_trade_all": "Stop Trading with All",
     "stopped": "Stopped",
     "target": "Target",
+    "tariff": "Tariff",
+    "tariff_tooltip": "Impose a tariff on this player's trade for {cost} gold",
     "trading": "Trading",
     "traitor": "Traitor",
     "troops": "Troops"
@@ -1186,7 +1177,9 @@
   },
   "radial_menu": {
     "delete_unit_description": "Click to delete the nearest unit",
-    "delete_unit_title": "Delete Unit"
+    "delete_unit_title": "Delete Unit",
+    "specialize_description": "Choose this port's specialization: trade hub, naval base, or harbor watch",
+    "specialize_title": "Specialize Port"
   },
   "relation": {
     "default": "Default",
@@ -1296,6 +1289,30 @@
     "success": "Successfully logged in as {email}!",
     "title": "Logging in..."
   },
+  "trade_routes": {
+    "contested": "Contested",
+    "danger": "Danger",
+    "escorts": "Escorts",
+    "risk": "Risk",
+    "routes": "Routes",
+    "summary_title": "Active merchant routes, contested sea lanes, and naval escorts",
+    "value": "Value"
+  },
+  "trade_stats": {
+    "arrivals": "Arrivals",
+    "captures_by_me": "Captured by me",
+    "gold_earned": "Gold earned",
+    "gold_in_transit": "Gold at sea",
+    "pirated_arrivals": "Pirated arrivals",
+    "port": "Port",
+    "routes_active": "Active routes",
+    "routes_contested": "Contested routes",
+    "routes_escorted": "Escorted routes",
+    "ships_captured": "Ships captured",
+    "ships_lost": "Ships lost",
+    "title": "Trade",
+    "top_ports": "Top receiving ports"
+  },
   "troubleshooting": {
     "battery": "Battery",
     "battery_level": "Battery Level",
@@ -1327,9 +1344,11 @@
   "unit_type": {
     "aircraft": "Aircraft",
     "aircraft_carrier": "Aircraft Carrier",
+    "anti_air_frigate": "Anti-Air Frigate",
     "atom_bomb": "Atom Bomb",
     "boat": "Boat",
     "city": "City",
+    "congress": "Congress",
     "defense_post": "Defense Post",
     "factory": "Factory",
     "hydrogen_bomb": "Hydrogen Bomb",
@@ -1367,10 +1386,14 @@
     "break_alliance_desc": "Break alliance with the player whose tile is under your cursor.",
     "build_aircraft_carrier": "Build Aircraft Carrier",
     "build_aircraft_carrier_desc": "Build an Aircraft Carrier under your cursor.",
+    "build_anti_air_frigate": "Build Anti-Air Frigate",
+    "build_anti_air_frigate_desc": "Build an Anti-Air Frigate under your cursor.",
     "build_atom_bomb": "Build Atom Bomb",
     "build_atom_bomb_desc": "Build an Atom Bomb under your cursor.",
     "build_city": "Build City",
     "build_city_desc": "Build a City under your cursor.",
+    "build_congress": "Build Congress",
+    "build_congress_desc": "Build a Congress under your cursor.",
     "build_controls": "Build Controls",
     "build_defense_post": "Build Defense Post",
     "build_defense_post_desc": "Build a Defense Post under your cursor.",
