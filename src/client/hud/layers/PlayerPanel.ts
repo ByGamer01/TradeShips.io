@@ -27,6 +27,7 @@ import {
   SendEmbargoIntentEvent,
   SendEmojiIntentEvent,
   SendTargetPlayerIntentEvent,
+  SendTariffIntentEvent,
 } from "../../Transport";
 import { UIState } from "../../UIState";
 import {
@@ -268,6 +269,12 @@ export class PlayerPanel extends LitElement implements Controller {
   ) {
     e.stopPropagation();
     this.eventBus.emit(new SendEmbargoIntentEvent(other, "stop"));
+    this.hide();
+  }
+
+  private handleTariffClick(e: Event, other: PlayerView) {
+    e.stopPropagation();
+    this.eventBus.emit(new SendTariffIntentEvent(other));
     this.hide();
   }
 
@@ -726,6 +733,9 @@ export class PlayerPanel extends LitElement implements Controller {
     const canBreakAlliance = this.actions?.interaction?.canBreakAlliance;
     const canTarget = this.actions?.interaction?.canTarget;
     const canEmbargo = this.actions?.interaction?.canEmbargo;
+    const canTariff = this.actions?.interaction?.canTariff;
+    const tariffCost = this.g.config().tariffCost();
+    const canAffordTariff = (my?.gold() ?? 0n) >= tariffCost;
 
     return html`
       <div class="flex flex-col gap-2.5">
@@ -804,6 +814,20 @@ export class PlayerPanel extends LitElement implements Controller {
                       label: translateText("player_panel.start_trade"),
                       type: "green",
                     })}
+                ${canTariff
+                  ? actionButton({
+                      onClick: (e: MouseEvent) =>
+                        this.handleTariffClick(e, other),
+                      icon: donateGoldIcon,
+                      iconAlt: "Tariff",
+                      title: translateText("player_panel.tariff_tooltip", {
+                        cost: renderNumber(tariffCost),
+                      }),
+                      label: translateText("player_panel.tariff"),
+                      type: "yellow",
+                      disabled: !canAffordTariff,
+                    })
+                  : ""}
                 ${canBreakAlliance
                   ? actionButton({
                       onClick: (e: MouseEvent) =>
