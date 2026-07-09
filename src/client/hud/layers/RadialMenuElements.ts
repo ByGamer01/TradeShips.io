@@ -12,6 +12,7 @@ import { TileRef } from "../../../core/game/GameMap";
 import { Emoji, findClosestBy, flattenedEmojiTable } from "../../../core/Util";
 import { UIState } from "../../UIState";
 import { renderNumber, translateText } from "../../Utils";
+import { SpecializePortIntentEvent } from "../../Transport";
 import { GameView, PlayerView } from "../../view";
 import { BuildItemDisplay, BuildMenu, flattenedBuildTable } from "./BuildMenu";
 import { ChatIntegration } from "./ChatIntegration";
@@ -22,6 +23,7 @@ import { TooltipItem } from "./RadialMenu";
 
 import { EventBus } from "../../../core/EventBus";
 const allianceIcon = assetUrl("images/AllianceIconWhite.svg");
+const anchorIcon = assetUrl("images/AnchorIcon.svg");
 const boatIcon = assetUrl("images/BoatIconWhite.svg");
 const buildIcon = assetUrl("images/BuildIconWhite.svg");
 const chatIcon = assetUrl("images/ChatIconWhite.svg");
@@ -120,6 +122,7 @@ export enum Slot {
   Ally = "ally",
   Back = "back",
   Delete = "delete",
+  Specialize = "specialize",
 }
 
 function isFriendlyTarget(params: MenuElementParams): boolean {
@@ -578,6 +581,76 @@ export const buildMenuElement: MenuElement = {
     if (params === undefined) return [];
     return createMenuElements(params, "build", "build");
   },
+};
+
+const SPECIALIZE_SELECTION_RADIUS = 5;
+
+/** The closest own, active, specializable port near the clicked tile. */
+function findSpecializablePort(params: MenuElementParams) {
+  const ports = params.myPlayer
+    .units(UnitType.Port)
+    .filter(
+      (port) =>
+        port.isActive() &&
+        !port.isUnderConstruction() &&
+        port.portSpecialization() === undefined &&
+        port.level() >=
+          params.game.config().portSpecializationMinLevel() &&
+        params.game.manhattanDist(port.tile(), params.tile) <=
+          SPECIALIZE_SELECTION_RADIUS,
+    );
+  return findClosestBy(ports, (port) =>
+    params.game.manhattanDist(port.tile(), params.tile),
+  );
+}
+
+function specializationLeaf(
+  spec: "trade" | "naval" | "watch",
+  icon: string,
+  color: string,
+): MenuElement {
+  return {
+    id: `${Slot.Specialize}_${spec}`,
+    name: `specialize_${spec}`,
+    disabled: (params: MenuElementParams) =>
+      findSpecializablePort(params) === null,
+    icon,
+    color,
+    tooltipKeys: [
+      { key: `radial_menu.specialize_${spec}_title`, className: "title" },
+      {
+        key: `radial_menu.specialize_${spec}_description`,
+        className: "description",
+      },
+    ],
+    action: (params: MenuElementParams) => {
+      const port = findSpecializablePort(params);
+      if (port !== null) {
+        params.eventBus.emit(new SpecializePortIntentEvent(port.id(), spec));
+      }
+      params.closeMenu();
+    },
+  };
+}
+
+export const specializePortElement: MenuElement = {
+  id: Slot.Specialize,
+  name: "specialize",
+  displayed: (params: MenuElementParams) =>
+    findSpecializablePort(params) !== null,
+  disabled: (params: MenuElementParams) =>
+    params.game.inSpawnPhase() || findSpecializablePort(params) === null,
+  icon: anchorIcon,
+  color: COLORS.trade,
+  tooltipKeys: [
+    { key: "radial_menu.specialize_title", className: "title" },
+    { key: "radial_menu.specialize_description", className: "description" },
+  ],
+  subMenu: () => [
+    specializationLeaf("trade", donateGoldIcon, COLORS.trade),
+    specializationLeaf("naval", swordIcon, COLORS.attack),
+    specializationLeaf("watch", targetIcon, COLORS.ally),
+  ],
 };
 
 export const boatMenuElement: MenuElement = {
