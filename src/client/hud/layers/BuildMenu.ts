@@ -39,7 +39,9 @@ const samlauncherIcon = assetUrl("images/SamLauncherIconWhite.svg");
 const shieldIcon = assetUrl("images/ShieldIconWhite.svg");
 const submarineIcon = assetUrl("images/SubmarineIconWhite.svg");
 const aircraftCarrierIcon = assetUrl("images/AircraftCarrierIconWhite.svg");
+const antiAirFrigateIcon = assetUrl("images/AntiAirFrigateIconWhite.svg");
 const navalMineIcon = assetUrl("images/NavalMineIconWhite.svg");
+const congressIcon = assetUrl("images/CongressIconWhite.svg");
 
 export interface BuildItemDisplay {
   unitType: PlayerBuildableUnitType;
@@ -94,6 +96,13 @@ export const buildTable: BuildItemDisplay[][] = [
       countable: true,
     },
     {
+      unitType: UnitType.AntiAirFrigate,
+      icon: antiAirFrigateIcon,
+      description: "build_menu.desc.anti_air_frigate",
+      key: "unit_type.anti_air_frigate",
+      countable: true,
+    },
+    {
       unitType: UnitType.NavalMine,
       icon: navalMineIcon,
       description: "build_menu.desc.naval_mine",
@@ -140,6 +149,13 @@ export const buildTable: BuildItemDisplay[][] = [
       icon: factoryIcon,
       description: "build_menu.desc.factory",
       key: "unit_type.factory",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Congress,
+      icon: congressIcon,
+      description: "build_menu.desc.congress",
+      key: "unit_type.congress",
       countable: true,
     },
   ],
