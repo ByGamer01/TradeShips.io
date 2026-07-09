@@ -31,6 +31,7 @@ function state(overrides: Partial<UnitState> = {}): UnitState {
     targetUnitId: null,
     targetTile: null,
     tilesTraveled: null,
+    portSpecialization: null,
     troops: 0,
     missileTimerQueue: [],
     level: 1,
@@ -84,6 +85,40 @@ describe("TradeLedger", () => {
       goldAtMyPorts: 802,
       portIncome: [{ unitId: 10, tile: 99, gold: 802, arrivals: 1 }],
     });
+  });
+
+  it("passes destination owner to gold estimator for allied route bonuses", () => {
+    const estimates: Array<{
+      tiles: number;
+      ownerID: number;
+      destinationOwnerID?: number | null;
+    }> = [];
+    const l = new TradeLedger({
+      localPlayerID: () => 1,
+      estimateGold: (tiles, ownerID, destinationOwnerID) => {
+        estimates.push({ tiles, ownerID, destinationOwnerID });
+        return destinationOwnerID === 2 ? 1500 : 1000;
+      },
+      portOwnerID: (unitId) => (unitId === 20 ? 2 : null),
+      portTile: () => null,
+    });
+
+    l.onUnitUpdate(
+      makeUnitUpdate({
+        unitType: UnitType.TradeShip,
+        ownerID: 1,
+        isActive: false,
+        reachedTarget: true,
+        tilesTraveled: 12,
+        targetUnitId: 20,
+      }),
+      state({ ownerID: 1, isActive: true }),
+    );
+
+    expect(estimates).toEqual([
+      { tiles: 12, ownerID: 1, destinationOwnerID: 2 },
+    ]);
+    expect(l.summary().goldFromMyShips).toBe(1500);
   });
 
   it("separates captured losses from captures made by the local player", () => {
