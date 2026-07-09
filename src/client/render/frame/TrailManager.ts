@@ -11,7 +11,7 @@
  */
 
 import type { UnitState } from "../types";
-import { SMOOTHED_NUKE_TYPES, UT_PORT, UT_TRADE_SHIP } from "../types";
+import { SMOOTHED_NUKE_TYPES } from "../types";
 
 interface UnitTrail {
   ownerID: number;
@@ -85,30 +85,7 @@ export class TrailManager {
         this.bresenham(trail.lastPosStamped, head, trail);
         trail.lastPosStamped = head;
       }
-
-      const tradeRouteTarget = this.tradeRouteTarget(unit, units);
-      if (tradeRouteTarget !== null) {
-        this.bresenham(head, tradeRouteTarget.pos, trail);
-      }
     }
-  }
-
-  private tradeRouteTarget(
-    unit: UnitState,
-    units: Map<number, UnitState>,
-  ): UnitState | null {
-    if (unit.unitType !== UT_TRADE_SHIP || unit.targetUnitId === null) {
-      return null;
-    }
-    const target = units.get(unit.targetUnitId);
-    if (
-      target === undefined ||
-      !target.isActive ||
-      target.unitType !== UT_PORT
-    ) {
-      return null;
-    }
-    return target;
   }
 
   private clearDeadUnits(units: Map<number, UnitState>): void {
