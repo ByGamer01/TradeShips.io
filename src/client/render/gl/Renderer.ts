@@ -493,6 +493,7 @@ export class GPURenderer {
     this.nukeTrajectoryPass = new NukeTrajectoryPass(gl, this.settings);
     this.nukeTelegraphPass = new NukeTelegraphPass(gl, this.settings);
     this.tradeRoutePass = new TradeRoutePass(gl, this.settings, this.mapW);
+    this.tradeRoutePass.setPaletteData(paletteData);
 
     // --- Scene capture target (for night composite) ---
     const sceneTex = gl.createTexture()!;
@@ -631,6 +632,8 @@ export class GPURenderer {
     this.samRadiusPass.setPaletteData(this.paletteData);
     // Name pass caches per-player colors and bakes them into slot rows
     this.namePass.refreshPlayerColors(this.paletteData);
+    // Trade route pass reads owner colors directly from this same array
+    this.tradeRoutePass.setPaletteData(this.paletteData);
   }
 
   /** Register late-arriving players (updates palette + NamePass lookup maps). */
