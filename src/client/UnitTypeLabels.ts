@@ -11,11 +11,16 @@ export const ALL_UNIT_OPTIONS: {
   { type: UnitType.City, translationKey: "unit_type.city" },
   { type: UnitType.DefensePost, translationKey: "unit_type.defense_post" },
   { type: UnitType.Port, translationKey: "unit_type.port" },
+  { type: UnitType.Congress, translationKey: "unit_type.congress" },
   { type: UnitType.Warship, translationKey: "unit_type.warship" },
   { type: UnitType.Submarine, translationKey: "unit_type.submarine" },
   {
     type: UnitType.AircraftCarrier,
     translationKey: "unit_type.aircraft_carrier",
+  },
+  {
+    type: UnitType.AntiAirFrigate,
+    translationKey: "unit_type.anti_air_frigate",
   },
   { type: UnitType.NavalMine, translationKey: "unit_type.naval_mine" },
   { type: UnitType.TransportShip, translationKey: "unit_type.boat" },
