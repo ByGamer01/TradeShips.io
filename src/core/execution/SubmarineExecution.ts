@@ -10,6 +10,7 @@ import { randomPatrolTile } from "./utils/NavalPatrol";
 const SUBMARINE_TARGET_TYPES = [
   UnitType.TransportShip,
   UnitType.Warship,
+  UnitType.AntiAirFrigate,
   UnitType.AircraftCarrier,
   UnitType.TradeShip,
 ] as const;
@@ -90,7 +91,8 @@ export class SubmarineExecution implements Execution {
         unit.owner() === owner ||
         !owner.canAttackPlayer(unit.owner(), true) ||
         this.alreadyTorpedoed.has(unit) ||
-        (unit.type() === UnitType.Warship &&
+        ((unit.type() === UnitType.Warship ||
+          unit.type() === UnitType.AntiAirFrigate) &&
           unit.warshipState().state === "docked")
       ) {
         continue;
@@ -152,6 +154,13 @@ export class SubmarineExecution implements Execution {
   }
 
   private patrol(): void {
+    const manualDestination = this.sub!.targetTile();
+    if (manualDestination !== undefined) {
+      this.patrolDestination = undefined;
+      this.moveToward(manualDestination, true);
+      return;
+    }
+
     if (this.patrolDestination === undefined) {
       this.patrolDestination = randomPatrolTile(
         this.mg,
@@ -165,20 +174,29 @@ export class SubmarineExecution implements Execution {
       }
     }
 
-    const result = this.pathfinder.next(
-      this.sub!.tile(),
-      this.patrolDestination,
-    );
+    this.moveToward(this.patrolDestination, false);
+  }
+
+  private moveToward(destination: TileRef, manual: boolean): void {
+    const result = this.pathfinder.next(this.sub!.tile(), destination);
     switch (result.status) {
       case PathStatus.COMPLETE:
         this.sub!.move(result.node);
-        this.patrolDestination = undefined;
+        if (manual) {
+          this.sub!.setTargetTile(undefined);
+        } else {
+          this.patrolDestination = undefined;
+        }
         break;
       case PathStatus.NEXT:
         this.sub!.move(result.node);
         break;
       case PathStatus.NOT_FOUND:
-        this.patrolDestination = undefined;
+        if (manual) {
+          this.sub!.setTargetTile(undefined);
+        } else {
+          this.patrolDestination = undefined;
+        }
         break;
     }
   }
