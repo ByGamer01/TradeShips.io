@@ -18,7 +18,6 @@ import {
   makeNameViewData,
   makePlayerUpdate,
   makeUnitUpdate,
-  stubConfig,
 } from "../../util/viewStubs";
 
 function withPlayers(
@@ -739,7 +738,7 @@ describe("GameView.frameData() — renderer contract", () => {
     expect(game.frameData().events.deadUnits).toBe(a1);
   });
 
-  it("stamps trade ship movement into trail state for visible sea routes", () => {
+  it("does not stamp trade ship movement into owner-colored trail state", () => {
     const game = makeGameView({ width: 10, height: 10 });
 
     const gu1 = makeEmptyGu(1);
@@ -767,145 +766,84 @@ describe("GameView.frameData() — renderer contract", () => {
     game.update(gu2);
 
     const trail = game.frameData().trailState;
-    expect([trail[11], trail[12], trail[13], trail[14]]).toEqual([
-      3, 3, 3, 3,
-    ]);
+    expect([trail[11], trail[12], trail[13], trail[14]]).toEqual([0, 0, 0, 0]);
   });
 
-  it("frame.tradeRoutes exposes live commercial route metrics", () => {
+  it("frame.tradeRoutes renders the trade-lane corridor as system segments", () => {
     const game = makeGameView({ width: 10, height: 10, myClientID: "c-me" });
     const gu = withPlayers(1, [
-      makePlayerUpdate({
-        id: "me",
-        smallID: 1,
-        clientID: "c-me",
-        allies: [3],
-      }),
-      makePlayerUpdate({ id: "ally", smallID: 3, clientID: "c-ally" }),
+      makePlayerUpdate({ id: "me", smallID: 1, clientID: "c-me" }),
     ]);
-    gu.updates[GameUpdateType.Unit] = [
-      makeUnitUpdate({
-        id: 10,
-        unitType: UnitType.Port,
-        ownerID: 1,
-        pos: 88,
-      }),
-      makeUnitUpdate({
-        id: 11,
-        unitType: UnitType.TradeShip,
-        ownerID: 1,
-        pos: 11,
-        targetUnitId: 10,
-      }),
-      makeUnitUpdate({
-        id: 12,
-        unitType: UnitType.TradeShip,
-        ownerID: 3,
-        pos: 18,
-        targetUnitId: 10,
-      }),
+    gu.updates[GameUpdateType.MaritimeObjective] = [
+      {
+        type: GameUpdateType.MaritimeObjective,
+        shape: "lane",
+        center: 34,
+        radius: 8,
+        laneHalfWidth: 8,
+        path: [32, 34, 36],
+        controllerSmallID: 1,
+        controllerTeam: null,
+        leaderSmallID: 1,
+        leaderTeam: null,
+        controlPercent: 10,
+        status: "capturing",
+        navalPower: [{ smallID: 1, team: null, power: 3 }],
+      },
     ];
     game.update(gu);
 
-    expect(game.frameData().tradeRoutes).toEqual([
-      {
-        shipId: 11,
-        ownerID: 1,
-        from: 11,
-        to: 88,
-        distanceTiles: 10,
-        enemyThreats: 0,
-        escortCount: 0,
-        estimatedGold: 10_000,
-        relation: "own",
-        riskLevel: "safe",
-      },
-      {
-        shipId: 12,
-        ownerID: 3,
-        from: 18,
-        to: 88,
-        distanceTiles: 7,
-        enemyThreats: 0,
-        escortCount: 0,
-        estimatedGold: 7_000,
-        relation: "friendly",
-        riskLevel: "safe",
-      },
+    const segments = game
+      .frameData()
+      .tradeRoutes.filter((route) => route.shipId < 0);
+    expect(segments.map((s) => [s.from, s.to])).toEqual([
+      [32, 34],
+      [34, 36],
     ]);
+    for (const segment of segments) {
+      expect(segment.ownerID).toBe(1);
+      expect(segment.relation).toBe("own");
+      expect(segment.riskLevel).toBe("safe");
+    }
   });
 
-  it("frame.tradeRoutes treats same-team merchant routes as friendly", () => {
+  it("frame.tradeRoutes keeps corridor segments after the path-bearing update", () => {
     const game = makeGameView({ width: 10, height: 10, myClientID: "c-me" });
-    const gu = withPlayers(1, [
-      makePlayerUpdate({
-        id: "me",
-        smallID: 1,
-        clientID: "c-me",
-        team: "red",
-      }),
-      makePlayerUpdate({
-        id: "teammate",
-        smallID: 2,
-        clientID: "c-teammate",
-        team: "red",
-      }),
+    const first = withPlayers(1, [
+      makePlayerUpdate({ id: "me", smallID: 1, clientID: "c-me" }),
     ]);
-    gu.updates[GameUpdateType.Unit] = [
-      makeUnitUpdate({
-        id: 10,
-        unitType: UnitType.Port,
-        ownerID: 2,
-        pos: 88,
-      }),
-      makeUnitUpdate({
-        id: 11,
-        unitType: UnitType.TradeShip,
-        ownerID: 2,
-        pos: 18,
-        targetUnitId: 10,
-      }),
+    const baseUpdate = {
+      type: GameUpdateType.MaritimeObjective as const,
+      shape: "lane" as const,
+      center: 34,
+      radius: 8,
+      laneHalfWidth: 8,
+      controllerSmallID: 0,
+      controllerTeam: null,
+      leaderSmallID: 0,
+      leaderTeam: null,
+      controlPercent: 0,
+      status: "contested" as const,
+      navalPower: [],
+    };
+    first.updates[GameUpdateType.MaritimeObjective] = [
+      { ...baseUpdate, path: [32, 34, 36] },
     ];
-    game.update(gu);
+    game.update(first);
 
-    expect(game.frameData().tradeRoutes[0]?.relation).toBe("friendly");
-  });
-
-  it("frame.tradeRoutes exposes estimated commercial route value", () => {
-    const game = makeGameView({
-      width: 10,
-      height: 10,
-      myClientID: "c-me",
-      config: stubConfig({
-        tradeShipGold: (distanceTiles: number, player: any) =>
-          BigInt(distanceTiles * 1_000 + player.smallID()),
-      }),
-    });
-    const gu = withPlayers(1, [
-      makePlayerUpdate({
-        id: "me",
-        smallID: 1,
-        clientID: "c-me",
-      }),
+    // Later ticks omit the static path; the cached copy must keep rendering.
+    const second = withPlayers(2, [
+      makePlayerUpdate({ id: "me", smallID: 1, clientID: "c-me" }),
     ]);
-    gu.updates[GameUpdateType.Unit] = [
-      makeUnitUpdate({
-        id: 10,
-        unitType: UnitType.Port,
-        ownerID: 1,
-        pos: 88,
-      }),
-      makeUnitUpdate({
-        id: 11,
-        unitType: UnitType.TradeShip,
-        ownerID: 1,
-        pos: 18,
-        targetUnitId: 10,
-      }),
-    ];
-    game.update(gu);
+    second.updates[GameUpdateType.MaritimeObjective] = [{ ...baseUpdate }];
+    game.update(second);
 
-    expect(game.frameData().tradeRoutes[0]?.estimatedGold).toBe(7_001);
+    const segments = game
+      .frameData()
+      .tradeRoutes.filter((route) => route.shipId < 0);
+    expect(segments).toHaveLength(2);
+    expect(segments[0].relation).toBe("neutral");
+    expect(segments[0].riskLevel).toBe("contested");
   });
 
   it("frame.structuresDirty is true on first populate (force initial upload)", () => {
