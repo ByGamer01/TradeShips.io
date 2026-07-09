@@ -22,5 +22,8 @@ describe("UnitTypeLabels", () => {
     expect(UNIT_TYPE_TRANSLATION_KEYS[UnitType.AircraftCarrier]).toBe(
       "unit_type.aircraft_carrier",
     );
+    expect(UNIT_TYPE_TRANSLATION_KEYS[UnitType.Congress]).toBe(
+      "unit_type.congress",
+    );
   });
 });
