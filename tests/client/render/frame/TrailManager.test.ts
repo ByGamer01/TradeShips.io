@@ -13,6 +13,7 @@ import {
   UT_ATOM_BOMB,
   UT_PORT,
   UT_TRADE_SHIP,
+  UT_TRANSPORT,
 } from "../../../../src/client/render/types";
 
 const MAP_W = 50;
@@ -36,6 +37,7 @@ function unit(overrides: Partial<UnitState> = {}): UnitState {
     targetUnitId: null,
     targetTile: null,
     tilesTraveled: null,
+    portSpecialization: null,
     troops: 0,
     missileTimerQueue: [],
     level: 1,
@@ -76,22 +78,22 @@ describe("TrailManager", () => {
 
     tm.update(
       units(
-        unit({ unitType: UT_TRADE_SHIP, pos: ref(2, 2), lastPos: ref(2, 2) }),
+        unit({ unitType: UT_TRANSPORT, pos: ref(2, 2), lastPos: ref(2, 2) }),
       ),
       [1],
     );
     tm.update(
       units(
-        unit({ unitType: UT_TRADE_SHIP, pos: ref(4, 2), lastPos: ref(3, 2) }),
+        unit({ unitType: UT_TRANSPORT, pos: ref(4, 2), lastPos: ref(3, 2) }),
       ),
       [1],
     );
 
-    // Trade ships are not interpolated, so the trail reaches the current pos.
+    // Transport ships are not interpolated, so the trail reaches the current pos.
     expect(trail[ref(4, 2)]).toBe(7);
   });
 
-  it("stamps a trade ship's active route to its destination port", () => {
+  it("does not stamp a trade ship's active route to its destination port", () => {
     const tm = new TrailManager(MAP_W, MAP_H);
     const trail = tm.getTrailState();
 
@@ -115,9 +117,13 @@ describe("TrailManager", () => {
       [1],
     );
 
-    expect([trail[ref(2, 2)], trail[ref(3, 2)], trail[ref(4, 2)], trail[ref(5, 2)], trail[ref(6, 2)]]).toEqual([
-      7, 7, 7, 7, 7,
-    ]);
+    expect([
+      trail[ref(2, 2)],
+      trail[ref(3, 2)],
+      trail[ref(4, 2)],
+      trail[ref(5, 2)],
+      trail[ref(6, 2)],
+    ]).toEqual([7, 0, 0, 0, 0]);
   });
 
   it("clears a unit's trail when it disappears", () => {
