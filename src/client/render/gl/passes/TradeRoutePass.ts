@@ -1,13 +1,13 @@
 /**
- * TradeRoutePass — draws the live trade network as animated dashed lines,
- * one segment per in-flight trade ship (ship position → destination port).
+ * TradeRoutePass — draws system ocean lanes as dashed lines.
  *
  * Rendered as instanced screen-space quads: a static 4-vertex corner strip
  * expanded along each segment in the vertex shader, dashed and endpoint-faded
- * in the fragment shader. Dashes drift toward the destination port so routes
- * read as cargo flow. Base color encodes the owner's relation to the local
- * player (own / friendly / foreign); contested and dangerous routes blend
- * toward warning colors so raids on the network are visible at a glance.
+ * in the fragment shader. Dashes are intentionally static: these are neutral
+ * sea lanes to capture, not per-ship destination arrows. They intentionally
+ * do not use player colors: player-colored strips make merchant traffic read
+ * like old territorial conquest. Contested and dangerous routes still tint
+ * toward warning colors so naval fights are visible at a glance.
  */
 
 import type { TradeRouteData } from "../../types";
@@ -22,6 +22,40 @@ const FLOATS_PER_INSTANCE = 8;
 const BYTES_PER_INSTANCE = FLOATS_PER_INSTANCE * 4;
 const INITIAL_CAPACITY = 256;
 
+/**
+ * Resolve a route's rgba using neutral sea-lane colors only. The palette arg
+ * is intentionally ignored; trade routes must not inherit player colors.
+ */
+export function resolveTradeRouteColor(
+  route: TradeRouteData,
+  _paletteData: Float32Array | null,
+  settings: RenderSettings["tradeRoute"],
+): [number, number, number, number] {
+  let r = settings.foreignR;
+  let g = settings.foreignG;
+  let b = settings.foreignB;
+  const systemLane = route.shipId < 0;
+  const a = Math.min(
+    1,
+    settings.foreignAlpha *
+      (systemLane ? 1.35 : route.ownerID > 0 ? 0.9 : 0.65),
+  );
+
+  if (route.riskLevel === "contested") {
+    const t = settings.contestedBlend;
+    r += (settings.contestedR - r) * t;
+    g += (settings.contestedG - g) * t;
+    b += (settings.contestedB - b) * t;
+  } else if (route.riskLevel === "dangerous") {
+    const t = settings.dangerousBlend;
+    r += (settings.dangerousR - r) * t;
+    g += (settings.dangerousG - g) * t;
+    b += (settings.dangerousB - b) * t;
+  }
+
+  return [r, g, b, a];
+}
+
 export class TradeRoutePass {
   private gl: WebGL2RenderingContext;
   private settings: RenderSettings;
@@ -33,6 +67,7 @@ export class TradeRoutePass {
   private instanceData: Float32Array;
   private capacity = INITIAL_CAPACITY;
   private count = 0;
+  private paletteData: Float32Array | null = null;
 
   private uCamera: WebGLUniformLocation;
   private uPixelSize: WebGLUniformLocation;
@@ -41,8 +76,6 @@ export class TradeRoutePass {
   private uDash: WebGLUniformLocation;
   private uFlowOffset: WebGLUniformLocation;
   private uEndFadePx: WebGLUniformLocation;
-
-  private readonly startTime = performance.now();
 
   constructor(
     gl: WebGL2RenderingContext,
@@ -81,7 +114,11 @@ export class TradeRoutePass {
     // Per-instance segment + color attributes.
     this.instanceBuf = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceBuf);
-    gl.bufferData(gl.ARRAY_BUFFER, this.instanceData.byteLength, gl.DYNAMIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      this.instanceData.byteLength,
+      gl.DYNAMIC_DRAW,
+    );
     gl.enableVertexAttribArray(1);
     gl.vertexAttribPointer(1, 2, gl.FLOAT, false, BYTES_PER_INSTANCE, 0);
     gl.vertexAttribDivisor(1, 1);
@@ -95,6 +132,11 @@ export class TradeRoutePass {
     gl.bindVertexArray(null);
   }
 
+  /** Share the renderer's player-color palette (rgba fill, indexed by ownerID). */
+  setPaletteData(data: Float32Array): void {
+    this.paletteData = data;
+  }
+
   /** Replace the route set. Called once per simulation tick. */
   update(routes: TradeRouteData[]): void {
     this.count = routes.length;
@@ -102,9 +144,7 @@ export class TradeRoutePass {
 
     if (this.count > this.capacity) {
       while (this.capacity < this.count) this.capacity *= 2;
-      this.instanceData = new Float32Array(
-        this.capacity * FLOATS_PER_INSTANCE,
-      );
+      this.instanceData = new Float32Array(this.capacity * FLOATS_PER_INSTANCE);
       const gl = this.gl;
       gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceBuf);
       gl.bufferData(
@@ -137,48 +177,17 @@ export class TradeRoutePass {
     );
   }
 
-  /** Resolve a route's rgba from relation base color + risk warning blend. */
+  /** Write a route's rgba (owner palette color + risk warning blend) into the instance buffer. */
   private writeColor(
     buf: Float32Array,
     idx: number,
     route: TradeRouteData,
   ): void {
-    const s = this.settings.tradeRoute;
-
-    let r: number, g: number, b: number, a: number;
-    switch (route.relation) {
-      case "own":
-        r = s.ownR;
-        g = s.ownG;
-        b = s.ownB;
-        a = s.ownAlpha;
-        break;
-      case "friendly":
-        r = s.friendlyR;
-        g = s.friendlyG;
-        b = s.friendlyB;
-        a = s.friendlyAlpha;
-        break;
-      default:
-        r = s.foreignR;
-        g = s.foreignG;
-        b = s.foreignB;
-        a = s.foreignAlpha;
-        break;
-    }
-
-    if (route.riskLevel === "contested") {
-      const t = s.contestedBlend;
-      r += (s.contestedR - r) * t;
-      g += (s.contestedG - g) * t;
-      b += (s.contestedB - b) * t;
-    } else if (route.riskLevel === "dangerous") {
-      const t = s.dangerousBlend;
-      r += (s.dangerousR - r) * t;
-      g += (s.dangerousG - g) * t;
-      b += (s.dangerousB - b) * t;
-    }
-
+    const [r, g, b, a] = resolveTradeRouteColor(
+      route,
+      this.paletteData,
+      this.settings.tradeRoute,
+    );
     buf[idx + 0] = r;
     buf[idx + 1] = g;
     buf[idx + 2] = b;
@@ -194,15 +203,13 @@ export class TradeRoutePass {
 
     const lineHalfPx = s.lineWidth / 2;
     const quadHalfPx = lineHalfPx + 1.0; // AA padding
-    const elapsedSec = (performance.now() - this.startTime) / 1000;
-
     gl.useProgram(this.program);
     gl.uniformMatrix3fv(this.uCamera, false, cameraMatrix);
     gl.uniform1f(this.uPixelSize, pixelSize);
     gl.uniform1f(this.uQuadHalfPx, quadHalfPx);
     gl.uniform1f(this.uLineHalfPx, lineHalfPx);
     gl.uniform2f(this.uDash, s.dashLen, s.gapLen);
-    gl.uniform1f(this.uFlowOffset, elapsedSec * s.flowSpeed);
+    gl.uniform1f(this.uFlowOffset, 0);
     gl.uniform1f(this.uEndFadePx, s.endFade);
 
     gl.bindVertexArray(this.vao);
