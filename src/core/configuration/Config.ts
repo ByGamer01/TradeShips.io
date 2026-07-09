@@ -252,6 +252,57 @@ export class Config {
     return BigInt(Math.floor(baseGold * this.goldMultiplierFor(player)));
   }
 
+  /** Allied commercial routes pay extra gold to make alliances economically meaningful. */
+  alliedTradeGoldBonus(): number {
+    return 0.5;
+  }
+
+  // ── Port specializations ─────────────────────────────────────────────
+
+  /** Minimum port level before a specialization can be chosen. */
+  portSpecializationMinLevel(): number {
+    return 2;
+  }
+  /** Trade hub: extra virtual levels for trade ship spawn chances. */
+  portTradeSpecSpawnBonusLevels(): number {
+    return 2;
+  }
+  /** Trade hub: gold multiplier bonus on arrivals at this port (0.25 = +25%). */
+  portTradeSpecGoldBonus(): number {
+    return 0.25;
+  }
+  /** Naval base: extra docked-warship healing slots. */
+  portNavalSpecHealingSlotsBonus(): number {
+    return 2;
+  }
+  /** Naval base: torpedo battery engagement range in tiles. */
+  portNavalBatteryRange(): number {
+    return 60;
+  }
+  /** Naval base: ticks between torpedo battery attacks. */
+  portNavalBatteryAttackRate(): number {
+    return 25;
+  }
+  /** Harbor watch: radius in which friendly trade ships are safe from pirates. */
+  portWatchSafeRadius(): number {
+    return 80;
+  }
+
+  // ── Tariffs (purchased trade taxes) ──────────────────────────────────
+
+  /** One-shot purchase price of imposing a tariff on an enemy. */
+  tariffCost(): Gold {
+    return 150_000n;
+  }
+  /** How long a purchased tariff stays active. */
+  tariffDurationTicks(): Tick {
+    return 1_500;
+  }
+  /** Share of the target's trade-arrival gold collected per active tariff. */
+  tariffTradeTaxRate(): number {
+    return 0.25;
+  }
+
   // Probability of trade ship spawn = 1 / tradeShipSpawnRate
   tradeShipSpawnRate(
     tradeShipSpawnRejections: number,
@@ -318,6 +369,15 @@ export class Config {
             UnitType.AircraftCarrier,
           ),
           maxHealth: 1500,
+        };
+        break;
+      case UnitType.AntiAirFrigate:
+        info = {
+          cost: this.costWrapper(
+            (numUnits: number) => Math.min(1_200_000, (numUnits + 1) * 300_000),
+            UnitType.AntiAirFrigate,
+          ),
+          maxHealth: 800,
         };
         break;
       case UnitType.Aircraft:
@@ -434,6 +494,12 @@ export class Config {
           ),
           constructionDuration: this.instantBuild() ? 0 : 2 * 10,
           upgradable: true,
+        };
+        break;
+      case UnitType.Congress:
+        info = {
+          cost: this.costWrapper(() => 500_000, UnitType.Congress),
+          constructionDuration: this.instantBuild() ? 0 : 5 * 10,
         };
         break;
       case UnitType.Train:
@@ -943,7 +1009,7 @@ export class Config {
   }
 
   navalMinePortRange(): number {
-    return 24;
+    return 120;
   }
 
   navalMineMaxPerPlayer(): number {
@@ -997,6 +1063,14 @@ export class Config {
 
   aircraftLifetime(): number {
     return 100;
+  }
+
+  antiAirFrigateRange(): number {
+    return 25;
+  }
+
+  antiAirFrigateAttackRate(): number {
+    return 5;
   }
 
   warshipDockingRange(): number {
