@@ -5,6 +5,7 @@ import type {
   UnitState,
 } from "../../types";
 import {
+  UT_ANTI_AIR_FRIGATE,
   UT_CARRIER,
   UT_NAVAL_MINE,
   UT_PORT,
@@ -33,6 +34,7 @@ const ROUTE_ESCORT_TYPES: ReadonlySet<string> = new Set([
   UT_WARSHIP,
   UT_SUBMARINE,
   UT_CARRIER,
+  UT_ANTI_AIR_FRIGATE,
 ]);
 
 function routeRelation(
@@ -186,7 +188,10 @@ export function friendlyOwnersFromRelations(
   if (localPlayerID <= 0 || localPlayerID >= relationSize) return friendly;
   const row = localPlayerID * relationSize;
   for (let id = 1; id < relationSize; id++) {
-    if (id !== localPlayerID && relationMatrix[row + id] === RELATION_FRIENDLY) {
+    if (
+      id !== localPlayerID &&
+      relationMatrix[row + id] === RELATION_FRIENDLY
+    ) {
       friendly.add(id);
     }
   }
