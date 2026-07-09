@@ -6,6 +6,7 @@ import {
   UnitType,
 } from "../../src/core/game/Game";
 import { maps } from "../../src/core/game/Maps.gen";
+import { isMaritimeMap } from "../../src/core/game/MaritimeMaps";
 import { MapPlaylist } from "../../src/server/MapPlaylist";
 
 const ROOT = path.join(__dirname, "..", "..");
@@ -54,50 +55,54 @@ describe("MapPlaylist arsenal lock defaults", () => {
     const config = playlist.get1v1Config();
     expectSupersetOfArsenal(config.disabledUnits);
   });
+
+  test("public 1v1 games use maritime maps", () => {
+    const playlist = new MapPlaylist();
+
+    for (let i = 0; i < 25; i++) {
+      expect(isMaritimeMap(playlist.get1v1Config().gameMap)).toBe(true);
+    }
+  });
 });
 
 describe("MapPlaylist special mode never reintroduces the arsenal", () => {
   const SPECIAL_DRAWS = 180;
 
-  test(
-    "every special draw keeps the full arsenal (incl. DefensePost) disabled, never forces waterNukes, and never exposes the retired modifier flags",
-    async () => {
-      const playlist = new MapPlaylist();
+  test("every special draw keeps the full arsenal (incl. DefensePost) disabled, never forces waterNukes, and never exposes the retired modifier flags", async () => {
+    const playlist = new MapPlaylist();
 
-      for (let i = 0; i < SPECIAL_DRAWS; i++) {
-        const config = await playlist.gameConfig("special");
+    for (let i = 0; i < SPECIAL_DRAWS; i++) {
+      const config = await playlist.gameConfig("special");
 
-        // (a) arsenal always disabled, including DefensePost unconditionally (REQ-4).
-        expectSupersetOfArsenal(config.disabledUnits);
-        expect(config.disabledUnits).toContain(UnitType.DefensePost);
+      // (a) arsenal always disabled, including DefensePost unconditionally (REQ-4).
+      expectSupersetOfArsenal(config.disabledUnits);
+      expect(config.disabledUnits).toContain(UnitType.DefensePost);
 
-        // (b) special mode never forces an arsenal-incompatible waterNukes flag (REQ-5).
-        expect(config.waterNukes).not.toBe(true);
+      // (b) special mode never forces an arsenal-incompatible waterNukes flag (REQ-5).
+      expect(config.waterNukes).not.toBe(true);
 
-        // (c) retired modifier flags must never surface as truthy (ADR-2).
-        expect(config.publicGameModifiers?.isNukesDisabled).toBeFalsy();
-        expect(config.publicGameModifiers?.isSAMsDisabled).toBeFalsy();
-        expect(config.publicGameModifiers?.isWaterNukes).toBeFalsy();
+      // (c) retired modifier flags must never surface as truthy (ADR-2).
+      expect(config.publicGameModifiers?.isNukesDisabled).toBeFalsy();
+      expect(config.publicGameModifiers?.isSAMsDisabled).toBeFalsy();
+      expect(config.publicGameModifiers?.isWaterNukes).toBeFalsy();
 
-        // (d) construction-time invariant (REQ-6): no modifier flag may imply a
-        // disabled unit absent from disabledUnits, and no flag may contradict a
-        // disabledUnits entry.
-        const disabled = new Set(config.disabledUnits ?? []);
-        if (config.publicGameModifiers?.isPortsDisabled) {
-          expect(disabled.has(UnitType.Port)).toBe(true);
-        }
+      // (d) construction-time invariant (REQ-6): no modifier flag may imply a
+      // disabled unit absent from disabledUnits, and no flag may contradict a
+      // disabledUnits entry.
+      const disabled = new Set(config.disabledUnits ?? []);
+      if (config.publicGameModifiers?.isPortsDisabled) {
+        expect(disabled.has(UnitType.Port)).toBe(true);
       }
-    },
-    // 180 async draws (each awaiting getMapLandTiles) can exceed the default
-    // 5s timeout under full-suite CPU contention even though each draw is
-    // fast in isolation.
-    20_000,
-  );
+    }
+  }, // 180 async draws (each awaiting getMapLandTiles) can exceed the default
+  // 5s timeout under full-suite CPU contention even though each draw is
+  // fast in isolation.
+  20_000);
 });
 
 describe("MapPlaylist maritime map curation", () => {
   test.each(["ffa", "team", "special"] as const)(
-    "%s playlist only contains water-majority maps",
+    "%s playlist only contains island/archipelago maps",
     (type) => {
       const playlist = new MapPlaylist();
       const mapsForType = new Set<GameMapType>(
@@ -107,6 +112,11 @@ describe("MapPlaylist maritime map curation", () => {
       expect(mapsForType.size).toBeGreaterThan(0);
       expect(mapsForType).not.toContain(GameMapType.Alps);
       expect(mapsForType).not.toContain(GameMapType.World);
+      expect(mapsForType).not.toContain(GameMapType.BajaCalifornia);
+      expect(mapsForType).not.toContain(GameMapType.NorthwestPassage);
+      expect(mapsForType).not.toContain(GameMapType.StraitOfMalacca);
+      expect(mapsForType).not.toContain(GameMapType.TaiwanStrait);
+      expect(mapsForType).not.toContain(GameMapType.Venice);
 
       for (const map of mapsForType) {
         expect(waterRatio(map)).toBeGreaterThanOrEqual(0.6);
@@ -121,23 +131,32 @@ describe("MapPlaylist maritime map curation", () => {
       GameMapType.ArchipelagoSea,
     );
   });
+
+  it("1v1 config never selects straits or passage maps", () => {
+    const playlist = new MapPlaylist();
+
+    for (let i = 0; i < 50; i++) {
+      expect([
+        GameMapType.NorthwestPassage,
+        GameMapType.Passage,
+        GameMapType.StraitOfMalacca,
+        GameMapType.TaiwanStrait,
+      ]).not.toContain(playlist.get1v1Config().gameMap);
+    }
+  });
 });
 
 describe("MapPlaylist public starting gold", () => {
-  test(
-    "every special maritime rotation draw is forced to 25M starting gold",
-    async () => {
-      const playlist = new MapPlaylist();
+  test("every special maritime rotation draw is forced to 25M starting gold", async () => {
+    const playlist = new MapPlaylist();
 
-      for (let i = 0; i < 40; i++) {
-        const config = await playlist.gameConfig("special");
+    for (let i = 0; i < 40; i++) {
+      const config = await playlist.gameConfig("special");
 
-        expect(config.startingGold).toBe(25_000_000);
-        expect(config.publicGameModifiers?.startingGold).toBe(25_000_000);
-        expect(config.publicGameModifiers?.isHardNations).toBeFalsy();
-        expect(config.nations).toBe("disabled");
-      }
-    },
-    15_000,
-  );
+      expect(config.startingGold).toBe(25_000_000);
+      expect(config.publicGameModifiers?.startingGold).toBe(25_000_000);
+      expect(config.publicGameModifiers?.isHardNations).toBeFalsy();
+      expect(config.nations).toBe("disabled");
+    }
+  }, 15_000);
 });
