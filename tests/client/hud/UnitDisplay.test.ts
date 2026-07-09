@@ -43,17 +43,23 @@ describe("UnitDisplay naval quickbar", () => {
       { type: UnitType.Warship, cost: 0n, canBuild: true },
       { type: UnitType.Submarine, cost: 0n, canBuild: true },
       { type: UnitType.AircraftCarrier, cost: 0n, canBuild: true },
+      { type: (UnitType as any).AntiAirFrigate, cost: 0n, canBuild: true },
       { type: UnitType.NavalMine, cost: 0n, canBuild: true },
+      { type: UnitType.Congress, cost: 0n, canBuild: true },
     ];
 
     const rendered = collectRenderableText(el.render());
 
     expect(rendered).toContain("submarine");
     expect(rendered).toContain("aircraft_carrier");
+    expect(rendered).toContain("anti_air_frigate");
     expect(rendered).toContain("naval_mine");
+    expect(rendered).toContain("congress");
     expect(rendered).toContain("/images/SubmarineIconWhite.svg");
     expect(rendered).toContain("/images/AircraftCarrierIconWhite.svg");
+    expect(rendered).toContain("/images/AntiAirFrigateIconWhite.svg");
     expect(rendered).toContain("/images/NavalMineIconWhite.svg");
+    expect(rendered).toContain("/images/CongressIconWhite.svg");
     expect(rendered).not.toContain("atom_bomb");
     expect(rendered).not.toContain("missile_silo");
   });
@@ -109,5 +115,49 @@ describe("UnitDisplay naval quickbar", () => {
     expect(rendered).toContain("Value");
     expect(rendered).toContain("200K");
     expect(rendered).toContain("Risk");
+  });
+
+  it("renders the maritime conquest objective summary", () => {
+    const el = new UnitDisplay();
+    const config = {
+      isUnitDisabled: (unit: UnitType) => DISABLED_ARSENAL.includes(unit),
+    };
+    const player = {
+      gold: () => 1_000_000n,
+      isAlive: () => true,
+      totalUnitLevels: () => 0,
+      units: () => [],
+    };
+
+    el.game = {
+      config: () => config,
+      frameData: () => ({
+        tradeRoutes: [],
+        maritimeObjective: {
+          name: "Silk Route",
+          center: 5050,
+          radius: 12,
+          controllerID: 1,
+          controllerTeam: "Blue",
+          leaderID: 1,
+          leaderTeam: "Blue",
+          controlPercent: 67,
+          status: "capturing",
+          navalPower: [{ ownerID: 1, team: "Blue", power: 6 }],
+        },
+      }),
+      inSpawnPhase: () => false,
+      myPlayer: () => player,
+    } as any;
+    el.eventBus = { emit: vi.fn() } as any;
+    el.uiState = { ghostStructure: null } as any;
+
+    const rendered = collectRenderableText(el.render());
+
+    expect(rendered).toContain("Control the central sea route to win");
+    expect(rendered).toContain("Silk Route");
+    expect(rendered).toContain("Blue Fleet");
+    expect(rendered).toContain("67%");
+    expect(rendered).toContain("Capturing");
   });
 });
