@@ -134,6 +134,10 @@ export class SendEmbargoAllIntentEvent implements GameEvent {
   constructor(public readonly action: "start" | "stop") {}
 }
 
+export class SendTariffIntentEvent implements GameEvent {
+  constructor(public readonly target: PlayerView) {}
+}
+
 export class SendDeleteUnitIntentEvent implements GameEvent {
   constructor(public readonly unitId: number) {}
 }
@@ -163,6 +167,20 @@ export class MoveWarshipIntentEvent implements GameEvent {
   constructor(
     public readonly unitIds: number[],
     public readonly tile: number,
+  ) {}
+}
+
+export class EscortTradeIntentEvent implements GameEvent {
+  constructor(
+    public readonly unitIds: number[],
+    public readonly targetUnitId: number,
+  ) {}
+}
+
+export class SpecializePortIntentEvent implements GameEvent {
+  constructor(
+    public readonly unitId: number,
+    public readonly specialization: "trade" | "naval" | "watch",
   ) {}
 }
 
@@ -240,6 +258,7 @@ export class Transport {
     this.eventBus.on(SendEmbargoAllIntentEvent, (e) =>
       this.onSendEmbargoAllIntent(e),
     );
+    this.eventBus.on(SendTariffIntentEvent, (e) => this.onSendTariffIntent(e));
     this.eventBus.on(BuildUnitIntentEvent, (e) => this.onBuildUnitIntent(e));
 
     this.eventBus.on(PauseGameIntentEvent, (e) => this.onPauseGameIntent(e));
@@ -254,6 +273,14 @@ export class Transport {
 
     this.eventBus.on(MoveWarshipIntentEvent, (e) => {
       this.onMoveWarshipEvent(e);
+    });
+
+    this.eventBus.on(EscortTradeIntentEvent, (e) => {
+      this.onEscortTradeEvent(e);
+    });
+
+    this.eventBus.on(SpecializePortIntentEvent, (e) => {
+      this.onSpecializePortEvent(e);
     });
 
     this.eventBus.on(SendDeleteUnitIntentEvent, (e) =>
@@ -560,6 +587,13 @@ export class Transport {
     });
   }
 
+  private onSendTariffIntent(event: SendTariffIntentEvent) {
+    this.sendIntent({
+      type: "tariff",
+      targetID: event.target.id(),
+    });
+  }
+
   private onBuildUnitIntent(event: BuildUnitIntentEvent) {
     this.sendIntent({
       type: "build_unit",
@@ -627,6 +661,22 @@ export class Transport {
       type: "move_warship",
       unitIds: event.unitIds,
       tile: event.tile,
+    });
+  }
+
+  private onEscortTradeEvent(event: EscortTradeIntentEvent) {
+    this.sendIntent({
+      type: "escort_trade",
+      unitIds: event.unitIds,
+      targetUnitId: event.targetUnitId,
+    });
+  }
+
+  private onSpecializePortEvent(event: SpecializePortIntentEvent) {
+    this.sendIntent({
+      type: "specialize_port",
+      unitId: event.unitId,
+      specialization: event.specialization,
     });
   }
 
