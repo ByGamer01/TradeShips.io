@@ -63,6 +63,7 @@ function unitStateFromUpdate(u: UnitUpdate): UnitState {
     targetUnitId: u.targetUnitId ?? null,
     targetTile: u.targetTile ?? null,
     tilesTraveled: u.tilesTraveled ?? null,
+    portSpecialization: u.portSpecialization ?? null,
     troops: u.troops,
     missileTimerQueue: u.missileTimerQueue,
     level: u.level,
@@ -92,6 +93,7 @@ function applyUpdateInPlace(target: UnitState, u: UnitUpdate): void {
   target.targetUnitId = u.targetUnitId ?? null;
   target.targetTile = u.targetTile ?? null;
   target.tilesTraveled = u.tilesTraveled ?? null;
+  target.portSpecialization = u.portSpecialization ?? null;
   target.troops = u.troops;
   target.missileTimerQueue = u.missileTimerQueue;
   target.level = u.level;
@@ -252,6 +254,10 @@ export class UnitView {
   /** Tiles traveled along the route (trade ships only, undefined otherwise). */
   tilesTraveled(): number | undefined {
     return this.state.tilesTraveled ?? undefined;
+  }
+  /** Port identity, or undefined when unspecialized / not a port. */
+  portSpecialization(): string | undefined {
+    return this.state.portSpecialization ?? undefined;
   }
 
   // How "ready" this unit is from 0 to 1.
