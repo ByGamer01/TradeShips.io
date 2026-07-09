@@ -15,8 +15,7 @@ uniform float uEndFadePx;  // fade-in/out length at segment endpoints
 out vec4 fragColor;
 
 void main() {
-  // Animated dash pattern. Subtracting the offset drifts the dashes toward
-  // the destination port, reading as cargo flowing along the route.
+  // Static dash pattern for neutral sea lanes.
   float period = uDash.x + uDash.y;
   float phase = mod(vDistPx - uFlowOffset, period);
   float dashAlpha = 1.0 - smoothstep(uDash.x - 0.75, uDash.x + 0.75, phase);
@@ -27,8 +26,7 @@ void main() {
   float lineAlpha = 1.0 - smoothstep(uLineHalfPx - 0.6, uLineHalfPx + 0.6, d);
   if (lineAlpha < 0.01) discard;
 
-  // Fade near both endpoints so routes don't stab through ship and port
-  // sprites.
+  // Fade near both endpoints so lanes don't stab through islands/ports.
   float endAlpha = smoothstep(0.0, uEndFadePx, vDistPx) *
     (1.0 - smoothstep(vSegLenPx - uEndFadePx, vSegLenPx, vDistPx));
 
