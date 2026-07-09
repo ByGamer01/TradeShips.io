@@ -1,9 +1,13 @@
-﻿import { Execution, Game, Player, Structures } from "../game/Game";
+﻿import { Execution, Game, Player, Structures, UnitType } from "../game/Game";
 import { PseudoRandom } from "../PseudoRandom";
 import { simpleHash } from "../Util";
 import { AllianceExtensionExecution } from "./alliance/AllianceExtensionExecution";
+import { ConstructionExecution } from "./ConstructionExecution";
 import { DeleteUnitExecution } from "./DeleteUnitExecution";
 import { AiAttackBehavior } from "./utils/AiAttackBehavior";
+
+const TRIBE_TILES_PER_PORT = 3500;
+const TRIBE_PORT_SCAN_LIMIT = 80;
 
 export class TribeExecution implements Execution {
   private active = true;
@@ -60,6 +64,7 @@ export class TribeExecution implements Execution {
     }
 
     this.acceptAllAllianceRequests();
+    if (this.maybeBuildPort()) return;
     this.deleteNextStructure();
     this.maybeAttack();
   }
@@ -87,10 +92,40 @@ export class TribeExecution implements Execution {
     if (!this.tribe.canDeleteUnit()) return;
     for (const unit of this.tribe.units()) {
       if (!Structures.has(unit.type())) continue;
+      if (unit.type() === UnitType.Port) continue;
       if (unit.isMarkedForDeletion()) continue;
       this.mg.addExecution(new DeleteUnitExecution(this.tribe, unit.id()));
       return;
     }
+  }
+
+  private maybeBuildPort(): boolean {
+    if (this.mg.config().isUnitDisabled(UnitType.Port)) return false;
+
+    const maxPorts = Math.max(
+      1,
+      Math.floor(this.tribe.numTilesOwned() / TRIBE_TILES_PER_PORT),
+    );
+    if (this.tribe.unitCount(UnitType.Port) >= maxPorts) return false;
+
+    const portCost = this.mg.unitInfo(UnitType.Port).cost(this.mg, this.tribe);
+    if (this.tribe.gold() < portCost) return false;
+
+    const candidates = this.random
+      .shuffleArray([...this.tribe.borderTiles(), ...this.tribe.tiles()])
+      .slice(0, TRIBE_PORT_SCAN_LIMIT);
+
+    for (const tile of candidates) {
+      const spawn = this.tribe.canBuild(UnitType.Port, tile);
+      if (spawn === false) continue;
+
+      this.mg.addExecution(
+        new ConstructionExecution(this.tribe, UnitType.Port, spawn),
+      );
+      return true;
+    }
+
+    return false;
   }
 
   private maybeAttack() {
