@@ -16,6 +16,7 @@ export const UT_TRADE_SHIP = "Trade Ship" as const;
 export const UT_WARSHIP = "Warship" as const;
 export const UT_SUBMARINE = "Submarine" as const;
 export const UT_CARRIER = "Aircraft Carrier" as const;
+export const UT_ANTI_AIR_FRIGATE = "Anti-Air Frigate" as const;
 export const UT_AIRCRAFT = "Aircraft" as const;
 export const UT_ATOM_BOMB = "Atom Bomb" as const;
 export const UT_HYDROGEN_BOMB = "Hydrogen Bomb" as const;
@@ -31,6 +32,7 @@ export const UT_TRAIN = "Train" as const;
 export const UT_CITY = "City" as const;
 export const UT_PORT = "Port" as const;
 export const UT_FACTORY = "Factory" as const;
+export const UT_CONGRESS = "Congress" as const;
 export const UT_DEFENSE_POST = "Defense Post" as const;
 export const UT_SAM_LAUNCHER = "SAM Launcher" as const;
 export const UT_MISSILE_SILO = "Missile Silo" as const;
@@ -43,6 +45,7 @@ export const STRUCTURE_TYPES: ReadonlySet<string> = new Set([
   UT_CITY,
   UT_PORT,
   UT_FACTORY,
+  UT_CONGRESS,
   UT_DEFENSE_POST,
   UT_SAM_LAUNCHER,
   UT_MISSILE_SILO,
@@ -84,6 +87,7 @@ export const ALL_UNIT_TYPES = [
   UT_WARSHIP,
   UT_SUBMARINE,
   UT_CARRIER,
+  UT_ANTI_AIR_FRIGATE,
   UT_AIRCRAFT,
   UT_ATOM_BOMB,
   UT_HYDROGEN_BOMB,
@@ -96,6 +100,7 @@ export const ALL_UNIT_TYPES = [
   UT_CITY,
   UT_PORT,
   UT_FACTORY,
+  UT_CONGRESS,
   UT_DEFENSE_POST,
   UT_SAM_LAUNCHER,
   UT_MISSILE_SILO,
