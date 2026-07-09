@@ -99,6 +99,8 @@ export interface UnitState {
    * as motion plans play back.
    */
   tilesTraveled: number | null;
+  /** Port identity ("trade" | "naval" | "watch"); null when unspecialized or not a port. */
+  portSpecialization: string | null;
   troops: number;
   missileTimerQueue: number[];
   level: number;
@@ -215,23 +217,54 @@ export interface NukeTelegraphData {
   relation: number;
 }
 
-/** Trade ship owner vs the local player. */
-export type TradeRouteRelation = "own" | "friendly" | "foreign";
+export type MaritimeObjectiveStatus =
+  | "neutral"
+  | "capturing"
+  | "contested"
+  | "controlled";
+
+export type MaritimeObjectiveShape = "circle" | "lane";
+
+export interface MaritimeObjectiveData {
+  name: string;
+  /** Objective geometry; undefined (old replays) means "circle". */
+  shape?: MaritimeObjectiveShape;
+  center: number;
+  radius: number;
+  /** Corridor spine polyline (lane shape only); cached client-side. */
+  path?: number[];
+  /** Corridor half-width in tiles (lane shape only). */
+  laneHalfWidth?: number;
+  /** Current holder/capturer; 0 means neutral or disputed. */
+  controllerID: number;
+  /** Current holder team in team games; null in FFA/neutral/disputed states. */
+  controllerTeam: string | null;
+  /** Strongest fleet owner this tick; 0 when neutral/disputed. */
+  leaderID: number;
+  /** Strongest fleet team this tick; null in FFA/neutral/disputed states. */
+  leaderTeam: string | null;
+  controlPercent: number;
+  status: MaritimeObjectiveStatus;
+  navalPower: { ownerID: number; team: string | null; power: number }[];
+}
+
+/** Sea-lane controller vs the local player. */
+export type TradeRouteRelation = "own" | "friendly" | "foreign" | "neutral";
 export type TradeRouteRiskLevel = "safe" | "contested" | "dangerous";
 
-/** One in-flight trade route: ship position → destination port. */
+/** One system ocean lane; ownerID is 0 while neutral or contested. */
 export interface TradeRouteData {
   shipId: number;
   ownerID: number;
-  /** Ship's current tile. */
+  /** Route start tile. */
   from: number;
-  /** Destination port tile. */
+  /** Route end tile. */
   to: number;
-  /** Straight-line distance in tiles (rounded). */
+  /** Straight-line lane distance in tiles (rounded). */
   distanceTiles: number;
-  /** Enemy naval threats close enough to contest the route segment. */
+  /** Rival fleet units close enough to contest the lane. */
   enemyThreats: number;
-  /** Own/allied naval escorts close enough to guard the route segment. */
+  /** Controller fleet units close enough to hold the lane. */
   escortCount: number;
   /**
    * Estimated gold payout for this in-flight route. This is projected from the
