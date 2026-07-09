@@ -15,6 +15,7 @@ import {
   Trios,
   UnitType,
 } from "../core/game/Game";
+import { isMaritimeMap } from "../core/game/MaritimeMaps";
 import { PseudoRandom } from "../core/PseudoRandom";
 import { GameConfig, PublicGameType, TeamCountConfig } from "../core/Schemas";
 import { logger } from "./Logger";
@@ -33,32 +34,6 @@ const ARCADE_MAPS = new Set<GameMapType>([
   GameMapType.Onion,
 ]);
 const SPECIAL_ONLY_MAPS = new Set<GameMapType>();
-
-const MARITIME_MAPS = new Set<GameMapType>([
-  GameMapType.Achiran,
-  GameMapType.Aegean,
-  GameMapType.ArchipelagoSea,
-  GameMapType.BajaCalifornia,
-  GameMapType.Britannia,
-  GameMapType.Caribbean,
-  GameMapType.FalklandIslands,
-  GameMapType.FaroeIslands,
-  GameMapType.FourIslands,
-  GameMapType.Hawaii,
-  GameMapType.Iceland,
-  GameMapType.Japan,
-  GameMapType.Lemnos,
-  GameMapType.NorthwestPassage,
-  GameMapType.Passage,
-  GameMapType.SoutheastAsia,
-  GameMapType.StraitOfMalacca,
-  GameMapType.Surrounded,
-  GameMapType.Svalmel,
-  GameMapType.TaiwanStrait,
-  GameMapType.TradersDream,
-  GameMapType.Venice,
-  GameMapType.WarshipWarship,
-]);
 
 // Hard cap on player count for performance. Applied after compact-map reduction.
 const MAX_PLAYER_COUNT = 125;
@@ -350,11 +325,12 @@ export class MapPlaylist {
 
   public get1v1Config(): GameConfig {
     const maps = [
-      GameMapType.Australia, // 40%
-      GameMapType.Australia,
-      GameMapType.Iceland, // 20%
-      GameMapType.Asia, // 20%
-      GameMapType.EuropeClassic, // 20%
+      GameMapType.ArchipelagoSea,
+      GameMapType.Iceland,
+      GameMapType.Japan,
+      GameMapType.FourIslands,
+      GameMapType.Caribbean,
+      GameMapType.Hawaii,
     ];
     const isCompact = Math.random() < 0.5;
     return {
@@ -446,7 +422,7 @@ export class MapPlaylist {
       ) {
         return;
       }
-      if (!MARITIME_MAPS.has(map)) {
+      if (!isMaritimeMap(map)) {
         return;
       }
       let freq = mapInfo.multiplayerFrequency;
