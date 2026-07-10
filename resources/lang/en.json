@@ -523,6 +523,7 @@
     "teams": "Teams"
   },
   "game_starting_modal": {
+    "based_on": "Based on OpenFront",
     "code_license": "Code licensed under AGPL-3.0 (no warranty)",
     "credits": "Credits",
     "title": "Game is Starting..."

@@ -25,17 +25,22 @@ export class GameStartingModal extends LitElement {
           : "opacity-0 invisible -translate-y-[48%]"}"
       >
         <div
-          class="text-base font-medium tracking-wider uppercase text-white/40 mb-3"
+          class="text-xl font-bold tracking-wider uppercase text-white mb-1"
         >
-          © OpenFront and Contributors
+          TradeShips.io
         </div>
-        <a
-          href="https://github.com/ByGamer01/TradeShips.io/blob/main/CREDITS.md"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="block mb-4 text-lg font-medium tracking-wider uppercase text-malibu-blue no-underline transition-colors duration-200 hover:text-aquarius"
-          >${translateText("game_starting_modal.credits")}</a
+        <div
+          class="text-sm font-medium tracking-wider text-white/40 mb-3"
         >
+          ${translateText("game_starting_modal.based_on")} —
+          <a
+            href="https://github.com/ByGamer01/TradeShips.io/blob/main/CREDITS.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-malibu-blue no-underline transition-colors duration-200 hover:text-aquarius uppercase"
+            >${translateText("game_starting_modal.credits")}</a
+          >
+        </div>
         <p class="text-base text-white/40 mb-4">
           ${translateText("game_starting_modal.code_license")}
         </p>
