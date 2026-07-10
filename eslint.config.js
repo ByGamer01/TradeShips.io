@@ -32,6 +32,7 @@ export default [
           allowDefaultProject: [
             "__mocks__/fileMock.js",
             "eslint.config.js",
+            "scripts/debug-anchor.mts",
             "scripts/generate-unit-atlas.mjs",
             "scripts/sync-assets.mjs",
           ],
