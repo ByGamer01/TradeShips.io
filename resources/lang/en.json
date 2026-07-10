@@ -678,7 +678,7 @@
     "radial_title": "Radial menu",
     "table_action": "Action",
     "table_key": "Key",
-    "troubleshooting_desc": "If you experience performance issues, crashes, or other problems while playing OpenFront, please visit our Troubleshooting page for help diagnosing and fixing common issues:",
+    "troubleshooting_desc": "If you experience performance issues, crashes, or other problems while playing TradeShips, please visit our Troubleshooting page for help diagnosing and fixing common issues:",
     "ui_attack_ratio": "Attack ratio - The amount of troops that will be used when you attack. You can adjust the attack ratio using the slider. Having more attacking troops than defending troops will make you lose fewer troops in the attack, while having less will increase the damage dealt to your attacking troops. The effect doesn't go beyond ratios of 2:1.",
     "ui_control": "Control panel",
     "ui_control_desc": "The control panel contains the following elements:",
@@ -698,7 +698,7 @@
     "ui_wilderness": "Wilderness",
     "ui_your_team": "Your team:",
     "video_tutorial": "Video Tutorial",
-    "video_tutorial_title": "OpenFront.io Tutorial"
+    "video_tutorial_title": "TradeShips.io Tutorial"
   },
   "host_modal": {
     "assigned_teams": "Assigned Teams",
@@ -753,14 +753,14 @@
     "got_it": "Got it",
     "how": "How",
     "later": "Later",
-    "modal_desc": "Your browser doesn't support fullscreen, but you can add OpenFront to your Home Screen for an immersive experience:",
+    "modal_desc": "Your browser doesn't support fullscreen, but you can add TradeShips to your Home Screen for an immersive experience:",
     "modal_title": "Fullscreen on iOS",
     "never": "Never",
     "step_add_to_home_label": "Add to Home Screen",
     "step_open": "Open from your Home Screen — launches fullscreen without the address bar",
     "step_scroll_and_tap": "Scroll down and tap",
     "step_share": "Tap the Share button in your browser",
-    "text": "For fullscreen, add OpenFront to your Home Screen"
+    "text": "For fullscreen, add TradeShips to your Home Screen"
   },
   "kick_reason": {
     "admin": "Kicked by an admin",
@@ -1319,7 +1319,7 @@
     "browser": "Browser",
     "canvas_2d_no_gpu": "Canvas 2D (no GPU)",
     "charging": "Charging",
-    "chromium_tip": "OpenFront runs best on Chromium-based browsers.",
+    "chromium_tip": "TradeShips runs best on Chromium-based browsers.",
     "copied_to_clipboard": "Info copied to the clipboard! Feel free to share it on our Discord if you need help.",
     "device_pixel_ratio": "Device Pixel Ratio",
     "environment": "Environment",
@@ -1525,7 +1525,7 @@
     "other_won": "{player} has won!",
     "requeue": "Play Again",
     "spectate": "Spectate",
-    "support_openfront": "Support OpenFront!",
+    "support_openfront": "Support TradeShips!",
     "territory_pattern": "Purchase a territory skin to go ad-free!",
     "wishlist": "Wishlist on Steam!",
     "you_won": "You Won!",
