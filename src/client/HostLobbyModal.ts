@@ -39,6 +39,7 @@ import { crazyGamesSDK } from "./CrazyGamesSDK";
 import { JoinLobbyEvent } from "./Main";
 import { terrainMapFileLoader } from "./TerrainMapFileLoader";
 import {
+  boostedNationCount,
   getBotsForCompactMap,
   getNationsForCompactMap,
   getRandomMapType,
@@ -1097,9 +1098,10 @@ export class HostLobbyModal extends BaseModal {
       // Only update if the map hasn't changed
       if (this.selectedMap === currentMap) {
         this.defaultNationCount = manifest.nations.length;
+        const boosted = boostedNationCount(manifest.nations.length);
         this.nations = this.compactMap
-          ? Math.max(0, Math.floor(manifest.nations.length * 0.25))
-          : manifest.nations.length;
+          ? Math.max(0, Math.floor(boosted * 0.25))
+          : boosted;
       }
     } catch (error) {
       console.warn("Failed to load nation count", error);

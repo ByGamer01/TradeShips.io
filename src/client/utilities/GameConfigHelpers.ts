@@ -104,6 +104,17 @@ export function getBotsForCompactMap(
   return bots;
 }
 
+/**
+ * TradeShips floor for the default nation count: games should field a real
+ * cast of nations, not only bot tribes. Maps whose manifest defines fewer
+ * nations get extras generated procedurally by the core (NationCreation).
+ */
+export const MIN_DEFAULT_NATIONS = 15;
+
+export function boostedNationCount(manifestCount: number): number {
+  return Math.max(manifestCount, MIN_DEFAULT_NATIONS);
+}
+
 export function getNationsForCompactMap(
   nations: number,
   defaultNationCount: number,
