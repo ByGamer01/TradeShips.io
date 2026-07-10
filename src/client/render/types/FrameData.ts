@@ -77,6 +77,12 @@ export interface FrameData {
    */
   readonly tradeLaneSegments: TradeRouteData[];
   readonly maritimeObjective: MaritimeObjectiveData | null;
+  /**
+   * Objective as rendered on the map (zone fill + flag). Authoritative core
+   * data only — null on non-maritime maps and for the derived replay
+   * fallback, so no phantom zone is ever drawn.
+   */
+  readonly maritimeObjectiveRender: MaritimeObjectiveData | null;
   /** True when structures changed this tick (added/removed/level change). */
   readonly structuresDirty: boolean;
 }

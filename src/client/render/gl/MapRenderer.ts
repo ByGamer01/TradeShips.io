@@ -18,6 +18,7 @@ import type {
   ConquestFx,
   DeadUnitFx,
   GhostPreviewData,
+  MaritimeObjectiveData,
   NameEntry,
   NukeTelegraphData,
   NukeTrajectoryData,
@@ -220,6 +221,11 @@ export class MapRenderer {
 
   updateTradeRoutes(data: TradeRouteData[]): void {
     this.renderer?.updateTradeRoutes(data);
+  }
+
+  /** Update the maritime objective zone (team circle / FFA trade lane). */
+  updateMaritimeObjective(data: MaritimeObjectiveData | null): void {
+    this.renderer?.updateMaritimeObjective(data);
   }
 
   /** Update spawn phase overlay (tile highlights + breathing rings). */

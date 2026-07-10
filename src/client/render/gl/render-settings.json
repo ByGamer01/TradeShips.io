@@ -315,6 +315,23 @@
     "dangerousB": 0.2,
     "dangerousBlend": 0.85
   },
+  "maritimeObjective": {
+    "laneFillAlpha": 0.1,
+    "circleFillAlpha": 0.16,
+    "ringAlpha": 0.85,
+    "ringWidth": 0.1,
+    "flagSize": 12,
+    "flagAlpha": 0.95,
+    "neutralR": 0.2,
+    "neutralG": 0.78,
+    "neutralB": 0.88,
+    "contestedR": 0.95,
+    "contestedG": 0.45,
+    "contestedB": 0.3,
+    "heldR": 0.93,
+    "heldG": 0.78,
+    "heldB": 0.35
+  },
   "samRadius": {
     "strokeWidth": 1.5,
     "dashLen": 12,

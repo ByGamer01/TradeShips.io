@@ -17,6 +17,7 @@ import type {
   DeadUnitFx,
   GhostPreviewData,
   NameEntry,
+  MaritimeObjectiveData,
   NukeTelegraphData,
   NukeTrajectoryData,
   PlayerState,
@@ -38,6 +39,7 @@ import { FalloutBloomPass } from "./passes/FalloutBloomPass";
 import { FalloutLightPass } from "./passes/FalloutLightPass";
 import { FxPass } from "./passes/fx-pass";
 import { LightmapPass } from "./passes/LightmapPass";
+import { MaritimeObjectivePass } from "./passes/MaritimeObjectivePass";
 import { MoveIndicatorPass } from "./passes/MoveIndicatorPass";
 import { NamePass } from "./passes/name-pass";
 import { NightCompositePass } from "./passes/NightCompositePass";
@@ -127,6 +129,7 @@ export class GPURenderer {
   private nukeTrajectoryPass: NukeTrajectoryPass;
   private nukeTelegraphPass: NukeTelegraphPass;
   private tradeRoutePass: TradeRoutePass;
+  private maritimeObjectivePass: MaritimeObjectivePass;
   private heatManager: HeatManager;
   private affiliationPalette: AffiliationPalette;
   private coordinateGridPass: CoordinateGridPass;
@@ -494,6 +497,11 @@ export class GPURenderer {
     this.nukeTelegraphPass = new NukeTelegraphPass(gl, this.settings);
     this.tradeRoutePass = new TradeRoutePass(gl, this.settings, this.mapW);
     this.tradeRoutePass.setPaletteData(paletteData);
+    this.maritimeObjectivePass = new MaritimeObjectivePass(
+      gl,
+      this.settings,
+      this.mapW,
+    );
 
     // --- Scene capture target (for night composite) ---
     const sceneTex = gl.createTexture()!;
@@ -909,6 +917,10 @@ export class GPURenderer {
     this.tradeRoutePass.update(data);
   }
 
+  updateMaritimeObjective(data: MaritimeObjectiveData | null): void {
+    this.maritimeObjectivePass.update(data);
+  }
+
   updateSpawnOverlay(inSpawnPhase: boolean, centers: SpawnCenter[]): void {
     this.inSpawnPhase = inSpawnPhase;
     this.spawnOverlayPass.update(inSpawnPhase, centers);
@@ -1161,6 +1173,7 @@ export class GPURenderer {
     this.spawnOverlayPass.draw(cam);
     if (pe.borderStamp) this.borderStampPass.draw(cam);
     if (pe.railroad) this.railroadPass.draw(cam, zoom);
+    this.maritimeObjectivePass.draw(cam);
     if (pe.tradeRoute) this.tradeRoutePass.draw(cam);
     if (pe.unit) this.unitPass.drawGround(cam);
     if (pe.falloutBloom) this.bloomPass.draw(cam, this.frameTick);
@@ -1233,6 +1246,7 @@ export class GPURenderer {
     this.nukeTrajectoryPass.dispose();
     this.nukeTelegraphPass.dispose();
     this.tradeRoutePass.dispose();
+    this.maritimeObjectivePass.dispose();
     this.barPass.dispose();
     disposeGPUResources(this.gl, this.res);
     this.gl.deleteTexture(this.paletteTex);

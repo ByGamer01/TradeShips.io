@@ -4,6 +4,7 @@ import type {
   ConquestFx,
   DeadUnitFx,
   FrameData,
+  MaritimeObjectiveData,
   NameEntry,
   NukeTelegraphData,
   PlayerState,
@@ -35,6 +36,7 @@ export interface FrameUploadTarget {
   updateAttackRings(rings: AttackRingInput[]): void;
   updateNukeTelegraphs(data: NukeTelegraphData[]): void;
   updateTradeRoutes(data: TradeRouteData[]): void;
+  updateMaritimeObjective(data: MaritimeObjectiveData | null): void;
   updateNames(
     names: ReadonlyMap<string, NameEntry>,
     players: ReadonlyMap<number, PlayerState>,
@@ -102,8 +104,9 @@ export function uploadFrameData(
   // --- Attack rings + nuke telegraphs + trade routes ---
   view.updateAttackRings(frame.attackRings);
   view.updateNukeTelegraphs(frame.nukeTelegraphs);
-  // Only the corridor is drawn; per-ship routes are HUD data, not lines.
+  // Only the corridor spine is drawn; per-ship routes are HUD data, not lines.
   view.updateTradeRoutes(frame.tradeLaneSegments);
+  view.updateMaritimeObjective(frame.maritimeObjectiveRender);
 
   // --- Names + player status ---
   view.updateNames(frame.names, frame.players, false, frame.playerStatus);

@@ -250,6 +250,7 @@ export class GameView implements GameMap {
       tradeRoutes: [],
       tradeLaneSegments: [],
       maritimeObjective: null,
+      maritimeObjectiveRender: null,
       structuresDirty: false,
     };
   }
@@ -690,6 +691,7 @@ export class GameView implements GameMap {
         previous: this._maritimeObjective,
       });
     f.maritimeObjective = this._maritimeObjective;
+    f.maritimeObjectiveRender = this._maritimeObjectiveCore ?? null;
     f.tradeLaneSegments = this.deriveTradeLaneSegments();
     f.structuresDirty = this._structuresDirty;
 
@@ -710,20 +712,17 @@ export class GameView implements GameMap {
   }
 
   /**
-   * The maritime objective geometry as segments consumed by TradeRoutePass
-   * (negative shipIds mark system lanes): the FFA corridor spine, or the
-   * Team-mode circle outline. Only the authoritative core objective is drawn
-   * (never the derived replay fallback), and it stays out of f.tradeRoutes so
-   * objective geometry never pollutes HUD route stats.
+   * The FFA corridor spine as dashed segments consumed by TradeRoutePass
+   * (negative shipIds mark system lanes) — a directional guide on top of
+   * the zone fill drawn by MaritimeObjectivePass. Only the authoritative
+   * core objective is drawn (never the derived replay fallback), and it
+   * stays out of f.tradeRoutes so it never pollutes HUD route stats.
    */
   private deriveTradeLaneSegments(): TradeRouteData[] {
     const objective = this._maritimeObjectiveCore;
-    if (objective === undefined) return [];
+    if (objective === undefined || objective.shape !== "lane") return [];
 
-    const points =
-      objective.shape === "lane"
-        ? objective.path
-        : this.circleOutline(objective.center, objective.radius);
+    const points = objective.path;
     if (points === undefined || points.length < 2) return [];
 
     const ownerID = objective.controllerID;
@@ -750,28 +749,6 @@ export class GameView implements GameMap {
     return segments;
   }
 
-  /** Closed polygon approximating the Team-mode objective circle. */
-  private circleOutline(center: number, radius: number): number[] {
-    const CIRCLE_SEGMENTS = 32;
-    const width = this._map.width();
-    const height = this._map.height();
-    const cx = center % width;
-    const cy = (center - cx) / width;
-    const points: number[] = [];
-    for (let i = 0; i <= CIRCLE_SEGMENTS; i++) {
-      const angle = (i / CIRCLE_SEGMENTS) * Math.PI * 2;
-      const x = Math.max(
-        0,
-        Math.min(width - 1, Math.round(cx + Math.cos(angle) * radius)),
-      );
-      const y = Math.max(
-        0,
-        Math.min(height - 1, Math.round(cy + Math.sin(angle) * radius)),
-      );
-      points.push(y * width + x);
-    }
-    return points;
-  }
 
   /** Clear and repopulate _frame.events arrays from this tick's gu.updates. */
   private buildFrameEvents(gu: GameUpdateViewData): void {

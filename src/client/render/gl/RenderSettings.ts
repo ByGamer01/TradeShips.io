@@ -359,6 +359,23 @@ export interface RenderSettings {
     dangerousB: number;
     dangerousBlend: number; // 0–1 — blend toward dangerous tint
   };
+  maritimeObjective: {
+    laneFillAlpha: number; // per-disc corridor fill opacity (discs stack toward the spine)
+    circleFillAlpha: number; // team-circle fill opacity
+    ringAlpha: number; // team-circle border ring opacity
+    ringWidth: number; // ring band width as fraction of radius
+    flagSize: number; // flag marker half-size in world tiles
+    flagAlpha: number; // flag marker opacity
+    neutralR: number; // zone color — uncontrolled
+    neutralG: number;
+    neutralB: number;
+    contestedR: number; // zone color — tied naval power
+    contestedG: number;
+    contestedB: number;
+    heldR: number; // zone color — a fleet holds/captures it
+    heldG: number;
+    heldB: number;
+  };
   samRadius: {
     strokeWidth: number; // ring half-width in world units
     dashLen: number; // dash length in world units
