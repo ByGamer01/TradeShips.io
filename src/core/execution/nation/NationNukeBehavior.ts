@@ -20,6 +20,7 @@ import { UpgradeStructureExecution } from "../UpgradeStructureExecution";
 import { closestTwoTiles } from "../Util";
 import { AiAttackBehavior } from "../utils/AiAttackBehavior";
 import { EMOJI_NUKE, NationEmojiBehavior } from "./NationEmojiBehavior";
+import { nationDifficulty } from "../utils/NationDifficulty";
 import { randTerritoryTileArray } from "./NationUtils";
 
 /** Cap on silo levels reachable via maybeDestroyEnemySam's upgrade fallback. */
@@ -101,7 +102,7 @@ export class NationNukeBehavior {
 
     const structures = nukeTarget.units(...Structures.types);
     const structureTiles = structures.map((u) => u.tile());
-    const difficulty = this.game.config().gameConfig().difficulty;
+    const difficulty = nationDifficulty(this.game);
     // Use more random tiles on Impossible difficulty to improve chances of finding a perfect SAM outranging spot
     const numRandomTiles = difficulty === Difficulty.Impossible ? 30 : 10;
     const randomTiles = randTerritoryTileArray(
@@ -171,7 +172,7 @@ export class NationNukeBehavior {
 
   findBestNukeTarget(): Player | null {
     // On Hard & Impossible with only 2 players left, target the only other one
-    const { difficulty: diff } = this.game.config().gameConfig();
+    const diff = nationDifficulty(this.game);
     if (
       (diff === Difficulty.Hard || diff === Difficulty.Impossible) &&
       this.game.players().length === 2
@@ -203,7 +204,8 @@ export class NationNukeBehavior {
     }
 
     // On impossible difficulty, prioritize nuking the crown if they have more than 50% of the map
-    const { difficulty, gameMode } = this.game.config().gameConfig();
+    const { gameMode } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     if (difficulty === Difficulty.Impossible && gameMode === GameMode.FFA) {
       const numTilesWithoutFallout =
         this.game.numLandTiles() - this.game.numTilesWithFallout();
@@ -299,7 +301,8 @@ export class NationNukeBehavior {
   }
 
   private findFFACrownTarget(): Player | null {
-    const { difficulty, gameMode } = this.game.config().gameConfig();
+    const { gameMode } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     if (gameMode !== GameMode.FFA) {
       return null;
     }
@@ -464,7 +467,7 @@ export class NationNukeBehavior {
 
     // On Hard & Impossible, ignore perceived cost when under heavy attack
     // The nation is probably going to get destroyed soon, so go all-in on nukes
-    const difficulty = this.game.config().gameConfig().difficulty;
+    const difficulty = nationDifficulty(this.game);
     if (
       (difficulty === Difficulty.Hard ||
         difficulty === Difficulty.Impossible) &&
@@ -657,7 +660,7 @@ export class NationNukeBehavior {
   }
 
   private isValidNukeTile(t: TileRef, nukeTarget: Player | null): boolean {
-    const difficulty = this.game.config().gameConfig().difficulty;
+    const difficulty = nationDifficulty(this.game);
 
     const owner = this.game.owner(t);
     if (owner === nukeTarget) return true;
@@ -705,7 +708,7 @@ export class NationNukeBehavior {
       })
       .reduce((prev, cur) => prev + cur, 0);
 
-    const difficulty = this.game.config().gameConfig().difficulty;
+    const difficulty = nationDifficulty(this.game);
     // On Easy, ignore SAMs entirely.
     // On Medium, apply a simple local SAM penalty.
     // On Hard & Impossible we rely on trajectory-based interception checks instead. See maybeSendNuke().

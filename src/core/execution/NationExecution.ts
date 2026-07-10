@@ -23,6 +23,7 @@ import { NationStructureBehavior } from "./nation/NationStructureBehavior";
 import { NationWarshipBehavior } from "./nation/NationWarshipBehavior";
 import { SpawnExecution } from "./SpawnExecution";
 import { AiAttackBehavior } from "./utils/AiAttackBehavior";
+import { nationDifficulty } from "./utils/NationDifficulty";
 
 export class NationExecution implements Execution {
   private active = true;
@@ -73,7 +74,7 @@ export class NationExecution implements Execution {
   }
 
   private getAttackRate(): number {
-    const { difficulty } = this.mg.config().gameConfig();
+    const difficulty = nationDifficulty(this.mg);
     switch (difficulty) {
       case Difficulty.Easy:
         return this.random.nextInt(65, 100); // Slower reactions
@@ -89,7 +90,7 @@ export class NationExecution implements Execution {
   }
 
   private tuneBehaviorRatios(): void {
-    const { difficulty } = this.mg.config().gameConfig();
+    const difficulty = nationDifficulty(this.mg);
     switch (difficulty) {
       case Difficulty.Easy:
         this.triggerRatio = this.random.nextInt(50, 60) / 100;
@@ -122,7 +123,7 @@ export class NationExecution implements Execution {
       this.behaviorsInitialized &&
       this.player !== null &&
       this.player.isAlive() &&
-      this.mg.config().gameConfig().difficulty !== Difficulty.Easy &&
+      nationDifficulty(this.mg) !== Difficulty.Easy &&
       this.player.unitsConstructed(UnitType.Port) &&
       !this.mg.config().isUnitDisabled(UnitType.Warship)
     ) {
@@ -347,7 +348,7 @@ export class NationExecution implements Execution {
     const player = this.player;
     if (player === null) return;
     const others = this.mg.players().filter((p) => p.id() !== player.id());
-    const difficulty = this.mg.config().gameConfig().difficulty;
+    const difficulty = nationDifficulty(this.mg);
     const isHigherDifficulty =
       difficulty === Difficulty.Hard || difficulty === Difficulty.Impossible;
     const teamGame = this.mg.config().gameConfig().gameMode === GameMode.Team;

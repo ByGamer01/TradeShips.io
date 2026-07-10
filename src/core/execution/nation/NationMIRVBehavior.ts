@@ -14,6 +14,7 @@ import { PseudoRandom } from "../../PseudoRandom";
 import { assertNever } from "../../Util";
 import { MirvExecution } from "../MIRVExecution";
 import { calculateTerritoryCenter } from "../Util";
+import { nationDifficulty } from "../utils/NationDifficulty";
 import {
   EMOJI_NUKE,
   NationEmojiBehavior,
@@ -37,7 +38,7 @@ export class NationMIRVBehavior {
   ) {}
 
   private get hesitationOdds(): number {
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     switch (difficulty) {
       case Difficulty.Easy:
         return 2; // More likely to hesitate
@@ -53,7 +54,7 @@ export class NationMIRVBehavior {
   }
 
   private get victoryDenialTeamThreshold(): number {
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     switch (difficulty) {
       case Difficulty.Easy:
         return 0.9; // Only react right before the game ends (95%)
@@ -69,7 +70,7 @@ export class NationMIRVBehavior {
   }
 
   private get victoryDenialIndividualThreshold(): number {
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     switch (difficulty) {
       case Difficulty.Easy:
         return 0.75; // Only react right before the game ends (80%)
@@ -85,7 +86,7 @@ export class NationMIRVBehavior {
   }
 
   private get steamrollCityGapMultiplier(): number {
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     switch (difficulty) {
       case Difficulty.Easy:
         return 2; // Needs larger gap to trigger
@@ -101,7 +102,7 @@ export class NationMIRVBehavior {
   }
 
   private get steamrollMinLeaderCities(): number {
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     switch (difficulty) {
       case Difficulty.Easy:
         return 20; // Needs more cities to trigger

@@ -17,6 +17,7 @@ import { assertNever } from "../../Util";
 import { ConstructionExecution } from "../ConstructionExecution";
 import { UpgradeStructureExecution } from "../UpgradeStructureExecution";
 import { closestTile, closestTwoTiles } from "../Util";
+import { nationDifficulty } from "../utils/NationDifficulty";
 import { randTerritoryTileArray } from "./NationUtils";
 
 /**
@@ -179,7 +180,7 @@ export class NationStructureBehavior {
    * Does not touch placementsCount or lastStructureTick.
    */
   private tryBuildDefensePost(): boolean {
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     if (difficulty === Difficulty.Easy) return false;
     if (difficulty === Difficulty.Medium && !this.random.chance(2))
       return false;
@@ -227,7 +228,7 @@ export class NationStructureBehavior {
   }
 
   private defensePostNeeded(): boolean {
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     if (difficulty === Difficulty.Easy) return false;
     const landAttacks = this.player
       .incomingAttacks()
@@ -430,7 +431,7 @@ export class NationStructureBehavior {
 
     // High-starting-gold Hard/Impossible nations build a SAM first so their
     // next structures get SAM coverage and aren't clustered under the same nuke target.
-    const { difficulty } = config.gameConfig();
+    const difficulty = nationDifficulty(this.game);
     if (
       this.placementsCount === 0 &&
       (difficulty === Difficulty.Hard ||
@@ -542,8 +543,7 @@ export class NationStructureBehavior {
     cityCount: number,
     hasCoastalTiles: boolean,
   ): boolean {
-    const gameConfig = this.game.config();
-    const { difficulty } = gameConfig.gameConfig();
+    const difficulty = nationDifficulty(this.game);
     const ratios = getStructureRatios(difficulty);
     const config = ratios[type];
     if (config === undefined) {
@@ -556,7 +556,7 @@ export class NationStructureBehavior {
     if (
       type === UnitType.Factory &&
       hasCoastalTiles &&
-      !gameConfig.isUnitDisabled(UnitType.Port)
+      !this.game.config().isUnitDisabled(UnitType.Port)
     ) {
       ratio *= FACTORY_COASTAL_RATIO_MULTIPLIER;
     }
@@ -638,7 +638,7 @@ export class NationStructureBehavior {
     if (type === UnitType.City) {
       increasePerOwned = CITY_PERCEIVED_COST_INCREASE_PER_OWNED;
     } else {
-      const { difficulty } = this.game.config().gameConfig();
+      const difficulty = nationDifficulty(this.game);
       const ratios = getStructureRatios(difficulty);
       const config = ratios[type];
       increasePerOwned = config?.perceivedCostIncreasePerOwned ?? 0.1;
@@ -738,7 +738,7 @@ export class NationStructureBehavior {
     }
 
     // Based on difficulty, chance to just pick a random structure
-    const { difficulty } = game.config().gameConfig();
+    const difficulty = nationDifficulty(game);
     let randomChance: number;
     switch (difficulty) {
       case Difficulty.Easy:
@@ -956,7 +956,7 @@ export class NationStructureBehavior {
     const { borderSpacing, structureSpacing } = this.spacingConstants();
     const stationRange = game.config().trainStationMaxRange();
     const stationRangeSquared = stationRange * stationRange;
-    const { difficulty } = game.config().gameConfig();
+    const difficulty = nationDifficulty(game);
     const useConnectionScore = this.shouldUseConnectivityScore(difficulty);
 
     const reachableStations = useConnectionScore
@@ -1173,7 +1173,7 @@ export class NationStructureBehavior {
     const { borderSpacing, structureSpacing } = this.spacingConstants();
     const stationRange = game.config().trainStationMaxRange();
     const stationRangeSquared = stationRange * stationRange;
-    const { difficulty } = game.config().gameConfig();
+    const difficulty = nationDifficulty(game);
     const useConnectionScore = this.shouldUseConnectivityScore(difficulty);
 
     const reachableStations = useConnectionScore
@@ -1237,7 +1237,7 @@ export class NationStructureBehavior {
     const otherUnits = player.units(UnitType.SAMLauncher);
     const { borderSpacing, structureSpacing } = this.spacingConstants();
 
-    const { difficulty } = game.config().gameConfig();
+    const difficulty = nationDifficulty(game);
     const weightByLevel =
       difficulty === Difficulty.Hard || difficulty === Difficulty.Impossible;
 

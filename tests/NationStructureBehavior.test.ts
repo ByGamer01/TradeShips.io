@@ -366,10 +366,21 @@ describe("NationStructureBehavior.tryBuildDefensePost", () => {
     return (behavior as any).tryBuildDefensePost();
   }
 
-  it("returns false on Easy regardless of ratio", () => {
-    expect(callTryBuild(Difficulty.Easy, 100, [makeLandAttack(5000)])).toBe(
-      false,
-    );
+  it("Easy is clamped to Hard: no difficulty short-circuit", () => {
+    // Nations always play at least Hard, so the Easy early-return is gone
+    // and the build path proceeds (failing here only for lack of tiles).
+    const game = makeMinimalGame(Difficulty.Easy);
+    const player = {
+      ...makeMinimalPlayer(1000, [makeLandAttack(1000)]),
+      borderTiles: () => [],
+      canBuild: () => false,
+    };
+    const random = new PseudoRandom(0);
+    const chanceSpy = vi.spyOn(random, "chance");
+    const behavior = makeBehavior(game, player, random);
+    (behavior as any).placementsCount = 1;
+    expect((behavior as any).tryBuildDefensePost()).toBe(false);
+    expect(chanceSpy).not.toHaveBeenCalledWith(2);
   });
 
   it("returns false when there are no incoming attacks", () => {
@@ -392,27 +403,21 @@ describe("NationStructureBehavior.tryBuildDefensePost", () => {
     expect(callTryBuild(Difficulty.Hard, 0, [makeLandAttack(500)])).toBe(false);
   });
 
-  // ── Medium 50% gate ──────────────────────────────────────────────────────
+  // ── Medium clamps to Hard ────────────────────────────────────────────────
 
-  it("Medium: returns false when random.chance(2) fails (50% gate closed)", () => {
+  it("Medium is clamped to Hard: 50% chance gate skipped", () => {
     const game = makeMinimalGame(Difficulty.Medium);
-    const player = makeMinimalPlayer(1000, [makeLandAttack(1000)]);
+    const player = {
+      ...makeMinimalPlayer(1000, [makeLandAttack(1000)]),
+      borderTiles: () => [],
+      canBuild: () => false,
+    };
     const random = new PseudoRandom(0);
-    vi.spyOn(random, "chance").mockReturnValue(false);
-    const behavior = makeBehavior(game, player, random);
-    (behavior as any).placementsCount = 1;
-    expect((behavior as any).tryBuildDefensePost()).toBe(false);
-  });
-
-  it("Medium: 50% gate consumes only the chance(2) call", () => {
-    const game = makeMinimalGame(Difficulty.Medium);
-    const player = makeMinimalPlayer(1000, [makeLandAttack(1000)]);
-    const random = new PseudoRandom(0);
-    const chanceSpy = vi.spyOn(random, "chance").mockReturnValue(false);
+    const chanceSpy = vi.spyOn(random, "chance");
     const behavior = makeBehavior(game, player, random);
     (behavior as any).placementsCount = 1;
     (behavior as any).tryBuildDefensePost();
-    expect(chanceSpy).toHaveBeenCalledWith(2);
+    expect(chanceSpy).not.toHaveBeenCalledWith(2);
   });
 
   it("Hard: skips chance gate (no chance(2) consumed)", () => {
@@ -555,8 +560,9 @@ describe("NationStructureBehavior.defensePostNeeded", () => {
     return (behavior as any).defensePostNeeded();
   }
 
-  it("returns false on Easy", () => {
-    expect(call(Difficulty.Easy, 1000, [makeAttack(1000)])).toBe(false);
+  it("Easy is clamped to Hard: defense posts are considered", () => {
+    // Nations always play at least Hard, so the Easy early-return is gone.
+    expect(call(Difficulty.Easy, 1000, [makeAttack(1000)])).toBe(true);
   });
 
   it("returns false when there are no incoming attacks", () => {

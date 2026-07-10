@@ -11,6 +11,7 @@ import {
 import { PseudoRandom } from "../../PseudoRandom";
 import { flattenedEmojiTable } from "../../Util";
 import { EmojiExecution } from "../EmojiExecution";
+import { nationDifficulty } from "../utils/NationDifficulty";
 
 const emojiId = (e: (typeof flattenedEmojiTable)[number]) =>
   flattenedEmojiTable.indexOf(e);
@@ -311,7 +312,7 @@ export function respondToEmoji(
   }
 
   if (["🕊️", "🏳️", "❤️", "🥰", "👏"].includes(emojiString)) {
-    if (game.config().gameConfig().difficulty === Difficulty.Easy) {
+    if (nationDifficulty(game) === Difficulty.Easy) {
       recipient.updateRelation(sender, 15);
     }
     game.addExecution(
