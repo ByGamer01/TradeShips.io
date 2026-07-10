@@ -29,6 +29,11 @@ const OPEN_WATER_MAGNITUDE = 10;
 // endpoints prefer interior tiles, so the route threads between the islands.
 const EDGE_MARGIN_PERCENT = 10;
 const MAX_EDGE_MARGIN = 24;
+// The corridor is a compact stretch around its flag, not a map-spanning
+// highway: the spine is trimmed to this % of the map's smaller dimension
+// (never below a few widths so it still reads as a route).
+const TARGET_LENGTH_PERCENT = 25;
+const MIN_LENGTH_WIDTHS = 6;
 
 function edgeMargin(miniMap: GameMap): number {
   const minDim = Math.min(miniMap.width(), miniMap.height());
@@ -96,7 +101,35 @@ export function findTradeLane(
   );
   if (miniPath === null) return null;
 
-  return buildLane(map, miniMap, miniPath, halfWidth);
+  return buildLane(
+    map,
+    miniMap,
+    trimToCenter(miniPath, map, halfWidth),
+    halfWidth,
+  );
+}
+
+/**
+ * Keep only the middle stretch of the spine so the objective is a compact
+ * capture zone around the flag rather than a map-spanning highway. The full
+ * path is still what anchors the corridor in the most open central water.
+ */
+function trimToCenter(
+  miniPath: TileRef[],
+  map: GameMap,
+  halfWidth: number,
+): TileRef[] {
+  const maxFullLength = Math.max(
+    halfWidth * MIN_LENGTH_WIDTHS,
+    ((Math.min(map.width(), map.height()) * TARGET_LENGTH_PERCENT) / 100) | 0,
+  );
+  // Mini path tiles are 2 full-map tiles apart.
+  const maxMiniLength = (maxFullLength / 2) | 0;
+  if (miniPath.length <= maxMiniLength) return miniPath;
+
+  const mid = (miniPath.length / 2) | 0;
+  const start = Math.max(0, mid - ((maxMiniLength / 2) | 0));
+  return miniPath.slice(start, start + maxMiniLength);
 }
 
 interface LargestComponent {

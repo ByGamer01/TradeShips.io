@@ -73,6 +73,15 @@ describe("findTradeLane", () => {
     }
   });
 
+  it("trims the corridor to a compact stretch around its center", async () => {
+    const game = await setup("world");
+
+    const lane = findTradeLane(game, game.miniMap())!;
+
+    // 25% of min(2000, 1000) = 250 full-map tiles → ≤125 mini spine points.
+    expect(lane.path.length).toBeLessThanOrEqual(126);
+  });
+
   it("returns null on a map without enough water", async () => {
     const game = await setup("plains");
 
