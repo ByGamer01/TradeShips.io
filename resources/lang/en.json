@@ -812,9 +812,7 @@
     "your_ranking": "Your Ranking"
   },
   "main": {
-    "account": "Account",
-    "clans": "Clans",
-    "copyright": "© OpenFront™ and Contributors",
+    "copyright": "© TradeShips and Contributors",
     "create": "Create Lobby",
     "discord_avatar_alt": "Discord profile avatar",
     "game_info": "Game info",
@@ -822,7 +820,6 @@
     "go_to_troubleshooting": "Go to our troubleshooting page",
     "help": "Help",
     "join": "Join Lobby",
-    "leaderboard": "Leaderboard",
     "login_discord": "Login with Discord",
     "login_google": "Login with Google",
     "menu": "Menu",
@@ -830,7 +827,6 @@
     "play": "Play",
     "privacy_policy": "Privacy Policy",
     "settings": "Settings",
-    "sign_in": "Sign in",
     "solo": "Solo",
     "store": "Store",
     "terms_of_service": "Terms of Service",

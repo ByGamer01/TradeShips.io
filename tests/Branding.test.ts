@@ -48,7 +48,10 @@ describe("TradeShips.io phase 1 branding", () => {
 
     expect(en.main.title).toBe("TradeShips.io (ALPHA)");
     expect(en.news_box.firefox_warning).toContain("TradeShips.io");
-    expect(en.main.copyright).toBe("© OpenFront™ and Contributors");
+    // Phase 2 (user decision 2026-07-10): the footer shows the TradeShips
+    // brand; AGPL attribution to OpenFront lives on in the game-starting
+    // credits modal and CREDITS.md.
+    expect(en.main.copyright).toBe("© TradeShips and Contributors");
   });
 
   test("uses the naval palette and removes the old primary blue literals", () => {
