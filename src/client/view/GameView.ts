@@ -248,6 +248,7 @@ export class GameView implements GameMap {
       nukeTelegraphs: [],
       attackRings: [],
       tradeRoutes: [],
+      tradeLaneSegments: [],
       maritimeObjective: null,
       structuresDirty: false,
     };
@@ -689,7 +690,7 @@ export class GameView implements GameMap {
         previous: this._maritimeObjective,
       });
     f.maritimeObjective = this._maritimeObjective;
-    this.appendTradeLaneRoutes(f.tradeRoutes);
+    f.tradeLaneSegments = this.deriveTradeLaneSegments();
     f.structuresDirty = this._structuresDirty;
 
     // First populate: signal "full upload required" by nulling changedTiles.
@@ -709,14 +710,22 @@ export class GameView implements GameMap {
   }
 
   /**
-   * Draw the FFA trade-lane corridor by appending its spine as consecutive
-   * segments consumed by TradeRoutePass (negative shipIds mark system lanes).
+   * The maritime objective geometry as segments consumed by TradeRoutePass
+   * (negative shipIds mark system lanes): the FFA corridor spine, or the
+   * Team-mode circle outline. Only the authoritative core objective is drawn
+   * (never the derived replay fallback), and it stays out of f.tradeRoutes so
+   * objective geometry never pollutes HUD route stats.
    */
-  private appendTradeLaneRoutes(routes: TradeRouteData[]): void {
-    const objective = this._maritimeObjective;
-    if (objective?.shape !== "lane" || objective.path === undefined) return;
+  private deriveTradeLaneSegments(): TradeRouteData[] {
+    const objective = this._maritimeObjectiveCore;
+    if (objective === undefined) return [];
 
-    const path = objective.path;
+    const points =
+      objective.shape === "lane"
+        ? objective.path
+        : this.circleOutline(objective.center, objective.radius);
+    if (points === undefined || points.length < 2) return [];
+
     const ownerID = objective.controllerID;
     const myID = this._myPlayer?.smallID() ?? 0;
     const relation: TradeRouteRelation =
@@ -724,12 +733,13 @@ export class GameView implements GameMap {
     const risk: TradeRouteRiskLevel =
       objective.status === "contested" ? "contested" : "safe";
 
-    for (let i = 0; i + 1 < path.length; i++) {
-      routes.push({
+    const segments: TradeRouteData[] = [];
+    for (let i = 0; i + 1 < points.length; i++) {
+      segments.push({
         shipId: -(1000 + i),
         ownerID,
-        from: path[i],
-        to: path[i + 1],
+        from: points[i],
+        to: points[i + 1],
         distanceTiles: 0,
         enemyThreats: 0,
         escortCount: 0,
@@ -737,6 +747,30 @@ export class GameView implements GameMap {
         riskLevel: risk,
       });
     }
+    return segments;
+  }
+
+  /** Closed polygon approximating the Team-mode objective circle. */
+  private circleOutline(center: number, radius: number): number[] {
+    const CIRCLE_SEGMENTS = 32;
+    const width = this._map.width();
+    const height = this._map.height();
+    const cx = center % width;
+    const cy = (center - cx) / width;
+    const points: number[] = [];
+    for (let i = 0; i <= CIRCLE_SEGMENTS; i++) {
+      const angle = (i / CIRCLE_SEGMENTS) * Math.PI * 2;
+      const x = Math.max(
+        0,
+        Math.min(width - 1, Math.round(cx + Math.cos(angle) * radius)),
+      );
+      const y = Math.max(
+        0,
+        Math.min(height - 1, Math.round(cy + Math.sin(angle) * radius)),
+      );
+      points.push(y * width + x);
+    }
+    return points;
   }
 
   /** Clear and repopulate _frame.events arrays from this tick's gu.updates. */

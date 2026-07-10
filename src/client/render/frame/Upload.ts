@@ -102,7 +102,8 @@ export function uploadFrameData(
   // --- Attack rings + nuke telegraphs + trade routes ---
   view.updateAttackRings(frame.attackRings);
   view.updateNukeTelegraphs(frame.nukeTelegraphs);
-  view.updateTradeRoutes(frame.tradeRoutes);
+  // Only the corridor is drawn; per-ship routes are HUD data, not lines.
+  view.updateTradeRoutes(frame.tradeLaneSegments);
 
   // --- Names + player status ---
   view.updateNames(frame.names, frame.players, false, frame.playerStatus);

@@ -70,6 +70,12 @@ export interface FrameData {
   readonly nukeTelegraphs: NukeTelegraphData[];
   readonly attackRings: AttackRingInput[];
   readonly tradeRoutes: TradeRouteData[];
+  /**
+   * FFA trade-lane corridor spine as renderable segments. Kept separate from
+   * tradeRoutes: ship routes feed HUD stats but are not drawn, while these
+   * segments are drawn but must not pollute the HUD's own-route stats.
+   */
+  readonly tradeLaneSegments: TradeRouteData[];
   readonly maritimeObjective: MaritimeObjectiveData | null;
   /** True when structures changed this tick (added/removed/level change). */
   readonly structuresDirty: boolean;

@@ -793,9 +793,7 @@ describe("GameView.frameData() — renderer contract", () => {
     ];
     game.update(gu);
 
-    const segments = game
-      .frameData()
-      .tradeRoutes.filter((route) => route.shipId < 0);
+    const segments = game.frameData().tradeLaneSegments;
     expect(segments.map((s) => [s.from, s.to])).toEqual([
       [32, 34],
       [34, 36],
@@ -805,6 +803,8 @@ describe("GameView.frameData() — renderer contract", () => {
       expect(segment.relation).toBe("own");
       expect(segment.riskLevel).toBe("safe");
     }
+    // Corridor geometry must not leak into HUD route stats.
+    expect(game.frameData().tradeRoutes).toHaveLength(0);
   });
 
   it("frame.tradeRoutes keeps corridor segments after the path-bearing update", () => {
@@ -838,9 +838,7 @@ describe("GameView.frameData() — renderer contract", () => {
     second.updates[GameUpdateType.MaritimeObjective] = [{ ...baseUpdate }];
     game.update(second);
 
-    const segments = game
-      .frameData()
-      .tradeRoutes.filter((route) => route.shipId < 0);
+    const segments = game.frameData().tradeLaneSegments;
     expect(segments).toHaveLength(2);
     expect(segments[0].relation).toBe("neutral");
     expect(segments[0].riskLevel).toBe("contested");
