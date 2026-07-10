@@ -610,18 +610,53 @@ describe("InputHandler AutoUpgrade", () => {
       expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.City);
     });
 
-    test("Numpad5 sets ghost structure to MissileSilo when buildMissileSilo is Digit5", () => {
+    test("Numpad4 sets ghost structure to Warship by default", () => {
+      window.dispatchEvent(
+        new KeyboardEvent("keyup", { code: "Numpad4", key: "4" }),
+      );
+      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.Warship);
+    });
+
+    test("Numpad5 sets ghost structure to Submarine by default", () => {
       window.dispatchEvent(
         new KeyboardEvent("keyup", { code: "Numpad5", key: "5" }),
       );
-      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.MissileSilo);
+      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.Submarine);
     });
 
-    test("Numpad0 sets ghost structure to MIRV when buildMIRV is Digit0", () => {
+    test("Numpad6 sets ghost structure to AircraftCarrier by default", () => {
       window.dispatchEvent(
-        new KeyboardEvent("keyup", { code: "Numpad0", key: "0" }),
+        new KeyboardEvent("keyup", { code: "Numpad6", key: "6" }),
       );
-      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.MIRV);
+      expect(inputHandler["uiState"].ghostStructure).toBe(
+        UnitType.AircraftCarrier,
+      );
+    });
+
+    test("Numpad7 sets ghost structure to AntiAirFrigate by default", () => {
+      window.dispatchEvent(
+        new KeyboardEvent("keyup", {
+          code: "Numpad7",
+          key: "7",
+        }),
+      );
+      expect(inputHandler["uiState"].ghostStructure).toBe(
+        (UnitType as any).AntiAirFrigate,
+      );
+    });
+
+    test("Numpad8 sets ghost structure to NavalMine by default", () => {
+      window.dispatchEvent(
+        new KeyboardEvent("keyup", { code: "Numpad8", key: "8" }),
+      );
+      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.NavalMine);
+    });
+
+    test("Numpad9 sets ghost structure to Congress by default", () => {
+      window.dispatchEvent(
+        new KeyboardEvent("keyup", { code: "Numpad9", key: "9" }),
+      );
+      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.Congress);
     });
 
     test("does not set ghost structure when the player is dead", () => {
@@ -858,6 +893,54 @@ describe("InputHandler AutoUpgrade", () => {
       );
 
       expect(uiState.ghostStructure).toBe(UnitType.City);
+    });
+
+    test("default Shift+Numpad8 sets ghost structure to AtomBomb", () => {
+      inputHandler = new InputHandler(
+        mockGameView,
+        uiState,
+        mockCanvas,
+        eventBus,
+      );
+      inputHandler.initialize();
+
+      window.dispatchEvent(
+        new KeyboardEvent("keyup", { code: "Numpad8", shiftKey: true }),
+      );
+
+      expect(uiState.ghostStructure).toBe(UnitType.AtomBomb);
+    });
+
+    test("default Shift+Numpad9 sets ghost structure to HydrogenBomb", () => {
+      inputHandler = new InputHandler(
+        mockGameView,
+        uiState,
+        mockCanvas,
+        eventBus,
+      );
+      inputHandler.initialize();
+
+      window.dispatchEvent(
+        new KeyboardEvent("keyup", { code: "Numpad9", shiftKey: true }),
+      );
+
+      expect(uiState.ghostStructure).toBe(UnitType.HydrogenBomb);
+    });
+
+    test("default Shift+Numpad0 sets ghost structure to MIRV", () => {
+      inputHandler = new InputHandler(
+        mockGameView,
+        uiState,
+        mockCanvas,
+        eventBus,
+      );
+      inputHandler.initialize();
+
+      window.dispatchEvent(
+        new KeyboardEvent("keyup", { code: "Numpad0", shiftKey: true }),
+      );
+
+      expect(uiState.ghostStructure).toBe(UnitType.MIRV);
     });
   });
 });

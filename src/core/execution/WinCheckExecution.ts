@@ -9,6 +9,7 @@ import {
   RankedType,
   Team,
 } from "../game/Game";
+import { isMaritimeMap } from "../game/MaritimeMaps";
 
 export class WinEvent implements GameEvent {
   constructor(public readonly winner: Player) {}
@@ -67,9 +68,13 @@ export class WinCheckExecution implements Execution {
     const timeElapsed = this.mg.elapsedGameSeconds();
     const numTilesWithoutFallout =
       this.mg.numLandTiles() - this.mg.numTilesWithFallout();
+    const maritimeConquest = isMaritimeMap(
+      this.mg.config().gameConfig().gameMap,
+    );
     if (
-      (max.numTilesOwned() / numTilesWithoutFallout) * 100 >
-        this.mg.config().percentageTilesOwnedToWin() ||
+      (!maritimeConquest &&
+        (max.numTilesOwned() / numTilesWithoutFallout) * 100 >
+          this.mg.config().percentageTilesOwnedToWin()) ||
       (this.mg.config().gameConfig().maxTimerValue !== undefined &&
         timeElapsed - this.mg.config().gameConfig().maxTimerValue! * 60 >= 0) ||
       timeElapsed >= WinCheckExecution.HARD_TIME_LIMIT_SECONDS
@@ -103,8 +108,12 @@ export class WinCheckExecution implements Execution {
     const numTilesWithoutFallout =
       this.mg.numLandTiles() - this.mg.numTilesWithFallout();
     const percentage = (max[1] / numTilesWithoutFallout) * 100;
+    const maritimeConquest = isMaritimeMap(
+      this.mg.config().gameConfig().gameMap,
+    );
     if (
-      percentage > this.mg.config().percentageTilesOwnedToWin() ||
+      (!maritimeConquest &&
+        percentage > this.mg.config().percentageTilesOwnedToWin()) ||
       (this.mg.config().gameConfig().maxTimerValue !== undefined &&
         timeElapsed - this.mg.config().gameConfig().maxTimerValue! * 60 >= 0) ||
       timeElapsed >= WinCheckExecution.HARD_TIME_LIMIT_SECONDS

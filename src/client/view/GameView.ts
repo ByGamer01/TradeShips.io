@@ -14,6 +14,7 @@ import { GameMap, TileRef } from "../../core/game/GameMap";
 import {
   GameUpdateType,
   GameUpdateViewData,
+  MaritimeObjectiveUpdate,
   SpawnPhaseEndUpdate,
 } from "../../core/game/GameUpdates";
 import { ATTACK_DELTA_OUTGOING } from "../../core/game/GameUpdateUtils";
@@ -29,14 +30,27 @@ import { formatPlayerDisplayName } from "../../core/Util";
 import { WorkerClient } from "../../core/worker/WorkerClient";
 import { computeAllianceClusters } from "../render/frame/derive/AllianceClusters";
 import { extractAttackRings } from "../render/frame/derive/AttackRings";
+import {
+  deriveMaritimeObjective,
+  maritimeObjectiveFromUpdate,
+  type MaritimeObjectiveData,
+} from "../render/frame/derive/MaritimeObjective";
 import { extractNukeTelegraphs } from "../render/frame/derive/NukeTelegraphs";
 import { computePlayerStatus } from "../render/frame/derive/PlayerStatus";
 import { buildRelationMatrix } from "../render/frame/derive/RelationMatrix";
+import {
+  deriveTradeRoutes,
+  friendlyOwnersFromRelations,
+  type TradeRouteData,
+  type TradeRouteRelation,
+  type TradeRouteRiskLevel,
+} from "../render/frame/derive/TradeRoutes";
 import { RailroadCache } from "../render/frame/RailroadCache";
 import { TrailManager } from "../render/frame/TrailManager";
 import type { FrameData, NameEntry, TilePair } from "../render/types";
 import { STRUCTURE_TYPES } from "../render/types";
 import { PlayerView } from "./PlayerView";
+import { TradeLedger } from "./TradeLedger";
 import { UnitView } from "./UnitView";
 
 const TRAIL_TYPES: ReadonlySet<UnitType> = new Set<UnitType>([
@@ -77,6 +91,9 @@ export class GameView implements GameMap {
     import("../render/types").PlayerState
   >();
   private _unitStates = new Map<number, import("../render/types").UnitState>();
+  private _maritimeObjective: MaritimeObjectiveData | undefined;
+  /** Latest authoritative objective from core; wins over the derived one. */
+  private _maritimeObjectiveCore: MaritimeObjectiveData | undefined;
   /** smallID → team, for the renderer's relation matrix (team games). */
   private _teams = new Map<number, string>();
   private updatedTiles: TileRef[] = [];
@@ -100,6 +117,37 @@ export class GameView implements GameMap {
   private _firstPopulate = true;
 
   private _myPlayer: PlayerView | null = null;
+
+  /** Session-long trade accounting for the local player (HUD consumer). */
+  private readonly _tradeLedger = new TradeLedger({
+    localPlayerID: () => this._myPlayer?.smallID() ?? 0,
+    estimateGold: (tilesTraveled, ownerID, destinationOwnerID) => {
+      const owner = this.playerViewBySmallID(ownerID);
+      if (owner === null) return 0;
+
+      let gold = Number(this._config.tradeShipGold(tilesTraveled, owner));
+      const destinationOwner =
+        destinationOwnerID !== undefined && destinationOwnerID !== null
+          ? this.playerViewBySmallID(destinationOwnerID)
+          : null;
+      if (
+        destinationOwner !== null &&
+        ownerID !== destinationOwnerID &&
+        (owner.isFriendly(destinationOwner) ||
+          destinationOwner.isFriendly(owner))
+      ) {
+        gold += Math.floor(gold * this._config.alliedTradeGoldBonus());
+      }
+      return gold;
+    },
+    portOwnerID: (unitId) => {
+      const port = this._units.get(unitId);
+      return port !== undefined && port.state.unitType === UnitType.Port
+        ? port.state.ownerID
+        : null;
+    },
+    portTile: (unitId) => this._units.get(unitId)?.state.pos ?? null,
+  });
 
   // ── populateFrame dirty flags ──────────────────────────────────────────
   // The derived structures below only depend on rarely-changing player
@@ -199,6 +247,10 @@ export class GameView implements GameMap {
       allianceClusters: new Map(),
       nukeTelegraphs: [],
       attackRings: [],
+      tradeRoutes: [],
+      tradeLaneSegments: [],
+      maritimeObjective: null,
+      maritimeObjectiveRender: null,
       structuresDirty: false,
     };
   }
@@ -296,6 +348,19 @@ export class GameView implements GameMap {
       | undefined;
     if (spawnPhaseEndUpdate) {
       this.startTick = spawnPhaseEndUpdate.startTick;
+    }
+
+    const maritimeUpdates = (gu.updates[GameUpdateType.MaritimeObjective] ??
+      []) as MaritimeObjectiveUpdate[];
+    const latestMaritime = maritimeUpdates[maritimeUpdates.length - 1];
+    if (latestMaritime !== undefined) {
+      const core = maritimeObjectiveFromUpdate(latestMaritime);
+      // The corridor path is static and sent on the first update only; keep
+      // the cached copy alive on later ticks (and scan the batch for it).
+      core.path ??=
+        maritimeUpdates.find((u) => u.path !== undefined)?.path ??
+        this._maritimeObjectiveCore?.path;
+      this._maritimeObjectiveCore = core;
     }
 
     const myDisplayName = formatPlayerDisplayName(
@@ -441,6 +506,9 @@ export class GameView implements GameMap {
     }
     gu.updates[GameUpdateType.Unit].forEach((update) => {
       let unit = this._units.get(update.id);
+      // Feed the ledger before the in-place state mutation below — it needs
+      // the pre-update state to detect captures and deactivations.
+      this._tradeLedger.onUnitUpdate(update, unit?.state ?? null);
       const isStructure = STRUCTURE_TYPES.has(update.unitType);
       if (unit !== undefined) {
         // Structure changes that affect rendering: owner changed (captured),
@@ -596,6 +664,35 @@ export class GameView implements GameMap {
           this._myPlayer.smallID(),
         )
       : [];
+    f.tradeRoutes = deriveTradeRoutes(
+      this._unitStates,
+      this._map.width(),
+      this._myPlayer?.smallID() ?? 0,
+      friendlyOwnersFromRelations(
+        f.relationMatrix,
+        f.relationSize,
+        this._myPlayer?.smallID() ?? 0,
+      ),
+      (distanceTiles, ownerID) => {
+        const owner = this.playerViewBySmallID(ownerID);
+        if (owner === null) {
+          return 0;
+        }
+        return Number(this._config.tradeShipGold(distanceTiles, owner));
+      },
+    );
+    this._maritimeObjective =
+      this._maritimeObjectiveCore ??
+      deriveMaritimeObjective(this._unitStates, {
+        mapWidth: this._map.width(),
+        mapHeight: this._map.height(),
+        isWater: (tile) => this._map.isWater(tile),
+        teamForOwner: (ownerID) => this._teams.get(ownerID) ?? null,
+        previous: this._maritimeObjective,
+      });
+    f.maritimeObjective = this._maritimeObjective;
+    f.maritimeObjectiveRender = this._maritimeObjectiveCore ?? null;
+    f.tradeLaneSegments = this.deriveTradeLaneSegments();
     f.structuresDirty = this._structuresDirty;
 
     // First populate: signal "full upload required" by nulling changedTiles.
@@ -613,6 +710,45 @@ export class GameView implements GameMap {
     this.railroadCache.clearDirty();
     this._structuresDirty = false;
   }
+
+  /**
+   * The FFA corridor spine as dashed segments consumed by TradeRoutePass
+   * (negative shipIds mark system lanes) — a directional guide on top of
+   * the zone fill drawn by MaritimeObjectivePass. Only the authoritative
+   * core objective is drawn (never the derived replay fallback), and it
+   * stays out of f.tradeRoutes so it never pollutes HUD route stats.
+   */
+  private deriveTradeLaneSegments(): TradeRouteData[] {
+    const objective = this._maritimeObjectiveCore;
+    if (objective === undefined || objective.shape !== "lane") return [];
+
+    const points = objective.path;
+    if (points === undefined || points.length < 2) return [];
+
+    const ownerID = objective.controllerID;
+    const myID = this._myPlayer?.smallID() ?? 0;
+    const relation: TradeRouteRelation =
+      ownerID === 0 ? "neutral" : myID > 0 && ownerID === myID ? "own" : "foreign";
+    const risk: TradeRouteRiskLevel =
+      objective.status === "contested" ? "contested" : "safe";
+
+    const segments: TradeRouteData[] = [];
+    for (let i = 0; i + 1 < points.length; i++) {
+      segments.push({
+        shipId: -(1000 + i),
+        ownerID,
+        from: points[i],
+        to: points[i + 1],
+        distanceTiles: 0,
+        enemyThreats: 0,
+        escortCount: 0,
+        relation,
+        riskLevel: risk,
+      });
+    }
+    return segments;
+  }
+
 
   /** Clear and repopulate _frame.events arrays from this tick's gu.updates. */
   private buildFrameEvents(gu: GameUpdateViewData): void {
@@ -660,6 +796,11 @@ export class GameView implements GameMap {
     return this._frame;
   }
 
+  /** Session-long trade accounting for the local player. */
+  tradeLedger(): TradeLedger {
+    return this._tradeLedger;
+  }
+
   private advanceMotionPlannedUnits(currentTick: Tick): void {
     for (const [unitId, plan] of this.unitMotionPlans) {
       const unit = this._units.get(unitId);
@@ -672,14 +813,20 @@ export class GameView implements GameMap {
 
       const oldTile = unit.tile();
       const dt = currentTick - plan.startTick;
-      const stepIndex =
-        dt <= 0 ? 0 : Math.floor(dt / Math.max(1, plan.ticksPerStep));
+      const ticksPerStep = Math.max(1, plan.ticksPerStep);
+      const stepIndex = dt <= 0 ? 0 : Math.floor(dt / ticksPerStep);
       const lastIndex = plan.path.length - 1;
       const idx = Math.max(0, Math.min(lastIndex, stepIndex));
       const newTile = plan.path[idx] as TileRef;
 
       if (newTile !== oldTile) {
-        unit.applyDerivedPosition(newTile);
+        // Steps advanced since last tick — feeds the client-side odometer
+        // (tilesTraveled) so it stays live between authoritative updates.
+        const prevDt = dt - 1;
+        const prevStepIndex =
+          prevDt <= 0 ? 0 : Math.floor(prevDt / ticksPerStep);
+        const prevIdx = Math.max(0, Math.min(lastIndex, prevStepIndex));
+        unit.applyDerivedPosition(newTile, idx - prevIdx);
         this.unitGrid.updateUnitCell(unit);
         continue;
       }
@@ -990,6 +1137,16 @@ export class GameView implements GameMap {
       throw new Error(`small id ${id} not found`);
     }
     return this.player(playerId);
+  }
+
+  /**
+   * Non-throwing lookup for smallIDs coming from render-derived data (ocean
+   * lane controllers, ledger owners): 0/unknown owners resolve to null.
+   */
+  private playerViewBySmallID(id: number): PlayerView | null {
+    const playerId = this.smallIDToID.get(id);
+    if (playerId === undefined) return null;
+    return this._players.get(playerId) ?? null;
   }
 
   playerByClientID(id: ClientID): PlayerView | null {

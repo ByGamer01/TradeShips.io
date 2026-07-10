@@ -78,7 +78,14 @@ describe("AllianceBehavior.handleAllianceRequests", () => {
       }
     });
 
-    vi.spyOn(player, "alliances").mockReturnValue(new Array(alliancesCount));
+    // Real alliance-like stubs: Hard-mode logic walks the list (isFriendly),
+    // so empty array slots would crash.
+    vi.spyOn(player, "alliances").mockReturnValue(
+      Array.from({ length: alliancesCount }, () => ({
+        recipient: () => player,
+        requestor: () => player,
+      })) as never[],
+    );
 
     const mockRequest = {
       requestor: () => requestor,
@@ -122,6 +129,14 @@ describe("AllianceBehavior.handleAllianceRequests", () => {
   });
 
   test("should reject alliance if relation is hostile", () => {
+    // Nations play at least Hard: pin the confusion roll and the
+    // threat-appeasement rule (a Human reads as a threat to a 10-tile nation
+    // and would be accepted) so the test exercises the relation rule.
+    vi.spyOn(allianceBehavior as any, "isConfused").mockReturnValue(false);
+    vi.spyOn(
+      allianceBehavior as any,
+      "isAlliancePartnerThreat",
+    ).mockReturnValue(false);
     const request = setupAllianceRequest({ relationDelta: -2 });
 
     allianceBehavior.handleAllianceRequests();
@@ -142,6 +157,13 @@ describe("AllianceBehavior.handleAllianceRequests", () => {
   });
 
   test("should reject alliance if player has too many alliances", () => {
+    // Nations play at least Hard: pin the confusion roll and the
+    // threat-appeasement rule so the test exercises the alliance-count rule.
+    vi.spyOn(allianceBehavior as any, "isConfused").mockReturnValue(false);
+    vi.spyOn(
+      allianceBehavior as any,
+      "isAlliancePartnerThreat",
+    ).mockReturnValue(false);
     const request = setupAllianceRequest({ alliancesCount: 10 });
 
     allianceBehavior.handleAllianceRequests();

@@ -36,6 +36,7 @@ import { PerformanceOverlay } from "./layers/PerformanceOverlay";
 import { PlayerInfoOverlay } from "./layers/PlayerInfoOverlay";
 import { PlayerPanel } from "./layers/PlayerPanel";
 import { ReplayPanel } from "./layers/ReplayPanel";
+import { TradeStatsPanel } from "./layers/TradeStatsPanel";
 import { SettingsModal } from "./layers/SettingsModal";
 import { SpawnTimer } from "./layers/SpawnTimer";
 import { TeamStats } from "./layers/TeamStats";
@@ -174,6 +175,15 @@ export function createRenderer(
   }
   replayPanel.eventBus = eventBus;
   replayPanel.game = game;
+
+  const tradeStatsPanel = document.querySelector(
+    "trade-stats-panel",
+  ) as TradeStatsPanel;
+  if (!(tradeStatsPanel instanceof TradeStatsPanel)) {
+    console.error("trade stats panel not found");
+  }
+  tradeStatsPanel.eventBus = eventBus;
+  tradeStatsPanel.game = game;
 
   const gameRightSidebar = document.querySelector(
     "game-right-sidebar",
@@ -321,6 +331,7 @@ export function createRenderer(
     playerInfo,
     winModal,
     replayPanel,
+    tradeStatsPanel,
     settingsModal,
     graphicsSettingsModal,
     teamStats,

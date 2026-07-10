@@ -5,6 +5,7 @@ import { UserMeResponse } from "../core/ApiSchemas";
 import { assetUrl } from "../core/AssetUrls";
 import {
   Difficulty,
+  DISABLED_ARSENAL,
   GameMapSize,
   GameMapType,
   GameMode,
@@ -25,6 +26,7 @@ import { crazyGamesSDK } from "./CrazyGamesSDK";
 import { JoinLobbyEvent } from "./Main";
 import { UsernameInput } from "./UsernameInput";
 import {
+  boostedNationCount,
   getBotsForCompactMap,
   getNationsForCompactMap,
   getRandomMapType,
@@ -39,7 +41,7 @@ import {
 import { terrainMapFileLoader } from "./TerrainMapFileLoader";
 
 const DEFAULT_OPTIONS = {
-  selectedMap: GameMapType.World,
+  selectedMap: GameMapType.ArchipelagoSea,
   selectedDifficulty: Difficulty.Easy,
   bots: 400,
   infiniteGold: false,
@@ -56,7 +58,7 @@ const DEFAULT_OPTIONS = {
   goldMultiplierValue: undefined as number | undefined,
   startingGold: false,
   startingGoldValue: undefined as number | undefined,
-  disabledUnits: [] as UnitType[],
+  disabledUnits: [...DISABLED_ARSENAL] as UnitType[],
   disableAlliances: false,
   waterNukes: false,
 } as const;
@@ -377,7 +379,7 @@ export class SinglePlayerModal extends BaseModal {
       this.startingGold !== DEFAULT_OPTIONS.startingGold ||
       this.disableAlliances !== DEFAULT_OPTIONS.disableAlliances ||
       this.waterNukes !== DEFAULT_OPTIONS.waterNukes ||
-      this.disabledUnits.length > 0
+      this.disabledUnits.length !== DEFAULT_OPTIONS.disabledUnits.length
     );
   }
 
@@ -718,9 +720,10 @@ export class SinglePlayerModal extends BaseModal {
       // Only update if the map hasn't changed
       if (this.selectedMap === currentMap) {
         this.defaultNationCount = manifest.nations.length;
+        const boosted = boostedNationCount(manifest.nations.length);
         this.nations = this.compactMap
-          ? Math.max(0, Math.floor(manifest.nations.length * 0.25))
-          : manifest.nations.length;
+          ? Math.max(0, Math.floor(boosted * 0.25))
+          : boosted;
       }
     } catch (error) {
       console.warn("Failed to load nation count", error);

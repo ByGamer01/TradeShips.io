@@ -10,6 +10,7 @@ import {
   MapInfo,
   maps,
 } from "../../../core/game/Game";
+import { isMaritimeMap } from "../../../core/game/MaritimeMaps";
 import { translateText } from "../../Utils";
 import "./MapDisplay";
 import { getFavoriteMaps, starIcon, toggleFavoriteMap } from "./MapFavorites";
@@ -17,8 +18,10 @@ const randomMap = assetUrl("images/RandomMap.webp");
 
 type MapTab = "featured" | "all" | "favorites";
 
+const selectableMaps: MapInfo[] = maps.filter((m) => isMaritimeMap(m.type));
+
 // Featured grid order: ranked maps first (1 = first), unranked alphabetical.
-const featuredMaps: MapInfo[] = maps
+const featuredMaps: MapInfo[] = selectableMaps
   .filter((m) => m.categories.includes("featured"))
   .sort(
     (a, b) =>
@@ -27,12 +30,13 @@ const featuredMaps: MapInfo[] = maps
   );
 
 function mapsInCategory(category: MapCategory): MapInfo[] {
-  return maps.filter((m) => m.categories.includes(category));
+  return selectableMaps.filter((m) => m.categories.includes(category));
 }
 
 @customElement("map-picker")
 export class MapPicker extends LitElement {
-  @property({ type: String }) selectedMap: GameMapType = GameMapType.World;
+  @property({ type: String }) selectedMap: GameMapType =
+    GameMapType.ArchipelagoSea;
   @property({ type: Boolean }) useRandomMap = false;
   @property({ type: Boolean }) showMedals = false;
   @property({ type: Boolean }) randomMapDivider = false;
@@ -78,7 +82,7 @@ export class MapPicker extends LitElement {
   private get filteredMaps(): MapInfo[] {
     if (!this.searchQuery.trim()) return [];
     const query = this.searchQuery.trim().toLowerCase();
-    return maps.filter((m) => {
+    return selectableMaps.filter((m) => {
       const name = translateText(m.translationKey).toLowerCase();
       const id = m.id.toLowerCase();
       return name.includes(query) || id.includes(query);
@@ -167,7 +171,7 @@ export class MapPicker extends LitElement {
 
   private renderFeaturedTab() {
     let featuredMapList = featuredMaps;
-    const selected = maps.find((m) => m.type === this.selectedMap);
+    const selected = selectableMaps.find((m) => m.type === this.selectedMap);
     if (
       !this.useRandomMap &&
       selected !== undefined &&
@@ -185,8 +189,13 @@ export class MapPicker extends LitElement {
     return html`<div class="space-y-3">
       ${mapCategoryOrder
         .filter((categoryKey) => categoryKey !== "featured")
-        .map((categoryKey) =>
-          this.renderCategoryBar(categoryKey, mapsInCategory(categoryKey)),
+        .map((categoryKey) => ({
+          categoryKey,
+          mapList: mapsInCategory(categoryKey),
+        }))
+        .filter(({ mapList }) => mapList.length > 0)
+        .map(({ categoryKey, mapList }) =>
+          this.renderCategoryBar(categoryKey, mapList),
         )}
     </div>`;
   }
@@ -203,7 +212,7 @@ export class MapPicker extends LitElement {
       </div>`;
     }
     const favoriteMaps = this.favorites
-      .map((favorite) => maps.find((m) => m.type === favorite))
+      .map((favorite) => selectableMaps.find((m) => m.type === favorite))
       .filter((m) => m !== undefined);
     return html`<div class="w-full">
       ${this.renderSectionHeading(translateText("map_categories.favorites"))}

@@ -1,4 +1,5 @@
 import { GameMapType, UnitType } from "../../core/game/Game";
+import { isMaritimeMap } from "../../core/game/MaritimeMaps";
 import { GameConfig } from "../../core/Schemas";
 
 /**
@@ -103,6 +104,17 @@ export function getBotsForCompactMap(
   return bots;
 }
 
+/**
+ * TradeShips floor for the default nation count: games should field a real
+ * cast of nations, not only bot tribes. Maps whose manifest defines fewer
+ * nations get extras generated procedurally by the core (NationCreation).
+ */
+export const MIN_DEFAULT_NATIONS = 15;
+
+export function boostedNationCount(manifestCount: number): number {
+  return Math.max(manifestCount, MIN_DEFAULT_NATIONS);
+}
+
 export function getNationsForCompactMap(
   nations: number,
   defaultNationCount: number,
@@ -124,7 +136,9 @@ export function getNationsForCompactMap(
 }
 
 export function getRandomMapType(): GameMapType {
-  const maps = Object.values(GameMapType);
+  const maps = Object.values(GameMapType).filter((map) =>
+    isMaritimeMap(map as GameMapType),
+  );
   const randIdx = Math.floor(Math.random() * maps.length);
   return maps[randIdx] as GameMapType;
 }

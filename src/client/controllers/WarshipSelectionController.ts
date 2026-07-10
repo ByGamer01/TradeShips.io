@@ -16,10 +16,16 @@ import {
 } from "../InputHandler";
 import { MapRenderer } from "../render/gl";
 import { TransformHandler } from "../TransformHandler";
-import { MoveWarshipIntentEvent } from "../Transport";
+import { EscortTradeIntentEvent, MoveWarshipIntentEvent } from "../Transport";
 import { GameView, UnitView } from "../view";
 
 const WARSHIP_SELECTION_RADIUS = 10;
+const COMMANDABLE_NAVAL_UNIT_TYPES = [
+  UnitType.Warship,
+  UnitType.Submarine,
+  UnitType.AircraftCarrier,
+  UnitType.AntiAirFrigate,
+] as const;
 
 /**
  * Controller for warship selection state + click handling.
@@ -52,7 +58,7 @@ export class WarshipSelectionController implements Controller {
   ) {}
 
   tick() {
-    // Prune any destroyed warships from the multi-selection so callers
+    // Prune any destroyed naval units from the multi-selection so callers
     // (move-warship intent) don't try to act on dead units. The WebGL
     // SelectionBoxPass also drops them automatically.
     this.multiSelectedWarships = this.multiSelectedWarships.filter((u) =>
@@ -138,13 +144,13 @@ export class WarshipSelectionController implements Controller {
   }
 
   /**
-   * Find player-owned warships near the given cell, sorted by distance.
+   * Find player-owned commandable naval units near the given cell, sorted by distance.
    */
-  private findWarshipsNearCell(clickRef: TileRef): UnitView[] {
+  private findCommandableNavalUnitsNearCell(clickRef: TileRef): UnitView[] {
     const myPlayer = this.game.myPlayer();
     if (!myPlayer) return [];
     return this.game
-      .units(UnitType.Warship)
+      .units(...(COMMANDABLE_NAVAL_UNIT_TYPES as unknown as UnitType[]))
       .filter(
         (unit) =>
           unit.isActive() &&
@@ -160,7 +166,50 @@ export class WarshipSelectionController implements Controller {
   }
 
   /**
+   * Find the closest friendly (own or allied) trade ship near the given
+   * cell — an escortable convoy target.
+   */
+  private findEscortableTradeShipNearCell(clickRef: TileRef): UnitView | null {
+    const myPlayer = this.game.myPlayer();
+    if (!myPlayer) return null;
+    const candidates = this.game
+      .units(UnitType.TradeShip)
+      .filter(
+        (unit) =>
+          unit.isActive() &&
+          (unit.owner() === myPlayer || myPlayer.isFriendly(unit.owner())) &&
+          this.game.manhattanDist(unit.tile(), clickRef) <=
+            WARSHIP_SELECTION_RADIUS,
+      )
+      .sort(
+        (a, b) =>
+          this.game.manhattanDist(a.tile(), clickRef) -
+          this.game.manhattanDist(b.tile(), clickRef),
+      );
+    return candidates[0] ?? null;
+  }
+
+  /**
+   * If the click lands on a friendly trade ship and the selection contains
+   * warships, order them to escort it. Returns true when the escort intent
+   * was sent (the click is consumed).
+   */
+  private tryEscortAtCell(selection: UnitView[], clickRef: TileRef): boolean {
+    const warshipIds = selection
+      .filter((u) => u.isActive() && u.type() === UnitType.Warship)
+      .map((u) => u.id());
+    if (warshipIds.length === 0) return false;
+
+    const convoy = this.findEscortableTradeShipNearCell(clickRef);
+    if (convoy === null) return false;
+
+    this.eventBus.emit(new EscortTradeIntentEvent(warshipIds, convoy.id()));
+    return true;
+  }
+
+  /**
    * Resolve a left-click in the world:
+   *  - selection present + clicked a friendly trade ship → escort it
    *  - multi-selected warships present + clicked water → move them all
    *  - single selected warship + clicked water → move it, then deselect
    *  - otherwise → if there's a nearby warship, select the closest one
@@ -182,18 +231,32 @@ export class WarshipSelectionController implements Controller {
 
     if (this.multiSelectedWarships.length > 0) {
       const myPlayer = this.game.myPlayer();
-      const activeIds = this.multiSelectedWarships
-        .filter((u) => u.isActive() && u.owner() === myPlayer)
-        .map((u) => u.id());
+      const activeUnits = this.multiSelectedWarships.filter(
+        (u) => u.isActive() && u.owner() === myPlayer,
+      );
 
-      if (activeIds.length > 0) {
-        this.eventBus.emit(new MoveWarshipIntentEvent(activeIds, clickRef));
+      if (this.tryEscortAtCell(activeUnits, clickRef)) {
+        this.eventBus.emit(new UnitSelectionEvent(null, false));
+        return;
+      }
+
+      if (activeUnits.length > 0) {
+        this.eventBus.emit(
+          new MoveWarshipIntentEvent(
+            activeUnits.map((u) => u.id()),
+            clickRef,
+          ),
+        );
       }
       this.eventBus.emit(new UnitSelectionEvent(null, false));
       return;
     }
 
     if (this.selectedUnit) {
+      if (this.tryEscortAtCell([this.selectedUnit], clickRef)) {
+        this.eventBus.emit(new UnitSelectionEvent(this.selectedUnit, false));
+        return;
+      }
       this.eventBus.emit(
         new MoveWarshipIntentEvent([this.selectedUnit.id()], clickRef),
       );
@@ -201,7 +264,7 @@ export class WarshipSelectionController implements Controller {
       return;
     }
 
-    nearbyWarships ??= this.findWarshipsNearCell(clickRef);
+    nearbyWarships ??= this.findCommandableNavalUnitsNearCell(clickRef);
     if (nearbyWarships.length > 0) {
       this.eventBus.emit(new UnitSelectionEvent(nearbyWarships[0], true));
     }
@@ -233,7 +296,7 @@ export class WarshipSelectionController implements Controller {
       this.onMouseUp(new MouseUpEvent(event.x, event.y), clickRef);
       return;
     }
-    const nearbyWarships = this.findWarshipsNearCell(clickRef);
+    const nearbyWarships = this.findCommandableNavalUnitsNearCell(clickRef);
     if (nearbyWarships.length > 0) {
       this.onMouseUp(
         new MouseUpEvent(event.x, event.y),
@@ -246,7 +309,7 @@ export class WarshipSelectionController implements Controller {
   }
 
   /**
-   * Resolve a shift+drag selection box: gather all player-owned warships
+   * Resolve a shift+drag selection box: gather all player-owned commandable naval units
    * whose screen position falls inside the rectangle.
    */
   private onSelectionBoxComplete(event: WarshipSelectionBoxCompleteEvent) {
@@ -258,15 +321,17 @@ export class WarshipSelectionController implements Controller {
     const myPlayer = this.game.myPlayer();
     if (!myPlayer) return;
 
-    const selected = this.game.units(UnitType.Warship).filter((unit) => {
-      if (!unit.isActive() || unit.owner() !== myPlayer) return false;
-      const screen = this.transformHandler.worldToScreenCoordinates(
-        new Cell(this.game.x(unit.tile()), this.game.y(unit.tile())),
-      );
-      return (
-        screen.x >= x1 && screen.x <= x2 && screen.y >= y1 && screen.y <= y2
-      );
-    });
+    const selected = this.game
+      .units(...(COMMANDABLE_NAVAL_UNIT_TYPES as unknown as UnitType[]))
+      .filter((unit) => {
+        if (!unit.isActive() || unit.owner() !== myPlayer) return false;
+        const screen = this.transformHandler.worldToScreenCoordinates(
+          new Cell(this.game.x(unit.tile()), this.game.y(unit.tile())),
+        );
+        return (
+          screen.x >= x1 && screen.x <= x2 && screen.y >= y1 && screen.y <= y2
+        );
+      });
 
     // Clear single selection if we got a box selection
     if (selected.length > 0 && this.selectedUnit) {

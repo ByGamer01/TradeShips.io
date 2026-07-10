@@ -934,9 +934,14 @@ export class InputHandler {
       { key: "buildDefensePost", type: UnitType.DefensePost },
       { key: "buildMissileSilo", type: UnitType.MissileSilo },
       { key: "buildSamLauncher", type: UnitType.SAMLauncher },
+      { key: "buildWarship", type: UnitType.Warship },
+      { key: "buildSubmarine", type: UnitType.Submarine },
+      { key: "buildAircraftCarrier", type: UnitType.AircraftCarrier },
+      { key: "buildAntiAirFrigate", type: UnitType.AntiAirFrigate },
+      { key: "buildNavalMine", type: UnitType.NavalMine },
+      { key: "buildCongress", type: UnitType.Congress },
       { key: "buildAtomBomb", type: UnitType.AtomBomb },
       { key: "buildHydrogenBomb", type: UnitType.HydrogenBomb },
-      { key: "buildWarship", type: UnitType.Warship },
       { key: "buildMIRV", type: UnitType.MIRV },
     ];
     for (const { key, type } of buildKeybinds) {

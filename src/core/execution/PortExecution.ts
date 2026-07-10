@@ -1,7 +1,16 @@
 import { Execution, Game, Unit, UnitType } from "../game/Game";
 import { PseudoRandom } from "../PseudoRandom";
+import { TorpedoExecution } from "./TorpedoExecution";
 import { TradeShipExecution } from "./TradeShipExecution";
 import { TrainStationExecution } from "./TrainStationExecution";
+
+/** Enemy ship types a naval-base port battery will engage. */
+const BATTERY_TARGET_TYPES = [
+  UnitType.Warship,
+  UnitType.AntiAirFrigate,
+  UnitType.Submarine,
+  UnitType.AircraftCarrier,
+] as const;
 
 export class PortExecution implements Execution {
   private active = true;
@@ -10,6 +19,7 @@ export class PortExecution implements Execution {
   private random: PseudoRandom;
   private checkOffset: number;
   private tradeShipSpawnRejections = 0;
+  private lastBatteryAttack = 0;
 
   constructor(port: Unit) {
     this.port = port;
@@ -37,6 +47,10 @@ export class PortExecution implements Execution {
 
     if (!this.port.hasTrainStation()) {
       this.createStation();
+    }
+
+    if (this.port.portSpecialization() === "naval") {
+      this.fireBattery();
     }
 
     // Only check every 10 ticks for performance.
@@ -73,7 +87,12 @@ export class PortExecution implements Execution {
     const spawnRate = this.mg
       .config()
       .tradeShipSpawnRate(this.tradeShipSpawnRejections, numTradeShips);
-    for (let i = 0; i < this.port!.level(); i++) {
+    // Trade hubs roll extra spawn chances, as if leveled higher.
+    const tradeBonus =
+      this.port!.portSpecialization() === "trade"
+        ? this.mg.config().portTradeSpecSpawnBonusLevels()
+        : 0;
+    for (let i = 0; i < this.port!.level() + tradeBonus; i++) {
       if (this.random.chance(spawnRate)) {
         this.tradeShipSpawnRejections = 0;
         return true;
@@ -81,6 +100,52 @@ export class PortExecution implements Execution {
       this.tradeShipSpawnRejections++;
     }
     return false;
+  }
+
+  /**
+   * Naval base battery: torpedo the closest enemy combat ship in range.
+   * Submarines are only engageable at their close-range engagement distance,
+   * matching warship targeting rules.
+   */
+  private fireBattery(): void {
+    const config = this.mg.config();
+    if (
+      this.mg.ticks() - this.lastBatteryAttack <
+      config.portNavalBatteryAttackRate()
+    ) {
+      return;
+    }
+
+    const owner = this.port.owner();
+    const nearby = this.mg.nearbyUnits(
+      this.port.tile(),
+      config.portNavalBatteryRange(),
+      BATTERY_TARGET_TYPES as unknown as UnitType[],
+    );
+
+    let best: Unit | undefined;
+    let bestDistSquared = Infinity;
+    for (const { unit, distSquared } of nearby) {
+      if (unit.owner() === owner || !owner.canAttackPlayer(unit.owner(), true)) {
+        continue;
+      }
+      if (
+        unit.type() === UnitType.Submarine &&
+        distSquared > config.submarineEngagementRange() ** 2
+      ) {
+        continue;
+      }
+      if (distSquared < bestDistSquared) {
+        best = unit;
+        bestDistSquared = distSquared;
+      }
+    }
+
+    if (best === undefined) return;
+    this.lastBatteryAttack = this.mg.ticks();
+    this.mg.addExecution(
+      new TorpedoExecution(this.port.tile(), owner, this.port, best),
+    );
   }
 
   createStation(): void {
@@ -125,6 +190,10 @@ export class PortExecution implements Execution {
     for (const [i, otherPort] of ports.entries()) {
       const expanded = new Array(otherPort.level()).fill(otherPort);
       weightedPorts.push(...expanded);
+      if (otherPort.portSpecialization() === "trade") {
+        // Trade hubs attract commerce: count them again as a destination.
+        weightedPorts.push(...expanded);
+      }
       const tooClose =
         this.mg.manhattanDist(this.port!.tile(), otherPort.tile()) <
         this.mg.config().tradeShipShortRangeDebuff();

@@ -32,12 +32,34 @@ export type WarshipState = {
   retreatPort?: TileRef;
   isInCombat?: boolean;
   lastCombatTick: number;
+  /**
+   * Trade ship this warship is escorting. While set, the patrol anchor
+   * follows the convoy; cleared on manual move or when the convoy ends.
+   */
+  escortUnitId?: number;
 };
 
 export type TransportShipState = {
   isRetreating: boolean;
   troops: number;
 };
+
+/**
+ * Port identity, chosen once per port (irreversible):
+ * - "trade": trade hub — attracts commerce and pays bonus gold on arrivals.
+ * - "naval": naval base — torpedo battery vs raiders + extra repair capacity.
+ * - "watch": harbor watch — trade ships near the port are safe from pirates.
+ */
+export type PortSpecialization = "trade" | "naval" | "watch";
+export const PORT_SPECIALIZATIONS: readonly PortSpecialization[] = [
+  "trade",
+  "naval",
+  "watch",
+];
+export const isPortSpecialization = (
+  value: unknown,
+): value is PortSpecialization =>
+  PORT_SPECIALIZATIONS.includes(value as PortSpecialization);
 
 export const AllPlayers = "AllPlayers" as const;
 
@@ -165,7 +187,13 @@ function unitTypeGroup<T extends readonly UnitType[]>(types: T) {
 export enum UnitType {
   TransportShip = "Transport",
   Warship = "Warship",
+  Submarine = "Submarine",
+  AircraftCarrier = "Aircraft Carrier",
+  AntiAirFrigate = "Anti-Air Frigate",
+  Aircraft = "Aircraft",
   Shell = "Shell",
+  Torpedo = "Torpedo",
+  NavalMine = "Naval Mine",
   SAMMissile = "SAMMissile",
   Port = "Port",
   AtomBomb = "Atom Bomb",
@@ -179,7 +207,19 @@ export enum UnitType {
   MIRVWarhead = "MIRV Warhead",
   Train = "Train",
   Factory = "Factory",
+  Congress = "Congress",
 }
+
+export const DISABLED_ARSENAL: readonly UnitType[] = [
+  UnitType.AtomBomb,
+  UnitType.HydrogenBomb,
+  UnitType.MIRV,
+  UnitType.MIRVWarhead,
+  UnitType.MissileSilo,
+  UnitType.SAMLauncher,
+  UnitType.SAMMissile,
+  UnitType.DefensePost,
+] as const;
 
 export enum TrainType {
   Engine = "Engine",
@@ -199,6 +239,9 @@ export const BuildableAttacks = unitTypeGroup([
   UnitType.HydrogenBomb,
   UnitType.MIRV,
   UnitType.Warship,
+  UnitType.Submarine,
+  UnitType.AircraftCarrier,
+  UnitType.AntiAirFrigate,
 ] as const);
 
 export const Structures = unitTypeGroup([
@@ -208,11 +251,13 @@ export const Structures = unitTypeGroup([
   UnitType.MissileSilo,
   UnitType.Port,
   UnitType.Factory,
+  UnitType.Congress,
 ] as const);
 
 export const BuildMenus = unitTypeGroup([
   ...Structures.types,
   ...BuildableAttacks.types,
+  UnitType.NavalMine,
 ] as const);
 
 export const PlayerBuildable = unitTypeGroup([
@@ -240,7 +285,21 @@ export interface UnitParamsMap {
     patrolTile: TileRef;
   };
 
+  [UnitType.AntiAirFrigate]: {
+    patrolTile: TileRef;
+  };
+
   [UnitType.Shell]: Record<string, never>;
+
+  [UnitType.Torpedo]: Record<string, never>;
+
+  [UnitType.NavalMine]: Record<string, never>;
+
+  [UnitType.Submarine]: Record<string, never>;
+
+  [UnitType.AircraftCarrier]: Record<string, never>;
+
+  [UnitType.Aircraft]: Record<string, never>;
 
   [UnitType.SAMMissile]: Record<string, never>;
 
@@ -268,6 +327,8 @@ export interface UnitParamsMap {
   };
 
   [UnitType.Factory]: Record<string, never>;
+
+  [UnitType.Congress]: Record<string, never>;
 
   [UnitType.MissileSilo]: Record<string, never>;
 
@@ -457,6 +518,15 @@ export interface Unit {
   trainType(): TrainType | undefined;
   isLoaded(): boolean | undefined;
   setLoaded(loaded: boolean): void;
+
+  // Trade
+  /** Tiles actually traveled along the route (drives trade gold on arrival). */
+  tilesTraveled(): number;
+  setTilesTraveled(tiles: number): void;
+
+  // Port
+  portSpecialization(): PortSpecialization | undefined;
+  setPortSpecialization(spec: PortSpecialization): void;
 
   // Targeting
   setTargetTile(cell: TileRef | undefined): void;
@@ -649,6 +719,11 @@ export interface Player {
   stopEmbargo(other: Player): void;
   endTemporaryEmbargo(other: Player): void;
   canTrade(other: Player): boolean;
+
+  // Tariffs — purchased trade taxes: while active, this player collects a
+  // cut of the target's trade-arrival gold. Expiry is tick-based and lazy.
+  addTariffAgainst(other: Player, expiryTick: Tick): void;
+  hasTariffAgainst(other: Player): boolean;
 
   // Attacking.
   canAttack(tile: TileRef): boolean;
@@ -856,6 +931,7 @@ export interface PlayerInteraction {
   canDonateGold: boolean;
   canDonateTroops: boolean;
   canEmbargo: boolean;
+  canTariff: boolean;
   allianceInfo?: AllianceInfo;
 }
 
@@ -889,6 +965,8 @@ export enum MessageType {
   DONATION_RECEIVED,
   CHAT,
   RENEW_ALLIANCE,
+  ECONOMIC_MISSION_STARTED,
+  TARIFF_IMPOSED,
 }
 
 // Message categories used for filtering events in the EventsDisplay
@@ -924,6 +1002,8 @@ export const MESSAGE_TYPE_CATEGORIES: Record<MessageType, MessageCategory> = {
   [MessageType.DONATION_SENT]: MessageCategory.TRADE,
   [MessageType.DONATION_RECEIVED]: MessageCategory.TRADE,
   [MessageType.CHAT]: MessageCategory.CHAT,
+  [MessageType.ECONOMIC_MISSION_STARTED]: MessageCategory.TRADE,
+  [MessageType.TARIFF_IMPOSED]: MessageCategory.TRADE,
 } as const;
 
 /**

@@ -93,6 +93,14 @@ export interface UnitState {
   underConstruction: boolean;
   targetUnitId: number | null;
   targetTile: number | null;
+  /**
+   * Tiles traveled along the route (trade ships only, null otherwise).
+   * Authoritative on each unit update; advanced client-side between updates
+   * as motion plans play back.
+   */
+  tilesTraveled: number | null;
+  /** Port identity ("trade" | "naval" | "watch"); null when unspecialized or not a port. */
+  portSpecialization: string | null;
   troops: number;
   missileTimerQueue: number[];
   level: number;
@@ -207,6 +215,64 @@ export interface NukeTelegraphData {
   outerRadius: number;
   /** Launcher vs local player: 0 = self, 1 = ally/teammate, 2 = enemy. */
   relation: number;
+}
+
+export type MaritimeObjectiveStatus =
+  | "neutral"
+  | "capturing"
+  | "contested"
+  | "controlled";
+
+export type MaritimeObjectiveShape = "circle" | "lane";
+
+export interface MaritimeObjectiveData {
+  name: string;
+  /** Objective geometry; undefined (old replays) means "circle". */
+  shape?: MaritimeObjectiveShape;
+  center: number;
+  radius: number;
+  /** Corridor spine polyline (lane shape only); cached client-side. */
+  path?: number[];
+  /** Corridor half-width in tiles (lane shape only). */
+  laneHalfWidth?: number;
+  /** Current holder/capturer; 0 means neutral or disputed. */
+  controllerID: number;
+  /** Current holder team in team games; null in FFA/neutral/disputed states. */
+  controllerTeam: string | null;
+  /** Strongest fleet owner this tick; 0 when neutral/disputed. */
+  leaderID: number;
+  /** Strongest fleet team this tick; null in FFA/neutral/disputed states. */
+  leaderTeam: string | null;
+  controlPercent: number;
+  status: MaritimeObjectiveStatus;
+  navalPower: { ownerID: number; team: string | null; power: number }[];
+}
+
+/** Sea-lane controller vs the local player. */
+export type TradeRouteRelation = "own" | "friendly" | "foreign" | "neutral";
+export type TradeRouteRiskLevel = "safe" | "contested" | "dangerous";
+
+/** One system ocean lane; ownerID is 0 while neutral or contested. */
+export interface TradeRouteData {
+  shipId: number;
+  ownerID: number;
+  /** Route start tile. */
+  from: number;
+  /** Route end tile. */
+  to: number;
+  /** Straight-line lane distance in tiles (rounded). */
+  distanceTiles: number;
+  /** Rival fleet units close enough to contest the lane. */
+  enemyThreats: number;
+  /** Controller fleet units close enough to hold the lane. */
+  escortCount: number;
+  /**
+   * Estimated gold payout for this in-flight route. This is projected from the
+   * visible route distance, not the server's final water-path tilesTraveled.
+   */
+  estimatedGold?: number;
+  relation: TradeRouteRelation;
+  riskLevel: TradeRouteRiskLevel;
 }
 
 /** Lean config for constructing the GPU renderer — no replay-specific fields. */

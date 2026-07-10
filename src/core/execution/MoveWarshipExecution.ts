@@ -1,6 +1,13 @@
 import { Execution, Game, Player, UnitType } from "../game/Game";
 import { TileRef } from "../game/GameMap";
 
+const MANUALLY_MOVABLE_NAVAL_UNITS = [
+  UnitType.Warship,
+  UnitType.Submarine,
+  UnitType.AircraftCarrier,
+  UnitType.AntiAirFrigate,
+] as const;
+
 export class MoveWarshipExecution implements Execution {
   constructor(
     private readonly owner: Player,
@@ -13,31 +20,46 @@ export class MoveWarshipExecution implements Execution {
       console.warn(`MoveWarshipExecution: position ${this.position} not valid`);
       return;
     }
-    // Get water component of new TargetTile for connectivity check
-    const newPatrolTileWaterComponent = mg.getWaterComponent(this.position);
-    // Cache warship list and build a lookup map — avoids repeated iteration
-    const warshipMap = new Map(
-      this.owner.units(UnitType.Warship).map((u) => [u.id(), u]),
+
+    const targetWaterComponent = mg.getWaterComponent(this.position);
+    if (targetWaterComponent === null) {
+      return;
+    }
+
+    const movableUnits = new Map(
+      this.owner
+        .units(...(MANUALLY_MOVABLE_NAVAL_UNITS as unknown as UnitType[]))
+        .map((u) => [u.id(), u]),
     );
-    // Deduplicate ids so each warship is only moved once
+
     for (const unitId of new Set(this.unitIds)) {
-      const warship = warshipMap.get(unitId);
-      if (!warship) {
-        console.warn(`MoveWarshipExecution: warship ${unitId} not found`);
+      const unit = movableUnits.get(unitId);
+      if (!unit) {
+        console.warn(`MoveWarshipExecution: naval unit ${unitId} not found`);
         continue;
       }
-      if (!warship.isActive()) {
-        console.warn(`MoveWarshipExecution: warship ${unitId} is not active`);
+      if (!unit.isActive()) {
+        console.warn(`MoveWarshipExecution: naval unit ${unitId} is not active`);
         continue;
       }
-      // Do not update the warship's patrolTile if it is in a different Water Component
-      if (!mg.hasWaterComponent(warship.tile(), newPatrolTileWaterComponent!)) {
+      if (!mg.hasWaterComponent(unit.tile(), targetWaterComponent)) {
         continue;
       }
-      warship.updateWarshipState({
-        patrolTile: this.position,
-      });
-      warship.setTargetTile(undefined);
+
+      unit.setTargetUnit(undefined);
+      if (
+        unit.type() === UnitType.Warship ||
+        unit.type() === UnitType.AntiAirFrigate
+      ) {
+        // A manual move order overrides escort duty.
+        unit.updateWarshipState({
+          patrolTile: this.position,
+          escortUnitId: undefined,
+        });
+        unit.setTargetTile(undefined);
+      } else {
+        unit.setTargetTile(this.position);
+      }
     }
   }
 

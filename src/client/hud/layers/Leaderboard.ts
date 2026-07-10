@@ -4,6 +4,7 @@ import { repeat } from "lit/directives/repeat.js";
 import { renderTroops, translateText } from "../../../client/Utils";
 import { EventBus } from "../../../core/EventBus";
 import { Controller } from "../../Controller";
+import type { MaritimeObjectiveData } from "../../render/types";
 import { GoToPlayerEvent } from "../../TransformHandler";
 import { formatPercentage, renderNumber } from "../../Utils";
 import { GameView, PlayerView } from "../../view";
@@ -17,6 +18,37 @@ interface Entry {
   isMyPlayer: boolean;
   isOnSameTeam: boolean;
   player: PlayerView;
+}
+
+function maritimeControlScore(
+  objective: MaritimeObjectiveData | null,
+  player: PlayerView,
+): number | null {
+  if (objective === null) return null;
+  const team = player.team();
+  const controlsAsPlayer =
+    objective.controllerID === player.smallID() ||
+    objective.leaderID === player.smallID();
+  const controlsAsTeam =
+    team !== null &&
+    (objective.controllerTeam === team || objective.leaderTeam === team);
+  return controlsAsPlayer || controlsAsTeam
+    ? objective.controlPercent / 100
+    : 0;
+}
+
+function maritimePowerScore(
+  objective: MaritimeObjectiveData | null,
+  player: PlayerView,
+): number {
+  if (objective === null) return 0;
+  const team = player.team();
+  const entry = objective.navalPower.find(
+    (power) =>
+      power.ownerID === player.smallID() ||
+      (team !== null && power.team === team),
+  );
+  return entry?.power ?? 0;
 }
 
 @customElement("leader-board")
@@ -77,6 +109,19 @@ export class Leaderboard extends LitElement implements Controller {
       this._sortOrder === "asc" ? a - b : b - a;
 
     const maxTroops = (p: PlayerView) => this.game!.config().maxTroops(p);
+    const maritimeObjective = this.game.frameData?.().maritimeObjective ?? null;
+    const scoreSort = (p: PlayerView) => {
+      const control = maritimeControlScore(maritimeObjective, p);
+      if (control !== null) {
+        return control * 1000 + maritimePowerScore(maritimeObjective, p);
+      }
+      return p.numTilesOwned();
+    };
+    const scoreText = (p: PlayerView) => {
+      const control = maritimeControlScore(maritimeObjective, p);
+      if (control !== null) return formatPercentage(control);
+      return formatPercentage(p.numTilesOwned() / numTilesWithoutFallout);
+    };
 
     switch (this._sortKey) {
       case "gold":
@@ -88,9 +133,7 @@ export class Leaderboard extends LitElement implements Controller {
         sorted = sorted.sort((a, b) => compare(maxTroops(a), maxTroops(b)));
         break;
       default:
-        sorted = sorted.sort((a, b) =>
-          compare(a.numTilesOwned(), b.numTilesOwned()),
-        );
+        sorted = sorted.sort((a, b) => compare(scoreSort(a), scoreSort(b)));
     }
 
     const numTilesWithoutFallout =
@@ -106,9 +149,7 @@ export class Leaderboard extends LitElement implements Controller {
       return {
         name: player.displayName(),
         position: index + 1,
-        score: formatPercentage(
-          player.numTilesOwned() / numTilesWithoutFallout,
-        ),
+        score: scoreText(player),
         gold: renderNumber(player.gold()),
         maxTroops: renderTroops(maxTroops),
         isMyPlayer: player === myPlayer,
@@ -137,9 +178,7 @@ export class Leaderboard extends LitElement implements Controller {
         this.players.push({
           name: myPlayer.displayName(),
           position: place,
-          score: formatPercentage(
-            myPlayer.numTilesOwned() / this.game.numLandTiles(),
-          ),
+          score: scoreText(myPlayer),
           gold: renderNumber(myPlayer.gold()),
           maxTroops: renderTroops(myPlayerMaxTroops),
           isMyPlayer: true,
@@ -186,7 +225,11 @@ export class Leaderboard extends LitElement implements Controller {
               class="py-1 md:py-2 text-center border-b border-slate-500 cursor-pointer whitespace-nowrap truncate"
               @click=${() => this.setSort("tiles")}
             >
-              ${translateText("leaderboard.owned")}
+              ${translateText(
+                this.game?.frameData?.().maritimeObjective
+                  ? "leaderboard.control"
+                  : "leaderboard.owned",
+              )}
               ${this._sortKey === "tiles"
                 ? this._sortOrder === "asc"
                   ? "⬆️"

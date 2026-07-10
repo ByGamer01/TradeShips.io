@@ -2,6 +2,7 @@ import { Logger } from "winston";
 import WebSocket from "ws";
 import {
   Difficulty,
+  DISABLED_ARSENAL,
   GameMapSize,
   GameMapType,
   GameMode,
@@ -80,7 +81,7 @@ export class GameManager {
         randomSpawn: false,
         gameMode: GameMode.FFA,
         bots: 400,
-        disabledUnits: [],
+        disabledUnits: [...DISABLED_ARSENAL],
         ...gameConfig,
       },
       creatorPersistentID,

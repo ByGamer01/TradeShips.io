@@ -738,6 +738,112 @@ describe("GameView.frameData() — renderer contract", () => {
     expect(game.frameData().events.deadUnits).toBe(a1);
   });
 
+  it("does not stamp trade ship movement into owner-colored trail state", () => {
+    const game = makeGameView({ width: 10, height: 10 });
+
+    const gu1 = makeEmptyGu(1);
+    gu1.updates[GameUpdateType.Unit] = [
+      makeUnitUpdate({
+        id: 77,
+        unitType: UnitType.TradeShip,
+        ownerID: 3,
+        pos: 11,
+        lastPos: 11,
+      }),
+    ];
+    game.update(gu1);
+
+    const gu2 = makeEmptyGu(2);
+    gu2.updates[GameUpdateType.Unit] = [
+      makeUnitUpdate({
+        id: 77,
+        unitType: UnitType.TradeShip,
+        ownerID: 3,
+        pos: 14,
+        lastPos: 11,
+      }),
+    ];
+    game.update(gu2);
+
+    const trail = game.frameData().trailState;
+    expect([trail[11], trail[12], trail[13], trail[14]]).toEqual([0, 0, 0, 0]);
+  });
+
+  it("frame.tradeRoutes renders the trade-lane corridor as system segments", () => {
+    const game = makeGameView({ width: 10, height: 10, myClientID: "c-me" });
+    const gu = withPlayers(1, [
+      makePlayerUpdate({ id: "me", smallID: 1, clientID: "c-me" }),
+    ]);
+    gu.updates[GameUpdateType.MaritimeObjective] = [
+      {
+        type: GameUpdateType.MaritimeObjective,
+        shape: "lane",
+        center: 34,
+        radius: 8,
+        laneHalfWidth: 8,
+        path: [32, 34, 36],
+        controllerSmallID: 1,
+        controllerTeam: null,
+        leaderSmallID: 1,
+        leaderTeam: null,
+        controlPercent: 10,
+        status: "capturing",
+        navalPower: [{ smallID: 1, team: null, power: 3 }],
+      },
+    ];
+    game.update(gu);
+
+    const segments = game.frameData().tradeLaneSegments;
+    expect(segments.map((s) => [s.from, s.to])).toEqual([
+      [32, 34],
+      [34, 36],
+    ]);
+    for (const segment of segments) {
+      expect(segment.ownerID).toBe(1);
+      expect(segment.relation).toBe("own");
+      expect(segment.riskLevel).toBe("safe");
+    }
+    // Corridor geometry must not leak into HUD route stats.
+    expect(game.frameData().tradeRoutes).toHaveLength(0);
+  });
+
+  it("frame.tradeRoutes keeps corridor segments after the path-bearing update", () => {
+    const game = makeGameView({ width: 10, height: 10, myClientID: "c-me" });
+    const first = withPlayers(1, [
+      makePlayerUpdate({ id: "me", smallID: 1, clientID: "c-me" }),
+    ]);
+    const baseUpdate = {
+      type: GameUpdateType.MaritimeObjective as const,
+      shape: "lane" as const,
+      center: 34,
+      radius: 8,
+      laneHalfWidth: 8,
+      controllerSmallID: 0,
+      controllerTeam: null,
+      leaderSmallID: 0,
+      leaderTeam: null,
+      controlPercent: 0,
+      status: "contested" as const,
+      navalPower: [],
+    };
+    first.updates[GameUpdateType.MaritimeObjective] = [
+      { ...baseUpdate, path: [32, 34, 36] },
+    ];
+    game.update(first);
+
+    // Later ticks omit the static path; the cached copy must keep rendering.
+    const second = withPlayers(2, [
+      makePlayerUpdate({ id: "me", smallID: 1, clientID: "c-me" }),
+    ]);
+    second.updates[GameUpdateType.MaritimeObjective] = [{ ...baseUpdate }];
+    game.update(second);
+
+    const segments = game.frameData().tradeLaneSegments;
+    expect(segments).toHaveLength(2);
+    expect(segments[0].relation).toBe("neutral");
+    expect(segments[0].riskLevel).toBe("contested");
+  });
+
   it("frame.structuresDirty is true on first populate (force initial upload)", () => {
     const game = makeGameView();
     game.update(makeEmptyGu(1));

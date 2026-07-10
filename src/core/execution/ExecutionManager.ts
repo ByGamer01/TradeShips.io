@@ -14,9 +14,12 @@ import { DonateGoldExecution } from "./DonateGoldExecution";
 import { DonateTroopsExecution } from "./DonateTroopExecution";
 import { EmbargoAllExecution } from "./EmbargoAllExecution";
 import { EmbargoExecution } from "./EmbargoExecution";
+import { TariffExecution } from "./TariffExecution";
 import { EmojiExecution } from "./EmojiExecution";
 import { MarkDisconnectedExecution } from "./MarkDisconnectedExecution";
+import { EscortTradeExecution } from "./EscortTradeExecution";
 import { MoveWarshipExecution } from "./MoveWarshipExecution";
+import { SpecializePortExecution } from "./SpecializePortExecution";
 import { NationExecution } from "./NationExecution";
 import { NoOpExecution } from "./NoOpExecution";
 import { PauseExecution } from "./PauseExecution";
@@ -69,6 +72,18 @@ export class Executor {
         return new BoatRetreatExecution(player, intent.unitID);
       case "move_warship":
         return new MoveWarshipExecution(player, intent.unitIds, intent.tile);
+      case "escort_trade":
+        return new EscortTradeExecution(
+          player,
+          intent.unitIds,
+          intent.targetUnitId,
+        );
+      case "specialize_port":
+        return new SpecializePortExecution(
+          player,
+          intent.unitId,
+          intent.specialization,
+        );
       case "spawn":
         return new SpawnExecution(this.gameID, player.info(), intent.tile);
       case "boat":
@@ -95,6 +110,8 @@ export class Executor {
         return new EmbargoExecution(player, intent.targetID, intent.action);
       case "embargo_all":
         return new EmbargoAllExecution(player, intent.action);
+      case "tariff":
+        return new TariffExecution(player, intent.targetID);
       case "build_unit":
         return new ConstructionExecution(
           player,

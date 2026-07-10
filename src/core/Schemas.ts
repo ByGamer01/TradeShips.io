@@ -42,8 +42,11 @@ export type Intent =
   | DonateTroopsIntent
   | BuildUnitIntent
   | EmbargoIntent
+  | TariffIntent
   | QuickChatIntent
   | MoveWarshipIntent
+  | EscortTradeIntent
+  | SpecializePortIntent
   | MarkDisconnectedIntent
   | EmbargoAllIntent
   | UpgradeStructureIntent
@@ -67,11 +70,14 @@ export type EmojiIntent = z.infer<typeof EmojiIntentSchema>;
 export type DonateGoldIntent = z.infer<typeof DonateGoldIntentSchema>;
 export type DonateTroopsIntent = z.infer<typeof DonateTroopIntentSchema>;
 export type EmbargoIntent = z.infer<typeof EmbargoIntentSchema>;
+export type TariffIntent = z.infer<typeof TariffIntentSchema>;
 export type BuildUnitIntent = z.infer<typeof BuildUnitIntentSchema>;
 export type UpgradeStructureIntent = z.infer<
   typeof UpgradeStructureIntentSchema
 >;
 export type MoveWarshipIntent = z.infer<typeof MoveWarshipIntentSchema>;
+export type EscortTradeIntent = z.infer<typeof EscortTradeIntentSchema>;
+export type SpecializePortIntent = z.infer<typeof SpecializePortIntentSchema>;
 export type QuickChatIntent = z.infer<typeof QuickChatIntentSchema>;
 export type MarkDisconnectedIntent = z.infer<
   typeof MarkDisconnectedIntentSchema
@@ -410,6 +416,11 @@ export const EmbargoAllIntentSchema = z.object({
   action: z.union([z.literal("start"), z.literal("stop")]),
 });
 
+export const TariffIntentSchema = z.object({
+  type: z.literal("tariff"),
+  targetID: ID,
+});
+
 export const DonateGoldIntentSchema = z.object({
   type: z.literal("donate_gold"),
   recipient: ID,
@@ -449,6 +460,18 @@ export const MoveWarshipIntentSchema = z.object({
   type: z.literal("move_warship"),
   unitIds: z.array(z.number().int()).nonempty(),
   tile: z.number(),
+});
+
+export const EscortTradeIntentSchema = z.object({
+  type: z.literal("escort_trade"),
+  unitIds: z.array(z.number().int()).nonempty(),
+  targetUnitId: z.number().int(),
+});
+
+export const SpecializePortIntentSchema = z.object({
+  type: z.literal("specialize_port"),
+  unitId: z.number().int(),
+  specialization: z.enum(["trade", "naval", "watch"]),
 });
 
 export const DeleteUnitIntentSchema = z.object({
@@ -506,7 +529,10 @@ const IntentSchema = z.discriminatedUnion("type", [
   UpgradeStructureIntentSchema,
   EmbargoIntentSchema,
   EmbargoAllIntentSchema,
+  TariffIntentSchema,
   MoveWarshipIntentSchema,
+  EscortTradeIntentSchema,
+  SpecializePortIntentSchema,
   QuickChatIntentSchema,
   AllianceExtensionIntentSchema,
   DeleteUnitIntentSchema,

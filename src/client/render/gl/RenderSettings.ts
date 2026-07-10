@@ -57,6 +57,7 @@ export interface RenderSettings {
     fx: boolean;
     bar: boolean;
     nameDebug: boolean;
+    tradeRoute: boolean;
   };
   terrain: {
     /**
@@ -330,6 +331,50 @@ export interface RenderSettings {
     lineWidth: number; // screen px — stroke width
     duration: number; // ms — total animation lifetime
     converge: number; // 0–1 — fraction of radius consumed during animation
+  };
+  tradeRoute: {
+    lineWidth: number; // px — route line stroke width
+    dashLen: number; // px — dash length
+    gapLen: number; // px — gap length
+    flowSpeed: number; // px/s — dash drift speed toward destination
+    endFade: number; // px — fade-in/out length at segment endpoints
+    ownR: number; // route color — local player's trade
+    ownG: number;
+    ownB: number;
+    ownAlpha: number;
+    friendlyR: number; // route color — ally/teammate trade
+    friendlyG: number;
+    friendlyB: number;
+    friendlyAlpha: number;
+    foreignR: number; // route color — everyone else's trade
+    foreignG: number;
+    foreignB: number;
+    foreignAlpha: number;
+    contestedR: number; // warning tint — enemy raiders near the route
+    contestedG: number;
+    contestedB: number;
+    contestedBlend: number; // 0–1 — blend toward contested tint
+    dangerousR: number; // danger tint — route under heavy threat
+    dangerousG: number;
+    dangerousB: number;
+    dangerousBlend: number; // 0–1 — blend toward dangerous tint
+  };
+  maritimeObjective: {
+    laneFillAlpha: number; // per-disc corridor fill opacity (discs stack toward the spine)
+    circleFillAlpha: number; // team-circle fill opacity
+    ringAlpha: number; // team-circle border ring opacity
+    ringWidth: number; // ring band width as fraction of radius
+    flagSize: number; // flag marker half-size in world tiles
+    flagAlpha: number; // flag marker opacity
+    neutralR: number; // zone color — uncontrolled
+    neutralG: number;
+    neutralB: number;
+    contestedR: number; // zone color — tied naval power
+    contestedG: number;
+    contestedB: number;
+    heldR: number; // zone color — a fleet holds/captures it
+    heldG: number;
+    heldB: number;
   };
   samRadius: {
     strokeWidth: number; // ring half-width in world units

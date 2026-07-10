@@ -21,6 +21,7 @@ import {
   PublicGameInfo,
 } from "../core/Schemas";
 import {
+  DISABLED_ARSENAL,
   Difficulty,
   GameMapSize,
   GameMode,
@@ -31,6 +32,7 @@ import { getApiBase } from "./Api";
 import { crazyGamesSDK } from "./CrazyGamesSDK";
 import { JoinLobbyEvent } from "./Main";
 import { terrainMapFileLoader } from "./TerrainMapFileLoader";
+import { UNIT_TYPE_TRANSLATION_KEYS } from "./UnitTypeLabels";
 import { normaliseMapKey } from "./Utils";
 import { BaseModal } from "./components/BaseModal";
 import "./components/CopyButton";
@@ -601,29 +603,17 @@ export class JoinLobbyModal extends BaseModal {
   }
 
   private renderDisabledUnits(): TemplateResult {
+    const visibleDisabledUnits =
+      this.gameConfig?.disabledUnits?.filter(
+        (unit) => !DISABLED_ARSENAL.includes(unit),
+      ) ?? [];
     if (
       !this.gameConfig ||
       !this.gameConfig.disabledUnits ||
-      this.gameConfig.disabledUnits.length === 0
+      visibleDisabledUnits.length === 0
     ) {
       return html``;
     }
-
-    const unitKeys: Record<string, string> = {
-      City: "unit_type.city",
-      Port: "unit_type.port",
-      "Defense Post": "unit_type.defense_post",
-      "SAM Launcher": "unit_type.sam_launcher",
-      "Missile Silo": "unit_type.missile_silo",
-      Warship: "unit_type.warship",
-      Factory: "unit_type.factory",
-      "Atom Bomb": "unit_type.atom_bomb",
-      "Hydrogen Bomb": "unit_type.hydrogen_bomb",
-      MIRV: "unit_type.mirv",
-      "Trade Ship": "player_stats_table.unit.trade",
-      Transport: "player_stats_table.unit.trans",
-      "MIRV Warhead": "player_stats_table.unit.mirvw",
-    };
 
     return html`
       <div
@@ -635,8 +625,8 @@ export class JoinLobbyModal extends BaseModal {
           ${translateText("private_lobby.disabled_units")}
         </div>
         <div class="flex flex-wrap gap-2">
-          ${this.gameConfig.disabledUnits.map((unit) => {
-            const key = unitKeys[unit];
+          ${visibleDisabledUnits.map((unit) => {
+            const key = UNIT_TYPE_TRANSLATION_KEYS[unit];
             const name = key ? translateText(key) : unit;
             return html`
               <span

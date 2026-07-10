@@ -33,6 +33,7 @@ describe("TradeShipExecution", () => {
       id: vi.fn(() => 1),
       clientID: vi.fn(() => 1),
       canTrade: vi.fn(() => true),
+      isFriendly: vi.fn(() => false),
     } as any;
 
     dstOwner = {
@@ -43,6 +44,7 @@ describe("TradeShipExecution", () => {
       unitCount: vi.fn(() => 1),
       clientID: vi.fn(() => 2),
       canTrade: vi.fn(() => true),
+      isFriendly: vi.fn(() => false),
     } as any;
 
     pirate = {
@@ -52,6 +54,7 @@ describe("TradeShipExecution", () => {
       units: vi.fn(() => [piratePort, piratePort2]),
       unitCount: vi.fn(() => 2),
       canTrade: vi.fn(() => true),
+      isFriendly: vi.fn(() => false),
     } as any;
 
     piratePort = {
@@ -88,8 +91,10 @@ describe("TradeShipExecution", () => {
       isActive: vi.fn(() => true),
       isUnderConstruction: vi.fn(() => false),
       isMarkedForDeletion: vi.fn(() => false),
+      portSpecialization: vi.fn(() => undefined),
     } as any;
 
+    let odometer = 0;
     tradeShip = {
       isActive: vi.fn(() => true),
       owner: vi.fn(() => origOwner),
@@ -97,9 +102,14 @@ describe("TradeShipExecution", () => {
       move: vi.fn(),
       setTargetUnit: vi.fn(),
       setSafeFromPirates: vi.fn(),
+      setReachedTarget: vi.fn(),
       touch: vi.fn(),
       delete: vi.fn(),
       tile: vi.fn(() => 32),
+      tilesTraveled: vi.fn(() => odometer),
+      setTilesTraveled: vi.fn((tiles: number) => {
+        odometer = tiles;
+      }),
     } as any;
 
     tradeShipExecution = new TradeShipExecution(origOwner, srcPort, dstPort);
@@ -165,5 +175,53 @@ describe("TradeShipExecution", () => {
     expect(tradeShipExecution.isActive()).toBe(false);
     expect(origOwner.addGold).toHaveBeenCalled();
     expect(dstOwner.addGold).toHaveBeenCalled();
+  });
+
+  it("pays a larger commercial bonus when trading with an ally", () => {
+    origOwner.isFriendly = vi.fn((p: Player) => p === dstOwner);
+    dstOwner.isFriendly = vi.fn((p: Player) => p === origOwner);
+
+    const baseGold = game
+      .config()
+      .tradeShipGold(tradeShip.tilesTraveled(), origOwner);
+
+    tradeShipExecution["pathFinder"] = {
+      next: vi.fn(() => ({ status: PathStatus.COMPLETE, node: 32 })),
+      findPath: vi.fn((from: number) => [from]),
+    } as any;
+    tradeShipExecution.tick(1);
+
+    const srcGold = (origOwner.addGold as any).mock.calls[0][0] as bigint;
+    const dstGold = (dstOwner.addGold as any).mock.calls[0][0] as bigint;
+
+    expect(srcGold).toBe(dstGold);
+    expect(srcGold).toBeGreaterThan(baseGold);
+  });
+
+  it("routes tariff cuts from arrival gold to the tariff issuer", () => {
+    const collector = {
+      id: vi.fn(() => 9),
+      smallID: vi.fn(() => 9),
+      addGold: vi.fn(),
+      hasTariffAgainst: vi.fn((p: Player) => p === origOwner),
+    } as any;
+    game.players = vi.fn(() => [collector]);
+
+    tradeShipExecution["pathFinder"] = {
+      next: vi.fn(() => ({ status: PathStatus.COMPLETE, node: 32 })),
+      findPath: vi.fn((from: number) => [from]),
+    } as any;
+    tradeShipExecution.tick(1);
+
+    expect(collector.addGold).toHaveBeenCalledTimes(1);
+    const cut = collector.addGold.mock.calls[0][0] as bigint;
+    const srcGold = (origOwner.addGold as any).mock.calls[0][0] as bigint;
+    const dstGold = (dstOwner.addGold as any).mock.calls[0][0] as bigint;
+
+    // dst owner has no tariff against them, so they receive the full amount.
+    expect(cut).toBeGreaterThan(0n);
+    expect(cut + srcGold).toBe(dstGold);
+    const rate = game.config().tariffTradeTaxRate();
+    expect(cut).toBe(BigInt(Math.floor(Number(dstGold) * rate)));
   });
 });

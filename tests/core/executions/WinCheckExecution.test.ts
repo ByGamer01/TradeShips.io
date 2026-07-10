@@ -1,6 +1,7 @@
 import { WinCheckExecution } from "../../../src/core/execution/WinCheckExecution";
 import {
   ColoredTeams,
+  GameMapType,
   GameMode,
   PlayerInfo,
   PlayerType,
@@ -348,6 +349,32 @@ describe("WinCheckExecution - Nation Winners", () => {
     winCheck.checkWinnerTeam();
 
     // Verify no winner declared (bot teams excluded)
+    expect(setWinnerSpy).not.toHaveBeenCalled();
+    expect(winCheck.isActive()).toBe(true);
+  });
+
+  test("should not award maritime maps by land percentage alone", async () => {
+    const game = await setup("big_plains", {
+      gameMap: GameMapType.ArchipelagoSea,
+      gameMode: GameMode.FFA,
+    });
+    const player = game.addPlayer(playerInfo("naval", PlayerType.Human));
+    const targetTiles = Math.ceil(game.numLandTiles() * 0.9);
+    let assigned = 0;
+
+    game.map().forEachTile((tile) => {
+      if (assigned >= targetTiles || !game.map().isLand(tile)) return;
+      player.conquer(tile);
+      assigned++;
+    });
+
+    const setWinnerSpy = vi.fn();
+    game.setWinner = setWinnerSpy;
+
+    const winCheck = new WinCheckExecution();
+    winCheck.init(game, 0);
+    winCheck.checkWinnerFFA();
+
     expect(setWinnerSpy).not.toHaveBeenCalled();
     expect(winCheck.isActive()).toBe(true);
   });

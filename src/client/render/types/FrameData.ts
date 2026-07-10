@@ -1,11 +1,13 @@
 import type { FrameEvents } from "./FrameEvents";
 import type {
   AttackRingInput,
+  MaritimeObjectiveData,
   NameEntry,
   NukeTelegraphData,
   PlayerState,
   PlayerStatusData,
   TilePair,
+  TradeRouteData,
   UnitState,
 } from "./Renderer";
 
@@ -67,6 +69,20 @@ export interface FrameData {
   readonly allianceClusters: ReadonlyMap<number, number>;
   readonly nukeTelegraphs: NukeTelegraphData[];
   readonly attackRings: AttackRingInput[];
+  readonly tradeRoutes: TradeRouteData[];
+  /**
+   * FFA trade-lane corridor spine as renderable segments. Kept separate from
+   * tradeRoutes: ship routes feed HUD stats but are not drawn, while these
+   * segments are drawn but must not pollute the HUD's own-route stats.
+   */
+  readonly tradeLaneSegments: TradeRouteData[];
+  readonly maritimeObjective: MaritimeObjectiveData | null;
+  /**
+   * Objective as rendered on the map (zone fill + flag). Authoritative core
+   * data only — null on non-maritime maps and for the derived replay
+   * fallback, so no phantom zone is ever drawn.
+   */
+  readonly maritimeObjectiveRender: MaritimeObjectiveData | null;
   /** True when structures changed this tick (added/removed/level change). */
   readonly structuresDirty: boolean;
 }

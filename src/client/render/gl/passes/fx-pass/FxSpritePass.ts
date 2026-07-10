@@ -10,10 +10,14 @@ import type { Config } from "../../../../../core/configuration/Config";
 import type { ConquestFx, DeadUnitFx, RendererConfig } from "../../../types";
 import {
   STRUCTURE_TYPES,
+  UT_AIRCRAFT,
   UT_ATOM_BOMB,
+  UT_CARRIER,
   UT_HYDROGEN_BOMB,
+  UT_SUBMARINE,
   UT_MIRV_WARHEAD,
   UT_SHELL,
+  UT_TORPEDO,
   UT_TRAIN,
   UT_WARSHIP,
 } from "../../../types";
@@ -367,13 +371,22 @@ export class FxSpritePass {
       return;
     }
 
-    if (typeName === UT_WARSHIP) {
+    if (
+      typeName === UT_WARSHIP ||
+      typeName === UT_SUBMARINE ||
+      typeName === UT_CARRIER
+    ) {
       this.pushFx(x, y, FX_UNIT_EXPLOSION, now);
       this.pushFx(x, y, FX_SINKING_SHIP, now);
       return;
     }
 
-    if (typeName === UT_SHELL && unit.reachedTarget) {
+    if (
+      (typeName === UT_SHELL ||
+        typeName === UT_TORPEDO ||
+        typeName === UT_AIRCRAFT) &&
+      unit.reachedTarget
+    ) {
       this.pushFx(x, y, FX_MINI_EXPLOSION, now);
       return;
     }

@@ -14,7 +14,8 @@
     "railroad": true,
     "fx": true,
     "bar": true,
-    "nameDebug": false
+    "nameDebug": false,
+    "tradeRoute": true
   },
   "terrain": {
     "oceanColor": "#4785b5"
@@ -144,6 +145,10 @@
       "Missile Silo": {
         "scale": 1.55,
         "iconFill": 0.85
+      },
+      "Congress": {
+        "scale": 1.25,
+        "iconFill": 0.7
       }
     },
     "highlightOutlineWidth": 0.04,
@@ -282,6 +287,50 @@
     "lineWidth": 2,
     "duration": 800,
     "converge": 0.7
+  },
+  "tradeRoute": {
+    "lineWidth": 1.75,
+    "dashLen": 6,
+    "gapLen": 5,
+    "flowSpeed": 10,
+    "endFade": 8,
+    "ownR": 1,
+    "ownG": 0.84,
+    "ownB": 0.35,
+    "ownAlpha": 0.55,
+    "friendlyR": 0.35,
+    "friendlyG": 0.8,
+    "friendlyB": 0.75,
+    "friendlyAlpha": 0.4,
+    "foreignR": 0.85,
+    "foreignG": 0.85,
+    "foreignB": 0.8,
+    "foreignAlpha": 0.18,
+    "contestedR": 1,
+    "contestedG": 0.55,
+    "contestedB": 0.2,
+    "contestedBlend": 0.6,
+    "dangerousR": 1,
+    "dangerousG": 0.25,
+    "dangerousB": 0.2,
+    "dangerousBlend": 0.85
+  },
+  "maritimeObjective": {
+    "laneFillAlpha": 0.1,
+    "circleFillAlpha": 0.16,
+    "ringAlpha": 0.85,
+    "ringWidth": 0.1,
+    "flagSize": 12,
+    "flagAlpha": 0.95,
+    "neutralR": 0.2,
+    "neutralG": 0.78,
+    "neutralB": 0.88,
+    "contestedR": 0.95,
+    "contestedG": 0.45,
+    "contestedB": 0.3,
+    "heldR": 0.93,
+    "heldG": 0.78,
+    "heldB": 0.35
   },
   "samRadius": {
     "strokeWidth": 1.5,

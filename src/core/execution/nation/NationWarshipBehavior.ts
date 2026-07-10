@@ -11,6 +11,7 @@ import {
 import { TileRef } from "../../game/GameMap";
 import { PseudoRandom } from "../../PseudoRandom";
 import { ConstructionExecution } from "../ConstructionExecution";
+import { nationDifficulty } from "../utils/NationDifficulty";
 import {
   EMOJI_WARSHIP_RETALIATION,
   NationEmojiBehavior,
@@ -233,7 +234,7 @@ export class NationWarshipBehavior {
       return;
     }
 
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     // In Easy never retaliate. In Medium retaliate with 15% chance. Hard with 50%, Impossible with 80%.
     if (
       (difficulty === Difficulty.Medium && this.random.nextInt(0, 100) < 15) ||
@@ -304,7 +305,7 @@ export class NationWarshipBehavior {
     }
 
     // Only the smart nations can do this
-    const { difficulty } = this.game.config().gameConfig();
+    const difficulty = nationDifficulty(this.game);
     if (
       difficulty !== Difficulty.Hard &&
       difficulty !== Difficulty.Impossible

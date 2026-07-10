@@ -23,6 +23,7 @@ import { NationStructureBehavior } from "./nation/NationStructureBehavior";
 import { NationWarshipBehavior } from "./nation/NationWarshipBehavior";
 import { SpawnExecution } from "./SpawnExecution";
 import { AiAttackBehavior } from "./utils/AiAttackBehavior";
+import { nationDifficulty } from "./utils/NationDifficulty";
 
 export class NationExecution implements Execution {
   private active = true;
@@ -61,6 +62,7 @@ export class NationExecution implements Execution {
 
   init(mg: Game) {
     this.mg = mg;
+    this.tuneBehaviorRatios();
     this.attackRate = this.getAttackRate();
     this.attackTick = this.random.nextInt(0, this.attackRate);
 
@@ -72,16 +74,44 @@ export class NationExecution implements Execution {
   }
 
   private getAttackRate(): number {
-    const { difficulty } = this.mg.config().gameConfig();
+    const difficulty = nationDifficulty(this.mg);
     switch (difficulty) {
       case Difficulty.Easy:
         return this.random.nextInt(65, 100); // Slower reactions
       case Difficulty.Medium:
-        return this.random.nextInt(55, 70);
-      case Difficulty.Hard:
         return this.random.nextInt(45, 60);
+      case Difficulty.Hard:
+        return this.random.nextInt(35, 50);
       case Difficulty.Impossible:
-        return this.random.nextInt(30, 50); // Faster reactions
+        return this.random.nextInt(25, 40); // Faster reactions
+      default:
+        assertNever(difficulty);
+    }
+  }
+
+  private tuneBehaviorRatios(): void {
+    const difficulty = nationDifficulty(this.mg);
+    switch (difficulty) {
+      case Difficulty.Easy:
+        this.triggerRatio = this.random.nextInt(50, 60) / 100;
+        this.reserveRatio = this.random.nextInt(30, 40) / 100;
+        this.expandRatio = this.random.nextInt(10, 20) / 100;
+        break;
+      case Difficulty.Medium:
+        this.triggerRatio = this.random.nextInt(48, 56) / 100;
+        this.reserveRatio = this.random.nextInt(28, 36) / 100;
+        this.expandRatio = this.random.nextInt(18, 28) / 100;
+        break;
+      case Difficulty.Hard:
+        this.triggerRatio = this.random.nextInt(44, 52) / 100;
+        this.reserveRatio = this.random.nextInt(24, 32) / 100;
+        this.expandRatio = this.random.nextInt(22, 34) / 100;
+        break;
+      case Difficulty.Impossible:
+        this.triggerRatio = this.random.nextInt(40, 48) / 100;
+        this.reserveRatio = this.random.nextInt(20, 28) / 100;
+        this.expandRatio = this.random.nextInt(26, 40) / 100;
+        break;
       default:
         assertNever(difficulty);
     }
@@ -93,7 +123,7 @@ export class NationExecution implements Execution {
       this.behaviorsInitialized &&
       this.player !== null &&
       this.player.isAlive() &&
-      this.mg.config().gameConfig().difficulty !== Difficulty.Easy &&
+      nationDifficulty(this.mg) !== Difficulty.Easy &&
       this.player.unitsConstructed(UnitType.Port) &&
       !this.mg.config().isUnitDisabled(UnitType.Warship)
     ) {
@@ -318,7 +348,7 @@ export class NationExecution implements Execution {
     const player = this.player;
     if (player === null) return;
     const others = this.mg.players().filter((p) => p.id() !== player.id());
-    const difficulty = this.mg.config().gameConfig().difficulty;
+    const difficulty = nationDifficulty(this.mg);
     const isHigherDifficulty =
       difficulty === Difficulty.Hard || difficulty === Difficulty.Impossible;
     const teamGame = this.mg.config().gameConfig().gameMode === GameMode.Team;

@@ -68,6 +68,8 @@ function nuke(overrides: Partial<UnitState> = {}): UnitState {
     underConstruction: false,
     targetUnitId: null,
     targetTile: 305,
+    tilesTraveled: null,
+    portSpecialization: null,
     troops: 0,
     missileTimerQueue: [],
     level: 1,

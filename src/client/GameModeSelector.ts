@@ -37,6 +37,7 @@ export class GameModeSelector extends LitElement {
   @state() private inputValid: boolean = true;
   private serverTimeOffset: number = 0;
   private defaultLobbyTime: number = 0;
+  private countdownRefreshId: number | undefined;
 
   private lobbySocket = new PublicLobbySocket((lobbies) =>
     this.handleLobbiesUpdate(lobbies),
@@ -58,6 +59,7 @@ export class GameModeSelector extends LitElement {
     super.connectedCallback();
     this.lobbySocket.start();
     this.defaultLobbyTime = ClientEnv.gameCreationRate() / 1000;
+    this.startCountdownRefresh();
     window.addEventListener(
       "username-validity-change",
       this.handleValidityChange,
@@ -86,6 +88,22 @@ export class GameModeSelector extends LitElement {
 
   public stop() {
     this.lobbySocket.stop();
+    this.stopCountdownRefresh();
+  }
+
+  private startCountdownRefresh() {
+    if (this.countdownRefreshId !== undefined) return;
+    this.countdownRefreshId = window.setInterval(() => {
+      if (this.lobbies !== null) {
+        this.requestUpdate();
+      }
+    }, 1000);
+  }
+
+  private stopCountdownRefresh() {
+    if (this.countdownRefreshId === undefined) return;
+    window.clearInterval(this.countdownRefreshId);
+    this.countdownRefreshId = undefined;
   }
 
   private handleLobbiesUpdate(lobbies: PublicGames) {
@@ -127,6 +145,13 @@ export class GameModeSelector extends LitElement {
     const ffa = this.lobbies?.games?.["ffa"]?.[0];
     const teams = this.lobbies?.games?.["team"]?.[0];
     const special = this.lobbies?.games?.["special"]?.[0];
+    const hasSideLobbies = special !== undefined || teams !== undefined;
+    const gameCardsGridClass = hasSideLobbies
+      ? "grid grid-cols-1 sm:grid-cols-[2fr_1fr] sm:grid-rows-[minmax(0,1fr)] gap-4 sm:h-[min(24rem,40vh)]"
+      : "grid grid-cols-1 sm:grid-rows-[minmax(0,1fr)] gap-4 sm:h-[min(24rem,40vh)]";
+    const mainLobbyCardClass = hasSideLobbies
+      ? "hidden sm:block"
+      : "hidden sm:block sm:w-2/3 sm:mx-auto sm:h-full";
 
     return html`
       <div class="flex flex-col gap-4 w-full px-4 sm:px-0 mx-auto pb-4 sm:pb-0">
@@ -139,7 +164,9 @@ export class GameModeSelector extends LitElement {
           )}
         </div>
         <!-- Create/ranked/join: mobile only, below solo -->
-        <div class="sm:hidden grid grid-cols-3 gap-4 h-14">
+        <div
+          class="sm:hidden grid grid-cols-[repeat(3,minmax(0,1fr))] gap-2 h-14"
+        >
           ${this.renderSmallActionCard(
             translateText("main.create"),
             this.openHostLobby,
@@ -170,12 +197,10 @@ export class GameModeSelector extends LitElement {
                 class="w-24 h-24 border-[6px] border-blue-500/30 border-t-blue-500 rounded-full animate-spin"
               ></span>
             </div>`
-          : html`<div
-              class="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-4 sm:h-[min(24rem,40vh)]"
-            >
+          : html`<div class=${gameCardsGridClass}>
               <!-- Left col: main card (desktop only) -->
               ${ffa
-                ? html`<div class="hidden sm:block">
+                ? html`<div class=${mainLobbyCardClass}>
                     ${this.renderLobbyCard(ffa, this.getLobbyTitle(ffa))}
                   </div>`
                 : nothing}
@@ -277,7 +302,7 @@ export class GameModeSelector extends LitElement {
       <button
         @click=${onClick}
         ?disabled=${!this.inputValid}
-        class="flex items-center justify-center w-full h-full rounded-lg ${bgClass} transition-all duration-200 text-sm lg:text-base font-medium text-white uppercase tracking-wider text-center ${!this
+        class="flex items-center justify-center min-w-0 w-full h-full px-1 sm:px-2 rounded-lg ${bgClass} transition-all duration-200 text-xs sm:text-sm lg:text-base leading-tight font-medium text-white uppercase tracking-wider text-center whitespace-normal break-words ${!this
           .inputValid
           ? "opacity-50 cursor-not-allowed pointer-events-none"
           : ""}"

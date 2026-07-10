@@ -53,15 +53,20 @@
   },
   "build_menu": {
     "desc": {
+      "aircraft_carrier": "Long-range aircraft strike platform",
+      "anti_air_frigate": "Escorts fleets with short-range anti-air",
       "atom_bomb": "Small explosion",
       "city": "Increases max population",
+      "congress": "Unlocks tariffs against enemy trade",
       "defense_post": "Increases defenses of nearby borders",
       "factory": "Creates railroads and spawns trains",
       "hydrogen_bomb": "Large explosion",
       "mirv": "Huge explosion, only targets selected player",
       "missile_silo": "Used to launch nukes",
+      "naval_mine": "Single-use naval explosive",
       "port": "Sends trade ships to generate gold",
       "sam_launcher": "Defends against incoming nukes",
+      "submarine": "Stealth torpedo raider",
       "warship": "Captures trade ships, destroys ships and boats"
     },
     "not_enough_money": "Not enough money",
@@ -412,6 +417,7 @@
     "conquered_no_gold": "Conquered {name} (didn't play, no gold awarded)",
     "duration_second": "1 second",
     "duration_seconds_plural": "{seconds} seconds",
+    "economic_mission_started": "Global Trade Boom! {count, plural, one {# trading nation received} other {# trading nations received}} a gold bonus",
     "focus": "Focus",
     "hydrogen_bomb_detonated": "{name} - hydrogen bomb detonated",
     "ignore": "Ignore",
@@ -429,6 +435,8 @@
     "sent_emoji": "Sent {name}: {emoji}",
     "sent_gold_to_player": "Sent {gold} gold to {name}",
     "sent_troops_to_player": "Sent {troops} troops to {name}",
+    "tariff_imposed": "You imposed a tariff on {name}'s trade",
+    "tariff_imposed_on_you": "{name} imposed a tariff on your trade!",
     "trade_ship_captured": "Your trade ship was captured by {name}",
     "unit_destroyed": "Your {unit} was destroyed",
     "unit_voluntarily_deleted": "Unit voluntarily deleted",
@@ -515,6 +523,7 @@
     "teams": "Teams"
   },
   "game_starting_modal": {
+    "based_on": "Based on OpenFront",
     "code_license": "Code licensed under AGPL-3.0 (no warranty)",
     "credits": "Credits",
     "title": "Game is Starting..."
@@ -670,7 +679,7 @@
     "radial_title": "Radial menu",
     "table_action": "Action",
     "table_key": "Key",
-    "troubleshooting_desc": "If you experience performance issues, crashes, or other problems while playing OpenFront, please visit our Troubleshooting page for help diagnosing and fixing common issues:",
+    "troubleshooting_desc": "If you experience performance issues, crashes, or other problems while playing TradeShips, please visit our Troubleshooting page for help diagnosing and fixing common issues:",
     "ui_attack_ratio": "Attack ratio - The amount of troops that will be used when you attack. You can adjust the attack ratio using the slider. Having more attacking troops than defending troops will make you lose fewer troops in the attack, while having less will increase the damage dealt to your attacking troops. The effect doesn't go beyond ratios of 2:1.",
     "ui_control": "Control panel",
     "ui_control_desc": "The control panel contains the following elements:",
@@ -690,7 +699,7 @@
     "ui_wilderness": "Wilderness",
     "ui_your_team": "Your team:",
     "video_tutorial": "Video Tutorial",
-    "video_tutorial_title": "OpenFront.io Tutorial"
+    "video_tutorial_title": "TradeShips.io Tutorial"
   },
   "host_modal": {
     "assigned_teams": "Assigned Teams",
@@ -745,14 +754,14 @@
     "got_it": "Got it",
     "how": "How",
     "later": "Later",
-    "modal_desc": "Your browser doesn't support fullscreen, but you can add OpenFront to your Home Screen for an immersive experience:",
+    "modal_desc": "Your browser doesn't support fullscreen, but you can add TradeShips to your Home Screen for an immersive experience:",
     "modal_title": "Fullscreen on iOS",
     "never": "Never",
     "step_add_to_home_label": "Add to Home Screen",
     "step_open": "Open from your Home Screen — launches fullscreen without the address bar",
     "step_scroll_and_tap": "Scroll down and tap",
     "step_share": "Tap the Share button in your browser",
-    "text": "For fullscreen, add OpenFront to your Home Screen"
+    "text": "For fullscreen, add TradeShips to your Home Screen"
   },
   "kick_reason": {
     "admin": "Kicked by an admin",
@@ -768,6 +777,7 @@
   },
   "leaderboard": {
     "cities": "Cities",
+    "control": "Control",
     "gold": "Gold",
     "launchers": "Launchers",
     "maxtroops": "Max troops",
@@ -803,9 +813,7 @@
     "your_ranking": "Your Ranking"
   },
   "main": {
-    "account": "Account",
-    "clans": "Clans",
-    "copyright": "© OpenFront™ and Contributors",
+    "copyright": "© TradeShips and Contributors",
     "create": "Create Lobby",
     "discord_avatar_alt": "Discord profile avatar",
     "game_info": "Game info",
@@ -813,7 +821,6 @@
     "go_to_troubleshooting": "Go to our troubleshooting page",
     "help": "Help",
     "join": "Join Lobby",
-    "leaderboard": "Leaderboard",
     "login_discord": "Login with Discord",
     "login_google": "Login with Google",
     "menu": "Menu",
@@ -821,11 +828,10 @@
     "play": "Play",
     "privacy_policy": "Privacy Policy",
     "settings": "Settings",
-    "sign_in": "Sign in",
     "solo": "Solo",
     "store": "Store",
     "terms_of_service": "Terms of Service",
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips.io (ALPHA)",
     "troubleshooting": "Troubleshooting",
     "user_avatar_alt": "{username}'s avatar",
     "wiki": "Wiki"
@@ -961,6 +967,13 @@
     "search_results": "Search Results",
     "unfavorite": "Remove from favourites"
   },
+  "maritime_objective": {
+    "capturing": "Capturing",
+    "contested": "Contested",
+    "controlled": "Controlled",
+    "hint": "Control the central sea route to win",
+    "neutral": "Neutral"
+  },
   "matchmaking_button": {
     "description": "(ALPHA)",
     "login_required": "Login to play ranked!",
@@ -989,7 +1002,7 @@
   },
   "news_box": {
     "dismiss": "Dismiss",
-    "firefox_warning": "OpenFront.io doesn't perform well with [Firefox-based browsers](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). We recommend you to use a [Chromium-based browser](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) for best performance.",
+    "firefox_warning": "TradeShips.io doesn't perform well with [Firefox-based browsers](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). We recommend you to use a [Chromium-based browser](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) for best performance.",
     "go_to_item": "Go to item {num}",
     "news": "NEWS",
     "tournament": "TOURNAMENT",
@@ -1044,6 +1057,8 @@
     "stop_trade_all": "Stop Trading with All",
     "stopped": "Stopped",
     "target": "Target",
+    "tariff": "Tariff",
+    "tariff_tooltip": "Impose a tariff on this player's trade for {cost} gold",
     "trading": "Trading",
     "traitor": "Traitor",
     "troops": "Troops"
@@ -1159,7 +1174,9 @@
   },
   "radial_menu": {
     "delete_unit_description": "Click to delete the nearest unit",
-    "delete_unit_title": "Delete Unit"
+    "delete_unit_title": "Delete Unit",
+    "specialize_description": "Choose this port's specialization: trade hub, naval base, or harbor watch",
+    "specialize_title": "Specialize Port"
   },
   "relation": {
     "default": "Default",
@@ -1269,13 +1286,37 @@
     "success": "Successfully logged in as {email}!",
     "title": "Logging in..."
   },
+  "trade_routes": {
+    "contested": "Contested",
+    "danger": "Danger",
+    "escorts": "Escorts",
+    "risk": "Risk",
+    "routes": "Routes",
+    "summary_title": "Active merchant routes, contested sea lanes, and naval escorts",
+    "value": "Value"
+  },
+  "trade_stats": {
+    "arrivals": "Arrivals",
+    "captures_by_me": "Captured by me",
+    "gold_earned": "Gold earned",
+    "gold_in_transit": "Gold at sea",
+    "pirated_arrivals": "Pirated arrivals",
+    "port": "Port",
+    "routes_active": "Active routes",
+    "routes_contested": "Contested routes",
+    "routes_escorted": "Escorted routes",
+    "ships_captured": "Ships captured",
+    "ships_lost": "Ships lost",
+    "title": "Trade",
+    "top_ports": "Top receiving ports"
+  },
   "troubleshooting": {
     "battery": "Battery",
     "battery_level": "Battery Level",
     "browser": "Browser",
     "canvas_2d_no_gpu": "Canvas 2D (no GPU)",
     "charging": "Charging",
-    "chromium_tip": "OpenFront runs best on Chromium-based browsers.",
+    "chromium_tip": "TradeShips runs best on Chromium-based browsers.",
     "copied_to_clipboard": "Info copied to the clipboard! Feel free to share it on our Discord if you need help.",
     "device_pixel_ratio": "Device Pixel Ratio",
     "environment": "Environment",
@@ -1298,16 +1339,23 @@
     "yes": "Yes"
   },
   "unit_type": {
+    "aircraft": "Aircraft",
+    "aircraft_carrier": "Aircraft Carrier",
+    "anti_air_frigate": "Anti-Air Frigate",
     "atom_bomb": "Atom Bomb",
     "boat": "Boat",
     "city": "City",
+    "congress": "Congress",
     "defense_post": "Defense Post",
     "factory": "Factory",
     "hydrogen_bomb": "Hydrogen Bomb",
     "mirv": "MIRV",
     "missile_silo": "Missile Silo",
+    "naval_mine": "Naval Mine",
     "port": "Port",
     "sam_launcher": "SAM Launcher",
+    "submarine": "Submarine",
+    "torpedo": "Torpedo",
     "warship": "Warship"
   },
   "user_setting": {
@@ -1333,10 +1381,16 @@
     "boat_attack_desc": "Send a boat attack to the tile under your cursor.",
     "break_alliance": "Break Alliance (Betray)",
     "break_alliance_desc": "Break alliance with the player whose tile is under your cursor.",
+    "build_aircraft_carrier": "Build Aircraft Carrier",
+    "build_aircraft_carrier_desc": "Build an Aircraft Carrier under your cursor.",
+    "build_anti_air_frigate": "Build Anti-Air Frigate",
+    "build_anti_air_frigate_desc": "Build an Anti-Air Frigate under your cursor.",
     "build_atom_bomb": "Build Atom Bomb",
     "build_atom_bomb_desc": "Build an Atom Bomb under your cursor.",
     "build_city": "Build City",
     "build_city_desc": "Build a City under your cursor.",
+    "build_congress": "Build Congress",
+    "build_congress_desc": "Build a Congress under your cursor.",
     "build_controls": "Build Controls",
     "build_defense_post": "Build Defense Post",
     "build_defense_post_desc": "Build a Defense Post under your cursor.",
@@ -1350,10 +1404,14 @@
     "build_mirv_desc": "Build a MIRV under your cursor.",
     "build_missile_silo": "Build Missile Silo",
     "build_missile_silo_desc": "Build a Missile Silo under your cursor.",
+    "build_naval_mine": "Build Naval Mine",
+    "build_naval_mine_desc": "Build a Naval Mine under your cursor.",
     "build_port": "Build Port",
     "build_port_desc": "Build a Port under your cursor.",
     "build_sam_launcher": "Build SAM Launcher",
     "build_sam_launcher_desc": "Build a SAM Launcher under your cursor.",
+    "build_submarine": "Build Submarine",
+    "build_submarine_desc": "Build a Submarine under your cursor.",
     "build_warship": "Build Warship",
     "build_warship_desc": "Build a Warship under your cursor.",
     "camera_movement": "Camera Movement",
@@ -1464,7 +1522,7 @@
     "other_won": "{player} has won!",
     "requeue": "Play Again",
     "spectate": "Spectate",
-    "support_openfront": "Support OpenFront!",
+    "support_openfront": "Support TradeShips!",
     "territory_pattern": "Purchase a territory skin to go ad-free!",
     "wishlist": "Wishlist on Steam!",
     "you_won": "You Won!",

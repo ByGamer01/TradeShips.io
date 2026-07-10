@@ -32,6 +32,8 @@ export const otherUnits = [
   "defp",
   "port",
   "wshp",
+  "aafg",
+  "cngr",
   "silo",
   "saml",
   "fact",
@@ -45,7 +47,9 @@ export type OtherUnitType =
   | UnitType.Port
   | UnitType.SAMLauncher
   | UnitType.Warship
-  | UnitType.Factory;
+  | UnitType.AntiAirFrigate
+  | UnitType.Factory
+  | UnitType.Congress;
 
 export const unitTypeToOtherUnit = {
   [UnitType.City]: "city",
@@ -54,7 +58,9 @@ export const unitTypeToOtherUnit = {
   [UnitType.Port]: "port",
   [UnitType.SAMLauncher]: "saml",
   [UnitType.Warship]: "wshp",
+  [UnitType.AntiAirFrigate]: "aafg",
   [UnitType.Factory]: "fact",
+  [UnitType.Congress]: "cngr",
 } as const satisfies Record<OtherUnitType, OtherUnit>;
 
 // Attacks

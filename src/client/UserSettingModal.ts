@@ -433,6 +433,16 @@ export class UserSettingModal extends BaseModal {
       ></setting-keybind>
 
       <setting-keybind
+        action="buildCongress"
+        label=${translateText("user_setting.build_congress")}
+        description=${translateText("user_setting.build_congress_desc")}
+        defaultKey=${this.defaultKeybinds.buildCongress}
+        .value=${this.getKeyValue("buildCongress")}
+        .display=${this.getKeyChar("buildCongress")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
         action="buildDefensePost"
         label=${translateText("user_setting.build_defense_post")}
         description=${translateText("user_setting.build_defense_post_desc")}
@@ -469,6 +479,46 @@ export class UserSettingModal extends BaseModal {
         defaultKey=${this.defaultKeybinds.buildWarship}
         .value=${this.getKeyValue("buildWarship")}
         .display=${this.getKeyChar("buildWarship")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
+        action="buildSubmarine"
+        label=${translateText("user_setting.build_submarine")}
+        description=${translateText("user_setting.build_submarine_desc")}
+        defaultKey=${this.defaultKeybinds.buildSubmarine}
+        .value=${this.getKeyValue("buildSubmarine")}
+        .display=${this.getKeyChar("buildSubmarine")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
+        action="buildAircraftCarrier"
+        label=${translateText("user_setting.build_aircraft_carrier")}
+        description=${translateText("user_setting.build_aircraft_carrier_desc")}
+        defaultKey=${this.defaultKeybinds.buildAircraftCarrier}
+        .value=${this.getKeyValue("buildAircraftCarrier")}
+        .display=${this.getKeyChar("buildAircraftCarrier")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
+        action="buildAntiAirFrigate"
+        label=${translateText("user_setting.build_anti_air_frigate")}
+        description=${translateText("user_setting.build_anti_air_frigate_desc")}
+        defaultKey=${this.defaultKeybinds.buildAntiAirFrigate}
+        .value=${this.getKeyValue("buildAntiAirFrigate")}
+        .display=${this.getKeyChar("buildAntiAirFrigate")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
+        action="buildNavalMine"
+        label=${translateText("user_setting.build_naval_mine")}
+        description=${translateText("user_setting.build_naval_mine_desc")}
+        defaultKey=${this.defaultKeybinds.buildNavalMine}
+        .value=${this.getKeyValue("buildNavalMine")}
+        .display=${this.getKeyChar("buildNavalMine")}
         @change=${this.handleKeybindChange}
       ></setting-keybind>
 

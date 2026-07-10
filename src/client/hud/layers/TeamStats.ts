@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { EventBus } from "../../../core/EventBus";
 import { GameMode, Team, UnitType } from "../../../core/game/Game";
 import { Controller } from "../../Controller";
+import type { MaritimeObjectiveData } from "../../render/types";
 import {
   formatPercentage,
   renderNumber,
@@ -23,6 +24,24 @@ interface TeamEntry {
   totalCities: string;
   totalScoreSort: number;
   players: PlayerView[];
+}
+
+function maritimeTeamControlScore(
+  objective: MaritimeObjectiveData | null,
+  team: Team,
+): number | null {
+  if (objective === null) return null;
+  return objective.controllerTeam === team || objective.leaderTeam === team
+    ? objective.controlPercent / 100
+    : 0;
+}
+
+function maritimeTeamPowerScore(
+  objective: MaritimeObjectiveData | null,
+  team: Team,
+): number {
+  if (objective === null) return 0;
+  return objective.navalPower.find((power) => power.team === team)?.power ?? 0;
 }
 
 @customElement("team-stats")
@@ -62,6 +81,7 @@ export class TeamStats extends LitElement implements Controller {
   private updateTeamStats() {
     const players = this.game.playerViews();
     const grouped: Record<Team, PlayerView[]> = {};
+    const maritimeObjective = this.game.frameData?.().maritimeObjective ?? null;
 
     if (this._myTeam === null) {
       const myPlayer = this.game.myPlayer();
@@ -101,9 +121,19 @@ export class TeamStats extends LitElement implements Controller {
           }
         }
 
+        const maritimeScore = maritimeTeamControlScore(
+          maritimeObjective,
+          rawTeam,
+        );
         const numTilesWithoutFallout =
           this.game.numLandTiles() - this.game.numTilesWithFallout();
-        const totalScorePercent = totalScoreSort / numTilesWithoutFallout;
+        const totalScorePercent =
+          maritimeScore ?? totalScoreSort / numTilesWithoutFallout;
+        if (maritimeScore !== null) {
+          totalScoreSort =
+            maritimeScore * 1000 +
+            maritimeTeamPowerScore(maritimeObjective, rawTeam);
+        }
 
         return {
           teamName,
@@ -127,6 +157,8 @@ export class TeamStats extends LitElement implements Controller {
 
   render() {
     if (!this.visible) return html``;
+
+    const maritimeObjective = this.game.frameData?.().maritimeObjective ?? null;
 
     return html`
       <div
@@ -169,7 +201,11 @@ export class TeamStats extends LitElement implements Controller {
                   <div
                     class="p-1.5 md:p-2.5 text-center border-b border-slate-500"
                   >
-                    ${translateText("leaderboard.owned")}
+                    ${translateText(
+                      maritimeObjective
+                        ? "leaderboard.control"
+                        : "leaderboard.owned",
+                    )}
                   </div>
                   <div
                     class="p-1.5 md:p-2.5 text-center border-b border-slate-500"

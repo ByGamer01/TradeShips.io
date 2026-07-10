@@ -1,5 +1,6 @@
 import { WarshipSelectionController } from "../../../src/client/controllers/WarshipSelectionController";
-import { UnitSelectionEvent } from "../../../src/client/InputHandler";
+import { MouseUpEvent, UnitSelectionEvent } from "../../../src/client/InputHandler";
+import { UnitType } from "../../../src/core/game/Game";
 
 describe("WarshipSelectionController", () => {
   let game: any;
@@ -92,5 +93,47 @@ describe("WarshipSelectionController", () => {
     } as unknown as UnitSelectionEvent);
     expect(ui["multiSelectedWarships"]).toEqual(units);
     expect(ui["selectedUnit"]).toBeNull();
+  });
+
+  it("selects player-owned naval support units for manual naval movement", () => {
+    const player = { id: () => 1 };
+    for (const unitType of [
+      UnitType.Submarine,
+      UnitType.AircraftCarrier,
+      UnitType.AntiAirFrigate,
+    ]) {
+      const unit = {
+        id: () => 7,
+        isActive: () => true,
+        owner: () => player,
+        tile: () => 42,
+      };
+      game.myPlayer = () => player;
+      game.isValidCoord = () => true;
+      game.ref = () => 42;
+      game.isWater = () => true;
+      game.manhattanDist = () => 0;
+      game.units = vi.fn((...types: UnitType[]) =>
+        types.includes(unitType) ? [unit] : [],
+      );
+      transformHandler.screenToWorldCoordinates = () => ({ x: 1, y: 1 });
+      eventBus.emit = vi.fn();
+
+      const ui = new WarshipSelectionController(
+        game,
+        eventBus,
+        transformHandler,
+        view,
+      );
+
+      ui["onMouseUp"](new MouseUpEvent(10, 10));
+
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          unit,
+          isSelected: true,
+        }),
+      );
+    }
   });
 });
