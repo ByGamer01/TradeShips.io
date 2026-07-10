@@ -132,6 +132,64 @@ function trimToCenter(
   return miniPath.slice(start, start + maxMiniLength);
 }
 
+/**
+ * Most open water tile of the map's largest water body, preferring tiles
+ * near the map center. Used to anchor the Team-mode circular objective so
+ * it never lands in a tiny inland bay next to the geometric map center.
+ * Deterministic: strict improvement scan in tile order.
+ */
+export function findOpenWaterAnchor(
+  map: GameMap,
+  miniMap: GameMap,
+): TileRef | null {
+  const component = largestWaterComponent(miniMap);
+  if (component === null) return null;
+
+  const width = miniMap.width();
+  const height = miniMap.height();
+  const centerX = (width / 2) | 0;
+  const centerY = (height / 2) | 0;
+
+  let best = -1;
+  let bestOpenness = -1;
+  let bestDist = 0;
+  const numTiles = width * height;
+  for (let tile = 0; tile < numTiles; tile++) {
+    if (component.cc.getComponentId(tile as TileRef) !== component.id) {
+      continue;
+    }
+    const x = tile % width;
+    const y = (tile - x) / width;
+    const distToEdge = Math.min(x, y, width - 1 - x, height - 1 - y);
+    // Map-edge water is "open" by magnitude but visually the map frame;
+    // capping by edge distance keeps the anchor in real open sea.
+    const openness = Math.min(miniMap.magnitude(tile as TileRef), distToEdge);
+    const dist = Math.abs(x - centerX) + Math.abs(y - centerY);
+    if (
+      openness > bestOpenness ||
+      (openness === bestOpenness && dist < bestDist)
+    ) {
+      best = tile;
+      bestOpenness = openness;
+      bestDist = dist;
+    }
+  }
+  if (best === -1) return null;
+
+  const miniX = best % width;
+  const miniY = (best - miniX) / width;
+  for (let dy = 0; dy < 2; dy++) {
+    for (let dx = 0; dx < 2; dx++) {
+      const x = miniX * 2 + dx;
+      const y = miniY * 2 + dy;
+      if (!map.isValidCoord(x, y)) continue;
+      const tile = map.ref(x, y);
+      if (map.isWater(tile)) return tile;
+    }
+  }
+  return null;
+}
+
 interface LargestComponent {
   cc: ConnectedComponents;
   id: number;

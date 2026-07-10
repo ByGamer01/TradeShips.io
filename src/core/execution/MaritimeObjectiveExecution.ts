@@ -5,6 +5,7 @@ import {
   MaritimeObjectiveStatus,
   MaritimeObjectiveUpdate,
 } from "../game/GameUpdates";
+import { findOpenWaterAnchor } from "../game/TradeLaneFinder";
 import {
   aggregateNavalPower,
   CaptureState,
@@ -48,9 +49,13 @@ export class MaritimeObjectiveExecution implements Execution {
 
   init(mg: Game, _ticks: number): void {
     this.mg = mg;
-    this.center = this.nearestWaterTile(
-      mg.ref(Math.round(mg.width() / 2), Math.round(mg.height() / 2)),
-    );
+    // Anchor in the open sea of the main water body; the nearest-water
+    // fallback can land in a tiny inland bay when the map center is land.
+    this.center =
+      findOpenWaterAnchor(mg, mg.miniMap()) ??
+      this.nearestWaterTile(
+        mg.ref(Math.round(mg.width() / 2), Math.round(mg.height() / 2)),
+      );
     this.radius = objectiveRadius(mg.width(), mg.height());
   }
 
