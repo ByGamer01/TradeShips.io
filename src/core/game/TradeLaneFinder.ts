@@ -23,6 +23,18 @@ export interface TradeLane {
 // considered fully open; shallower tiles pay an extra cost per missing step
 // so the spine prefers the middle of the largest water body.
 const OPEN_WATER_MAGNITUDE = 10;
+// Map-edge water is the "openest" of all (no coast beyond the border), which
+// would glue the corridor to the map frame on island maps. Tiles closer than
+// this margin to the map edge pay a cost per missing step, and corridor
+// endpoints prefer interior tiles, so the route threads between the islands.
+const EDGE_MARGIN_PERCENT = 10;
+const MAX_EDGE_MARGIN = 24;
+
+function edgeMargin(miniMap: GameMap): number {
+  const minDim = Math.min(miniMap.width(), miniMap.height());
+  const margin = ((minDim * EDGE_MARGIN_PERCENT) / 100) | 0;
+  return Math.min(MAX_EDGE_MARGIN, (minDim / 4) | 0, margin);
+}
 // Largest water component must cover at least this % of the minimap for a
 // corridor to make sense; otherwise callers should fall back to the circle.
 const MIN_COMPONENT_PERCENT = 4;
@@ -54,8 +66,22 @@ export function findTradeLane(
 
   // Double-BFS diameter approximation inside the component: farthest tile
   // from the deterministic seed, then farthest tile from that endpoint.
-  const endA = bfsFarthest(miniMap, component.cc, component.id, component.seed);
-  const endB = bfsFarthest(miniMap, component.cc, component.id, endA.tile);
+  // Interior tiles are preferred so endpoints don't sit in map corners.
+  const margin = edgeMargin(miniMap);
+  const endA = bfsFarthest(
+    miniMap,
+    component.cc,
+    component.id,
+    component.seed,
+    margin,
+  );
+  const endB = bfsFarthest(
+    miniMap,
+    component.cc,
+    component.id,
+    endA.tile,
+    margin,
+  );
 
   // Degenerate corridor: shorter than its own width once scaled to full map.
   if (endB.dist * 2 < halfWidth * 2) return null;
@@ -66,6 +92,7 @@ export function findTradeLane(
     component.id,
     endA.tile,
     endB.tile,
+    margin,
   );
   if (miniPath === null) return null;
 
@@ -115,16 +142,20 @@ function largestWaterComponent(miniMap: GameMap): LargestComponent | null {
 /**
  * Plain FIFO BFS restricted to one water component. Returns the farthest
  * tile (first encountered at the max distance, which is deterministic given
- * the fixed queue order) and its distance.
+ * the fixed queue order) and its distance. Tiles at least `margin` from the
+ * map edge are preferred; the true farthest tile is the fallback for
+ * components that live entirely along the border.
  */
 function bfsFarthest(
   miniMap: GameMap,
   cc: ConnectedComponents,
   componentId: number,
   start: TileRef,
+  margin: number,
 ): { tile: TileRef; dist: number } {
   const width = miniMap.width();
-  const numTiles = width * miniMap.height();
+  const height = miniMap.height();
+  const numTiles = width * height;
   const dist = new Int32Array(numTiles).fill(-1);
   const queue = new Int32Array(numTiles);
   let head = 0;
@@ -134,6 +165,8 @@ function bfsFarthest(
   queue[tail++] = start;
   let far = start;
   let farDist = 0;
+  let interiorFar = -1;
+  let interiorFarDist = -1;
 
   while (head < tail) {
     const tile = queue[head++];
@@ -155,16 +188,27 @@ function bfsFarthest(
         farDist = d;
         far = n as TileRef;
       }
+      const nx = n % width;
+      const ny = (n - nx) / width;
+      const distToEdge = Math.min(nx, ny, width - 1 - nx, height - 1 - ny);
+      if (distToEdge >= margin && d > interiorFarDist) {
+        interiorFarDist = d;
+        interiorFar = n;
+      }
     }
   }
 
+  if (interiorFar !== -1) {
+    return { tile: interiorFar as TileRef, dist: interiorFarDist };
+  }
   return { tile: far, dist: farDist };
 }
 
 /**
  * Dijkstra via Dial's bucket queue (integer costs, deterministic FIFO order
  * within each bucket). Step cost is 1 for open water and grows as the tile
- * gets closer to a coastline, so the path drifts toward the most open water.
+ * gets closer to a coastline or to the map edge, so the path drifts toward
+ * open water while threading between islands instead of hugging the border.
  */
 function openWaterPath(
   miniMap: GameMap,
@@ -172,10 +216,12 @@ function openWaterPath(
   componentId: number,
   from: TileRef,
   to: TileRef,
+  margin: number,
 ): TileRef[] | null {
   const width = miniMap.width();
-  const numTiles = width * miniMap.height();
-  const maxStepCost = 1 + OPEN_WATER_MAGNITUDE;
+  const height = miniMap.height();
+  const numTiles = width * height;
+  const maxStepCost = 1 + OPEN_WATER_MAGNITUDE + margin;
   const numBuckets = maxStepCost + 1;
 
   const dist = new Int32Array(numTiles).fill(-1);
@@ -215,7 +261,11 @@ function openWaterPath(
     const magnitude = miniMap.magnitude(n as TileRef);
     const shortfall =
       magnitude >= OPEN_WATER_MAGNITUDE ? 0 : OPEN_WATER_MAGNITUDE - magnitude;
-    const next = dist[fromTile] + 1 + shortfall;
+    const nx = n % width;
+    const ny = (n - nx) / width;
+    const distToEdge = Math.min(nx, ny, width - 1 - nx, height - 1 - ny);
+    const edgePenalty = distToEdge >= margin ? 0 : margin - distToEdge;
+    const next = dist[fromTile] + 1 + shortfall + edgePenalty;
     if (dist[n] !== -1 && dist[n] <= next) return;
     dist[n] = next;
     parent[n] = fromTile;

@@ -58,6 +58,21 @@ describe("findTradeLane", () => {
     }
   });
 
+  it("keeps corridor endpoints away from the map edge on a large map", async () => {
+    const game = await setup("world");
+
+    const lane = findTradeLane(game, game.miniMap())!;
+
+    // Mini-map margin is 24 → 48 full-map tiles; allow slack for scaling.
+    const margin = 40;
+    for (const tile of [lane.path[0], lane.path[lane.path.length - 1]]) {
+      const x = tile % game.width();
+      const y = (tile - x) / game.width();
+      const distToEdge = Math.min(x, y, game.width() - 1 - x, game.height() - 1 - y);
+      expect(distToEdge).toBeGreaterThanOrEqual(margin);
+    }
+  });
+
   it("returns null on a map without enough water", async () => {
     const game = await setup("plains");
 
