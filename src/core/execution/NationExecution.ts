@@ -17,6 +17,7 @@ import { GameID } from "../Schemas";
 import { assertNever, simpleHash } from "../Util";
 import { NationAllianceBehavior } from "./nation/NationAllianceBehavior";
 import { NationEmojiBehavior } from "./nation/NationEmojiBehavior";
+import { NationMaritimeBehavior } from "./nation/NationMaritimeBehavior";
 import { NationMIRVBehavior } from "./nation/NationMIRVBehavior";
 import { NationNukeBehavior } from "./nation/NationNukeBehavior";
 import { NationStructureBehavior } from "./nation/NationStructureBehavior";
@@ -35,6 +36,7 @@ export class NationExecution implements Execution {
   private attackBehavior!: AiAttackBehavior;
   private allianceBehavior!: NationAllianceBehavior;
   private warshipBehavior!: NationWarshipBehavior;
+  private maritimeBehavior!: NationMaritimeBehavior;
   private nukeBehavior!: NationNukeBehavior;
   private structureBehavior!: NationStructureBehavior;
   private mg: Game;
@@ -233,6 +235,7 @@ export class NationExecution implements Execution {
     this.mirvBehavior.considerMIRV();
     this.structureBehavior.handleStructures();
     this.warshipBehavior.maybeSpawnWarship();
+    this.maritimeBehavior.contestObjective();
     this.handleEmbargoesToHostileNations();
     this.attackBehavior.maybeAttack();
     this.warshipBehavior.counterWarshipInfestation();
@@ -264,6 +267,11 @@ export class NationExecution implements Execution {
       this.mg,
       this.player,
       this.emojiBehavior,
+    );
+    this.maritimeBehavior = new NationMaritimeBehavior(
+      this.random,
+      this.mg,
+      this.player,
     );
     this.attackBehavior = new AiAttackBehavior(
       this.random,

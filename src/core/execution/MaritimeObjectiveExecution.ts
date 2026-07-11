@@ -1,5 +1,6 @@
 import { Execution, Game, Player, Team, Unit } from "../game/Game";
 import { TileRef } from "../game/GameMap";
+import { PseudoRandom } from "../PseudoRandom";
 import {
   GameUpdateType,
   MaritimeObjectiveStatus,
@@ -57,6 +58,32 @@ export class MaritimeObjectiveExecution implements Execution {
         mg.ref(Math.round(mg.width() / 2), Math.round(mg.height() / 2)),
       );
     this.radius = objectiveRadius(mg.width(), mg.height());
+
+    mg.setMaritimeZone({
+      center: () => this.center,
+      contains: (tile) =>
+        mg.euclideanDistSquared(tile, this.center) <= this.radius ** 2,
+      randomPatrolTile: (rand) => this.randomPatrolTile(rand),
+    });
+  }
+
+  /** Deterministic water tile inside the objective circle (center fallback). */
+  private randomPatrolTile(rand: PseudoRandom): TileRef {
+    if (this.mg === null) return this.center;
+    const centerX = this.mg.x(this.center);
+    const centerY = this.mg.y(this.center);
+    for (let attempts = 0; attempts < 50; attempts++) {
+      const x = rand.nextInt(centerX - this.radius, centerX + this.radius + 1);
+      const y = rand.nextInt(centerY - this.radius, centerY + this.radius + 1);
+      if (!this.mg.isValidCoord(x, y)) continue;
+      const tile = this.mg.ref(x, y);
+      if (!this.mg.isWater(tile)) continue;
+      if (this.mg.euclideanDistSquared(tile, this.center) > this.radius ** 2) {
+        continue;
+      }
+      return tile;
+    }
+    return this.center;
   }
 
   tick(_ticks: number): void {

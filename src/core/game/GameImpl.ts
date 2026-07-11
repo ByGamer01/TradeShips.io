@@ -21,6 +21,7 @@ import {
   GameMode,
   GameUpdates,
   HumansVsNations,
+  MaritimeZone,
   MessageType,
   MutableAlliance,
   Nation,
@@ -113,6 +114,7 @@ export class GameImpl implements Game {
 
   private _isPaused: boolean = false;
   private _winner: Player | Team | null = null;
+  private _maritimeZone: MaritimeZone | null = null;
   private _waterManager: WaterManager;
   private _sharedWaterCache: SharedWaterCache;
   private _teamGameSpawnAreas: TeamGameSpawnAreas | undefined;
@@ -867,6 +869,14 @@ export class GameImpl implements Game {
 
   getWinner(): Player | Team | null {
     return this._winner;
+  }
+
+  maritimeZone(): MaritimeZone | null {
+    return this._maritimeZone;
+  }
+
+  setMaritimeZone(zone: MaritimeZone): void {
+    this._maritimeZone = zone;
   }
 
   private makeWinner(winner: string | Player): Winner | undefined {
