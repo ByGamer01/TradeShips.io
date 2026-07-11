@@ -79,12 +79,12 @@ export default defineConfig(({ mode }) => {
       cdnBase,
     ),
     backgroundImageUrl: buildAssetUrl(
-      "images/background.webp",
+      "images/TradeShipsBackground.webp",
       assetManifest,
       cdnBase,
     ),
     desktopLogoImageUrl: buildAssetUrl(
-      "images/OpenFront.png",
+      "images/TradeShipsSocial.png",
       assetManifest,
       cdnBase,
     ),
