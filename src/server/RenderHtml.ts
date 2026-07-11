@@ -37,7 +37,7 @@ export async function renderHtmlContent(htmlPath: string): Promise<string> {
       cdnBase,
     ),
     backgroundImageUrl: buildAssetUrl(
-      "images/TradeShipsBackground.webp",
+      "images/background.webp",
       assetManifest,
       cdnBase,
     ),

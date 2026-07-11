@@ -79,7 +79,7 @@ export default defineConfig(({ mode }) => {
       cdnBase,
     ),
     backgroundImageUrl: buildAssetUrl(
-      "images/TradeShipsBackground.webp",
+      "images/background.webp",
       assetManifest,
       cdnBase,
     ),
