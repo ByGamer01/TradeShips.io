@@ -23,7 +23,7 @@
     "click_to_copy": "Kopyalamak için tıkla"
   },
   "main": {
-    "title": "OpenFront (ALFA)",
+    "title": "TradeShips (ALFA)",
     "join_discord": "Discord",
     "login_discord": "Discord'la giriş yap",
     "sign_in": "Oturum Aç",
@@ -40,7 +40,7 @@
     "wiki": "Wiki",
     "privacy_policy": "Gizlilik Politikası",
     "terms_of_service": "Hizmet Şartları",
-    "copyright": "© OpenFront™ ve Katkıda Bulunanlar",
+    "copyright": "© TradeShips™ ve Katkıda Bulunanlar",
     "reddit": "Reddit",
     "play": "Oyna",
     "news": "Haberler",
@@ -149,7 +149,13 @@
     "icon_request": "Zarf - İttifak isteği. Bu oyuncu size ittifak isteği göndermiş.",
     "info_enemy_panel": "Düşman bilgi paneli",
     "exit_confirmation": "Oyundan çıkmak istediğine emin misin?",
-    "bomb_direction": "Atom / Hidrojen bombası yay yönü"
+    "bomb_direction": "Atom / Hidrojen bombası yay yönü",
+    "maritime_contested": "Rakip filolar en güçlü deniz gücü olarak berabere kaldığında bölge çekişmeli olur ve ilerleme donar. Daha güçlü bir rakip, bölgeyi ele geçirmeden önce sahibin kontrolünü %0'a düşürür.",
+    "maritime_desc": "Deniz haritalarında oyun, merkezi deniz rotasını kontrol ederek kazanılır. Kontrolünü artırmak için en güçlü deniz kuvvetini işaretli bölgede tut: %100'ü elinde tutan ilk filo oyunu kazanır.",
+    "maritime_ffa": "Herkes tek başına: hedef, haritanın merkezi açık sularından geçen, bayrak ve parlayan bir şeritle işaretlenmiş bir ticaret koridorudur. Yalnızca koridorun içindeki gemiler sayılır.",
+    "maritime_power": "Deniz gücü: uçak gemileri 6 sayılır; savaş gemileri, denizaltılar ve hava savunma fırkateynleri 3 sayılır; nakliye gemileri, ticaret gemileri ve uçaklar 1 sayılır.",
+    "maritime_team": "Takım oyunları: hedef, açık denizde bir halka ve bayrakla işaretlenmiş dairesel bir bölgedir. Tüm takımının filosu birlikte sayılır.",
+    "maritime_title": "Hedef: deniz rotası"
   },
   "single_modal": {
     "title": "Tekli",
@@ -394,7 +400,8 @@
   "game_starting_modal": {
     "title": "Oyun Başlıyor...",
     "credits": "Atıflar",
-    "code_license": "Kod AGPL-3.0 altında lisanslanmıştır (garanti yok)"
+    "code_license": "Kod AGPL-3.0 altında lisanslanmıştır (garanti yok)",
+    "based_on": "OpenFront tabanlıdır"
   },
   "difficulty": {
     "difficulty": "Ülke Zorluğu",
@@ -424,7 +431,14 @@
     "atom_bomb": "Atom Bombası",
     "hydrogen_bomb": "Hidrojen Bombası",
     "mirv": "MIRV",
-    "factory": "Fabrika"
+    "factory": "Fabrika",
+    "aircraft": "Uçak",
+    "aircraft_carrier": "Uçak Gemisi",
+    "anti_air_frigate": "Hava Savunma Fırkateyni",
+    "congress": "Kongre",
+    "naval_mine": "Deniz Mayını",
+    "submarine": "Denizaltı",
+    "torpedo": "Torpido"
   },
   "user_setting": {
     "title": "Seçenekler",
@@ -527,7 +541,17 @@
     "exit_game_info": "Ana menüye dön",
     "background_music_volume": "Arkaplan Müziği Sesi",
     "sound_effects_volume": "Ses Efektleri Sesi",
-    "keybind_conflict_error": "{key} tuşu zaten başka bir eyleme atanmış."
+    "keybind_conflict_error": "{key} tuşu zaten başka bir eyleme atanmış.",
+    "build_aircraft_carrier": "Uçak Gemisi İnşa Et",
+    "build_aircraft_carrier_desc": "İmlecinin altına bir uçak gemisi inşa eder.",
+    "build_anti_air_frigate": "Hava Savunma Fırkateyni İnşa Et",
+    "build_anti_air_frigate_desc": "İmlecinin altına bir hava savunma fırkateyni inşa eder.",
+    "build_congress": "Kongre İnşa Et",
+    "build_congress_desc": "İmlecinin altına bir Kongre inşa eder.",
+    "build_naval_mine": "Deniz Mayını Döşe",
+    "build_naval_mine_desc": "İmlecinin altına bir deniz mayını döşer.",
+    "build_submarine": "Denizaltı İnşa Et",
+    "build_submarine_desc": "İmlecinin altına bir denizaltı inşa eder."
   },
   "chat": {
     "title": "Hızlı Sohbet",
@@ -628,12 +652,17 @@
       "port": "Altın üretmek için ticaret gemileri gönderir",
       "defense_post": "Yakındaki sınırların savunmasını artırır",
       "city": "Maksimum nüfusu artırır",
-      "factory": "Demiryolları yapar ve trenler oluşturur"
+      "factory": "Demiryolları yapar ve trenler oluşturur",
+      "aircraft_carrier": "Uzun menzilli hava saldırı platformu",
+      "anti_air_frigate": "Filolara kısa menzilli hava savunmasıyla eşlik eder",
+      "congress": "Düşman ticaretine karşı gümrük tarifelerinin kilidini açar",
+      "naval_mine": "Tek kullanımlık deniz mayını",
+      "submarine": "Gizli torpido akıncısı"
     },
     "not_enough_money": "Yeterli para yok"
   },
   "win_modal": {
-    "support_openfront": "OpenFront'u Destekle!",
+    "support_openfront": "TradeShips'u Destekle!",
     "territory_pattern": "Bir toprak kaplaması alarak reklamlardan kurtul!",
     "died": "Öldün",
     "your_team": "Takımınız kazandı!",
@@ -667,7 +696,8 @@
     "warships": "Savaş Gemileri",
     "cities": "Şehirler",
     "show_control": "Kontrolü Göster",
-    "show_units": "Birimleri Göster"
+    "show_units": "Birimleri Göster",
+    "control": "Kontrol"
   },
   "player_info_overlay": {
     "type": "Tür",
@@ -729,7 +759,10 @@
     "unit_captured_by_enemy": "{unit} {name} tarafından ele geçirildi",
     "captured_enemy_unit": "{name}'den {unit} ele geçirildi",
     "unit_destroyed": "{unit} yok edildi",
-    "no_boats_available": "Bot mevcut değil, maks {max}"
+    "no_boats_available": "Bot mevcut değil, maks {max}",
+    "economic_mission_started": "Küresel ticaret patlaması! {count, plural, one {# ticaret ulusu altın bonusu aldı} other {# ticaret ulusu altın bonusu aldı}}",
+    "tariff_imposed": "{name} adlı oyuncunun ticaretine tarife koydun",
+    "tariff_imposed_on_you": "{name} ticaretine tarife koydu!"
   },
   "unit_info_modal": {
     "structure_info": "Bina Bilgisi",
@@ -784,7 +817,9 @@
     "emotes": "Emojiler",
     "arc_up": "Yukarı yay",
     "arc_down": "Aşağı yay",
-    "flip_rocket_trajectory": "Roket yörüngesini çevir"
+    "flip_rocket_trajectory": "Roket yörüngesini çevir",
+    "tariff": "Tarife",
+    "tariff_tooltip": "{cost} altın karşılığında bu oyuncunun ticaretine tarife koy"
   },
   "send_troops_modal": {
     "title_with_name": "{name}'e Birlik Gönder",
@@ -870,7 +905,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Birimi Sil",
-    "delete_unit_description": "En yakın birimi silmek için tıklayın"
+    "delete_unit_description": "En yakın birimi silmek için tıklayın",
+    "specialize_description": "Bu limanın uzmanlığını seç: ticaret merkezi, deniz üssü veya liman gözetimi",
+    "specialize_title": "Limanı Uzmanlaştır"
   },
   "discord_user_header": {
     "avatar_alt": "Profil Resmi"
@@ -949,5 +986,36 @@
     "description": "(ALFA)",
     "login_required": "Aşamalı oynamak için giriş yap!",
     "must_login": "Aşamalı eşleştirme oynamak için giriş yapmanız gerek."
+  },
+  "maritime_objective": {
+    "capturing": "Ele geçiriliyor",
+    "contested": "Çekişmeli",
+    "controlled": "Kontrol altında",
+    "hint": "Kazanmak için merkezi deniz rotasını kontrol et",
+    "neutral": "Tarafsız"
+  },
+  "trade_routes": {
+    "contested": "Çekişmeli",
+    "danger": "Tehlike",
+    "escorts": "Eskortlar",
+    "risk": "Risk",
+    "routes": "Rotalar",
+    "summary_title": "Aktif ticaret rotaları, çekişmeli deniz yolları ve deniz eskortları",
+    "value": "Değer"
+  },
+  "trade_stats": {
+    "arrivals": "Varışlar",
+    "captures_by_me": "Benim ele geçirdiklerim",
+    "gold_earned": "Kazanılan altın",
+    "gold_in_transit": "Denizdeki altın",
+    "pirated_arrivals": "Korsan varışları",
+    "port": "Liman",
+    "routes_active": "Aktif rotalar",
+    "routes_contested": "Çekişmeli rotalar",
+    "routes_escorted": "Eskortlu rotalar",
+    "ships_captured": "Ele geçirilen gemiler",
+    "ships_lost": "Kaybedilen gemiler",
+    "title": "Ticaret",
+    "top_ports": "Başlıca varış limanları"
   }
 }

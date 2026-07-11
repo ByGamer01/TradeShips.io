@@ -62,7 +62,12 @@
       "missile_silo": "Uzita por lanĉi atombombojn",
       "port": "Sendas komercŝipojn por produkti oron",
       "sam_launcher": "Defendas kontraŭ alvenantaj atombomboj",
-      "warship": "Kaptas komercŝipojn, detruas ŝipojn kaj boatojn"
+      "warship": "Kaptas komercŝipojn, detruas ŝipojn kaj boatojn",
+      "aircraft_carrier": "Longdistanca aviadila atakplatformo",
+      "anti_air_frigate": "Eskortas flotojn per mallongdistanca kontraŭaera defendo",
+      "congress": "Malŝlosas tarifojn kontraŭ malamika komerco",
+      "naval_mine": "Unufoje uzebla mara mino",
+      "submarine": "Kaŝa torpeda atakanto"
     },
     "not_enough_money": "Ne sufiĉe da mono",
     "warship_shift_hint": "Premu la Majuskligan klavon, alklak-tenu kaj ŝovu por elekti plurajn militŝipojn samtempe"
@@ -425,7 +430,10 @@
     "unit_voluntarily_deleted": "Trupuno libervole forigita",
     "wants_to_renew_alliance": "{name} volas renovigi aliancon kun vi",
     "unit_captured_by_enemy": "Via {unit} estis kaptita de {name}",
-    "captured_enemy_unit": "Kaptis {unit} de {name}"
+    "captured_enemy_unit": "Kaptis {unit} de {name}",
+    "economic_mission_started": "Tutmonda komerca eksplodo! {count, plural, one {# komerca nacio ricevis} other {# komercaj nacioj ricevis}} oran bonuson",
+    "tariff_imposed": "Vi trudis tarifon al la komerco de {name}",
+    "tariff_imposed_on_you": "{name} trudis tarifon al via komerco!"
   },
   "flag_input": {
     "button_title": "Elektu flagon!",
@@ -510,7 +518,8 @@
   "game_starting_modal": {
     "code_license": "Kodo licencita sub AGPL-3.0 (neniu garantio)",
     "credits": "Agnoskoj",
-    "title": "Ludo komenciĝas..."
+    "title": "Ludo komenciĝas...",
+    "based_on": "Bazita sur OpenFront"
   },
   "graphics_setting": {
     "black": "Nigraj",
@@ -620,7 +629,7 @@
     "radial_title": "Radia menuo",
     "table_action": "Influo",
     "table_key": "Klavo",
-    "troubleshooting_desc": "Se vi havas rendimentajn problemojn, kolapsojn, aŭ aliajn problemojn ludante OpenFront, bonvolu viziti nian problemsolvan paĝon por helpo diagnozi kaj ripari kutimajn problemojn:",
+    "troubleshooting_desc": "Se vi havas rendimentajn problemojn, kolapsojn, aŭ aliajn problemojn ludante TradeShips, bonvolu viziti nian problemsolvan paĝon por helpo diagnozi kaj ripari kutimajn problemojn:",
     "ui_attack_ratio": "Ataka kvociento - La nombro da uzataj trupoj kiam vi atakas. Vi povas ĝustigi la atakan kvocienton uzante la glitilon. Havi pli da atakaj trupoj ol la defendaj trupoj malpliigos la perdojn dum atako, dum havi malpli multe pliigos la damaĝon ricevitan de viaj atakaj trupoj. La efiko ne superas rilatumon de 2:1.",
     "ui_control": "Kontrolpanelo",
     "ui_control_desc": "La kontrolpanelo enhavas la sekvajn elementojn:",
@@ -640,7 +649,13 @@
     "ui_wilderness": "Sovaĝejo",
     "ui_your_team": "Via teamo:",
     "video_tutorial": "Lernila Filmeto",
-    "video_tutorial_title": "OpenFront.io Lernilo"
+    "video_tutorial_title": "TradeShips.io Lernilo",
+    "maritime_contested": "Kiam rivalaj flotoj egalas kiel la plej forta mara potenco, la zono estas disputata kaj la progreso frostiĝas. Pli forta rivalo malpliigas la kontrolon de la tenanto ĝis 0% antaŭ ol kapti ĝin.",
+    "maritime_desc": "Sur maraj mapoj oni venkas kontrolante la centran marvojon. Tenu la plej fortan maran forton ene de la markita zono por kreskigi vian kontrolon: la unua floto kiu tenas 100% venkas la ludon.",
+    "maritime_ffa": "Ĉiu por si: la celo estas komerca koridoro tra la centraj malfermaj akvoj de la mapo, markita per flago kaj brila vojo. Nur ŝipoj ene de la koridoro kalkuliĝas.",
+    "maritime_power": "Mara potenco: aviadilportantoj valoras 6; militŝipoj, submarŝipoj kaj kontraŭaeraj fregatoj valoras 3; transportoj, komercaj ŝipoj kaj aviadiloj valoras 1.",
+    "maritime_team": "Teamaj ludoj: la celo estas cirkla zono en la malferma maro, markita per ringo kaj flago. La floto de via tuta teamo sumiĝas.",
+    "maritime_title": "Celo: la marvojo"
   },
   "host_modal": {
     "assigned_teams": "Asignitaj Teamoj",
@@ -692,14 +707,14 @@
     "got_it": "Mi komprenis",
     "how": "Kiel",
     "later": "Poste",
-    "modal_desc": "Via retnavigilo ne kapablas plenekranan reĝimon, sed vi povas aldoni OpenFront al via komenca ekrano por pli entira sperto:",
+    "modal_desc": "Via retnavigilo ne kapablas plenekranan reĝimon, sed vi povas aldoni TradeShips al via komenca ekrano por pli entira sperto:",
     "modal_title": "Plenekrana sur iOS",
     "never": "Neniam",
     "step_add_to_home_label": "Aldoni al komenca ekrano",
     "step_open": "Malfermi de via komenca ekrano — ekas plenekrane sen la adresa linio",
     "step_scroll_and_tap": "Rulumu suben kaj klaku",
     "step_share": "Alklaku la kunhavigan butonon de via retnavigilo",
-    "text": "Por plenekrana reĝimo, aldonu OpenFront al via komenca ekrano"
+    "text": "Por plenekrana reĝimo, aldonu TradeShips al via komenca ekrano"
   },
   "kick_reason": {
     "admin": "Forpelita de administranto",
@@ -718,7 +733,8 @@
     "show_control": "Montri regulilon",
     "show_units": "Montri trupojn",
     "team": "Teamo",
-    "warships": "Militŝipoj"
+    "warships": "Militŝipoj",
+    "control": "Kontrolo"
   },
   "leaderboard_modal": {
     "clan": "Klano",
@@ -746,7 +762,7 @@
   "main": {
     "account": "Konto",
     "clans": "Klanoj",
-    "copyright": "© OpenFront™ kaj Kontribuantoj",
+    "copyright": "© TradeShips™ kaj Kontribuantoj",
     "create": "Krei Ludejon",
     "discord_avatar_alt": "Profilbildo de Diskorda profilo",
     "game_info": "Informo pri ludo",
@@ -765,7 +781,7 @@
     "solo": "Unu ludanto",
     "store": "Butiko",
     "terms_of_service": "Uzokondiĉoj",
-    "title": "OpenFront (ALFA)",
+    "title": "TradeShips (ALFA)",
     "troubleshooting": "Problemsolvado",
     "user_avatar_alt": "Profilbildo de %{username}",
     "wiki": "Vikio"
@@ -904,7 +920,7 @@
   },
   "news_box": {
     "dismiss": "Ignori",
-    "firefox_warning": "OpenFront.io ne funkcias efike kun [retnavigiloj bazitaj sur Fajrovulpo](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). Ni rekomendas al vi uzi [retnavigilon bazitan sur Chromium](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) por plej bonaj rendimentoj.",
+    "firefox_warning": "TradeShips.io ne funkcias efike kun [retnavigiloj bazitaj sur Fajrovulpo](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). Ni rekomendas al vi uzi [retnavigilon bazitan sur Chromium](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) por plej bonaj rendimentoj.",
     "go_to_item": "Iri al {num}a ero ",
     "news": "NOVAĴOJ",
     "tournament": "TURNIRO",
@@ -961,7 +977,9 @@
     "target": "Celi",
     "trading": "Komercado",
     "traitor": "Perfidulo",
-    "troops": "Trupoj"
+    "troops": "Trupoj",
+    "tariff": "Tarifo",
+    "tariff_tooltip": "Trudu tarifon al la komerco de ĉi tiu ludanto por {cost} da oro"
   },
   "player_stats_table": {
     "arrived": "Alveninta",
@@ -1074,7 +1092,9 @@
   },
   "radial_menu": {
     "delete_unit_description": "Alklaku por forigi la plej proksiman trupunon",
-    "delete_unit_title": "Forigi trupunon"
+    "delete_unit_title": "Forigi trupunon",
+    "specialize_description": "Elektu la specialiĝon de ĉi tiu haveno: komerca nodo, mara bazo aŭ havena gardo",
+    "specialize_title": "Specialigi havenon"
   },
   "relation": {
     "default": "Defaŭlta",
@@ -1190,7 +1210,7 @@
     "browser": "Retnavigilo",
     "canvas_2d_no_gpu": "2D kanvaso (ne grafika karto)",
     "charging": "Ŝarganta",
-    "chromium_tip": "OpenFront plej bone funkcias per retnavigiloj bazitaj sur Chromium.",
+    "chromium_tip": "TradeShips plej bone funkcias per retnavigiloj bazitaj sur Chromium.",
     "copied_to_clipboard": "Informoj kopiitaj al tondujo! Libere sendu ilin en nian Diskordan servilon se vi bezonas helpon.",
     "device_pixel_ratio": "Aparata rilatumo de rastrumeroj",
     "environment": "Medio",
@@ -1223,7 +1243,14 @@
     "missile_silo": "Misila Silo",
     "port": "Haveno",
     "sam_launcher": "SAM-lanĉilo",
-    "warship": "Militŝipo"
+    "warship": "Militŝipo",
+    "aircraft": "Aviadilo",
+    "aircraft_carrier": "Aviadilportanto",
+    "anti_air_frigate": "Kontraŭaera fregato",
+    "congress": "Kongreso",
+    "naval_mine": "Mara mino",
+    "submarine": "Submarŝipo",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "alert_frame_desc": "(Mal)ŝalti la avertkadron. Se ŝaltita, la kadro estos montrata kiam vi estos perfidita aŭ atakita grunde.",
@@ -1351,7 +1378,17 @@
     "zoom_in": "Zomi",
     "zoom_in_desc": "Zomi en la mapon",
     "zoom_out": "Malzomi",
-    "zoom_out_desc": "Malzomi la mapon"
+    "zoom_out_desc": "Malzomi la mapon",
+    "build_aircraft_carrier": "Konstrui aviadilportanton",
+    "build_aircraft_carrier_desc": "Konstruas aviadilportanton sub via kursoro.",
+    "build_anti_air_frigate": "Konstrui kontraŭaeran fregaton",
+    "build_anti_air_frigate_desc": "Konstruas kontraŭaeran fregaton sub via kursoro.",
+    "build_congress": "Konstrui Kongreson",
+    "build_congress_desc": "Konstruas Kongreson sub via kursoro.",
+    "build_naval_mine": "Meti maran minon",
+    "build_naval_mine_desc": "Metas maran minon sub via kursoro.",
+    "build_submarine": "Konstrui submarŝipon",
+    "build_submarine_desc": "Konstruas submarŝipon sub via kursoro."
   },
   "username": {
     "enter_username": "Enigu vian uzantnomon",
@@ -1376,11 +1413,42 @@
     "other_won": "{player} venkis!",
     "requeue": "Reludi",
     "spectate": "Spekti",
-    "support_openfront": "Subtenu OpenFront!",
+    "support_openfront": "Subtenu TradeShips!",
     "territory_pattern": "Aĉetu teritorian haŭton por ludi sen reklamoj!",
     "wishlist": "Dezirlistu ĉe Steam!",
     "you_won": "Vi venkis!",
     "your_team": "Via teamo venkis!",
     "youtube_tutorial": "Ĉu vi bezonas helpon?"
+  },
+  "maritime_objective": {
+    "capturing": "Kaptata",
+    "contested": "Disputata",
+    "controlled": "Kontrolata",
+    "hint": "Kontrolu la centran marvojon por venki",
+    "neutral": "Neŭtrala"
+  },
+  "trade_routes": {
+    "contested": "Disputata",
+    "danger": "Danĝero",
+    "escorts": "Eskortoj",
+    "risk": "Risko",
+    "routes": "Vojoj",
+    "summary_title": "Aktivaj komercaj vojoj, disputataj marvojoj kaj maraj eskortoj",
+    "value": "Valoro"
+  },
+  "trade_stats": {
+    "arrivals": "Alvenoj",
+    "captures_by_me": "Kaptitaj de mi",
+    "gold_earned": "Gajnita oro",
+    "gold_in_transit": "Oro sur la maro",
+    "pirated_arrivals": "Piratitaj alvenoj",
+    "port": "Haveno",
+    "routes_active": "Aktivaj vojoj",
+    "routes_contested": "Disputataj vojoj",
+    "routes_escorted": "Eskortataj vojoj",
+    "ships_captured": "Kaptitaj ŝipoj",
+    "ships_lost": "Perditaj ŝipoj",
+    "title": "Komerco",
+    "top_ports": "Ĉefaj ricevaj havenoj"
   }
 }

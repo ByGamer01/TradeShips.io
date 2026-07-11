@@ -9,7 +9,7 @@
     "close": "Stäng"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "Gå med i Discord!",
     "login_discord": "Logga in med Discord",
     "checking_login": "Kontrollerar inloggning...",
@@ -118,7 +118,13 @@
     "icon_embargo": "Stoppskylt med dollartecken - Embargo. Den här spelaren har avbrutit handel med dig automatiskt eller manuellt.",
     "icon_request": "Kuvert - Alliansförfrågan. Denna spelare har skickat dig en alliansförfrågan.",
     "info_enemy_panel": "Fiendeinfopanel",
-    "exit_confirmation": "Är du säker på att du vill avsluta spelet?"
+    "exit_confirmation": "Är du säker på att du vill avsluta spelet?",
+    "maritime_contested": "När rivaliserande flottor står lika som starkaste sjömakt är zonen omstridd och framstegen fryser. En starkare rival tömmer innehavarens kontroll ner till 0 % innan zonen erövras.",
+    "maritime_desc": "På maritima kartor vinner den som kontrollerar den centrala sjövägen. Håll den starkaste sjöstyrkan inom den markerade zonen för att öka din kontroll: den första flottan som håller 100 % vinner spelet.",
+    "maritime_ffa": "Alla mot alla: målet är en handelskorridor genom kartans centrala öppna vatten, markerad med en flagga och en lysande farled. Endast fartyg inne i korridoren räknas.",
+    "maritime_power": "Sjömakt: hangarfartyg räknas som 6; krigsfartyg, ubåtar och luftvärnsfregatter räknas som 3; transporter, handelsfartyg och flygplan räknas som 1.",
+    "maritime_team": "Lagspel: målet är en cirkulär zon på öppet hav, markerad med en ring och en flagga. Hela lagets flotta räknas samman.",
+    "maritime_title": "Mål: sjövägen"
   },
   "single_modal": {
     "title": "Enspelarläge",
@@ -227,7 +233,8 @@
   },
   "game_starting_modal": {
     "title": "Spelet startar...",
-    "desc": "Förbereder lobbyn för att starta. Vänligen vänta."
+    "desc": "Förbereder lobbyn för att starta. Vänligen vänta.",
+    "based_on": "Baserat på OpenFront"
   },
   "difficulty": {
     "difficulty": "Svårighetsgrad",
@@ -253,7 +260,14 @@
     "atom_bomb": "Liten atombomb",
     "hydrogen_bomb": "Vätebomb",
     "mirv": "MIRV",
-    "factory": "Fabrik"
+    "factory": "Fabrik",
+    "aircraft": "Flygplan",
+    "aircraft_carrier": "Hangarfartyg",
+    "anti_air_frigate": "Luftvärnsfregatt",
+    "congress": "Kongress",
+    "naval_mine": "Sjömina",
+    "submarine": "Ubåt",
+    "torpedo": "Torped"
   },
   "user_setting": {
     "title": "Användarinställningar",
@@ -329,7 +343,17 @@
     "terrain_enabled": "Terräng vy aktiverad",
     "terrain_disabled": "Terräng vy avaktiverad",
     "exit_game_label": "Avsluta Spelet",
-    "exit_game_info": "Återgå till huvudmenyn"
+    "exit_game_info": "Återgå till huvudmenyn",
+    "build_aircraft_carrier": "Bygg hangarfartyg",
+    "build_aircraft_carrier_desc": "Bygger ett hangarfartyg under din markör.",
+    "build_anti_air_frigate": "Bygg luftvärnsfregatt",
+    "build_anti_air_frigate_desc": "Bygger en luftvärnsfregatt under din markör.",
+    "build_congress": "Bygg kongress",
+    "build_congress_desc": "Bygger en kongress under din markör.",
+    "build_naval_mine": "Bygg sjömina",
+    "build_naval_mine_desc": "Bygger en sjömina under din markör.",
+    "build_submarine": "Bygg ubåt",
+    "build_submarine_desc": "Bygger en ubåt under din markör."
   },
   "chat": {
     "title": "Snabbchat",
@@ -415,7 +439,12 @@
       "port": "Skickar handelsfartyg för att generera guld",
       "defense_post": "Ökar försvaret mot närliggande gränser",
       "city": "Ökar max befolkning",
-      "factory": "Skapar järnvägar och producerar tåg"
+      "factory": "Skapar järnvägar och producerar tåg",
+      "aircraft_carrier": "Långdistansplattform för flyganfall",
+      "anti_air_frigate": "Eskorterar flottor med kortdistansluftvärn",
+      "congress": "Låser upp tullar mot fiendens handel",
+      "naval_mine": "Sjömina för engångsbruk",
+      "submarine": "Smygande torpedjägare"
     },
     "not_enough_money": "Ej tillräckligt med guld"
   },
@@ -437,7 +466,8 @@
     "team": "Lag",
     "owned": "Ägd",
     "gold": "Guld",
-    "troops": "Trupper"
+    "troops": "Trupper",
+    "control": "Kontroll"
   },
   "player_info_overlay": {
     "type": "Typ",
@@ -478,7 +508,10 @@
     "accept_alliance": "Acceptera",
     "reject_alliance": "Neka",
     "alliance_renewed": "Din allians med {name} har förnyats",
-    "ignore": "Ignorera"
+    "ignore": "Ignorera",
+    "economic_mission_started": "Global handelsboom! {count, plural, one {# handelsnation fick} other {# handelsnationer fick}} en guldbonus",
+    "tariff_imposed": "Du införde en tull på {name}s handel",
+    "tariff_imposed_on_you": "{name} införde en tull på din handel!"
   },
   "unit_info_modal": {
     "structure_info": "Strukturinformation",
@@ -516,7 +549,9 @@
     "yes": "Ja",
     "no": "Nej",
     "none": "Ingen",
-    "alliances": "Allianser"
+    "alliances": "Allianser",
+    "tariff": "Tull",
+    "tariff_tooltip": "Inför en tull på denna spelares handel för {cost} guld"
   },
   "replay_panel": {
     "replay_speed": "Återspelningshastighet",
@@ -585,5 +620,40 @@
     "redirecting": "Du blir omdirigerad...",
     "not_authorized": "Du har inte behörighet att komma åt den här webbplatsen.",
     "contact_admin": "Om du tror att du ser detta meddelande felaktigt, kontakta webbplatsens administratör."
+  },
+  "maritime_objective": {
+    "capturing": "Erövras",
+    "contested": "Omstridd",
+    "controlled": "Kontrollerad",
+    "hint": "Kontrollera den centrala sjövägen för att vinna",
+    "neutral": "Neutral"
+  },
+  "radial_menu": {
+    "specialize_description": "Välj hamnens specialisering: handelsnav, flottbas eller hamnvakt",
+    "specialize_title": "Specialisera hamn"
+  },
+  "trade_routes": {
+    "contested": "Omstridd",
+    "danger": "Fara",
+    "escorts": "Eskorter",
+    "risk": "Risk",
+    "routes": "Rutter",
+    "summary_title": "Aktiva handelsrutter, omstridda sjövägar och flotteskorter",
+    "value": "Värde"
+  },
+  "trade_stats": {
+    "arrivals": "Ankomster",
+    "captures_by_me": "Kapade av mig",
+    "gold_earned": "Intjänat guld",
+    "gold_in_transit": "Guld till sjöss",
+    "pirated_arrivals": "Kapade ankomster",
+    "port": "Hamn",
+    "routes_active": "Aktiva rutter",
+    "routes_contested": "Omstridda rutter",
+    "routes_escorted": "Eskorterade rutter",
+    "ships_captured": "Kapade fartyg",
+    "ships_lost": "Förlorade fartyg",
+    "title": "Handel",
+    "top_ports": "Främsta mottagarhamnar"
   }
 }

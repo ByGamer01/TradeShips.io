@@ -38,7 +38,7 @@
     "wiki": "위키",
     "privacy_policy": "개인정보보호정책",
     "terms_of_service": "서비스 이용 약관",
-    "copyright": "© OpenFront™ 및 기여자",
+    "copyright": "© TradeShips™ 및 기여자",
     "play": "플레이",
     "news": "소식",
     "store": "상점",
@@ -177,7 +177,13 @@
     "exit_confirmation": "정말 게임을 종료 하시겠습니까?",
     "bomb_direction": "원자 / 수소 폭탄 궤적 방향",
     "icon_alt_player_leaderboard": "플레이어 순위표 아이콘",
-    "icon_alt_team_leaderboard": "팀 순위표 아이콘"
+    "icon_alt_team_leaderboard": "팀 순위표 아이콘",
+    "maritime_contested": "라이벌 함대들이 최강 해군력에서 동률이 되면 구역은 분쟁 상태가 되고 진행이 멈춥니다. 더 강한 라이벌은 점령하기 전에 보유자의 통제력을 0%까지 깎아냅니다.",
+    "maritime_desc": "해양 맵에서는 중앙 해상 항로를 통제하는 쪽이 승리합니다. 표시된 구역 안에 최강의 해군력을 유지하여 통제력을 높이세요. 100%를 유지한 첫 함대가 게임에서 승리합니다.",
+    "maritime_ffa": "개인전: 목표는 맵 중앙의 공해를 가로지르는 무역 항로 회랑으로, 깃발과 빛나는 항로로 표시됩니다. 회랑 안의 함선만 계산됩니다.",
+    "maritime_power": "해군력: 항공모함은 6, 군함·잠수함·대공 호위함은 3, 수송선·무역선·항공기는 1로 계산됩니다.",
+    "maritime_team": "팀전: 목표는 공해상의 원형 구역으로, 고리와 깃발로 표시됩니다. 팀 전체의 함대가 합산됩니다.",
+    "maritime_title": "목표: 해상 항로"
   },
   "single_modal": {
     "random_spawn": "무작위 생성",
@@ -440,7 +446,8 @@
   "game_starting_modal": {
     "title": "게임이 시작됩니다...",
     "credits": "크레딧",
-    "code_license": "코드는 AGPL-3.0 라이선스에 따르며, 보증은 제공되지 않습니다."
+    "code_license": "코드는 AGPL-3.0 라이선스에 따르며, 보증은 제공되지 않습니다.",
+    "based_on": "OpenFront 기반"
   },
   "difficulty": {
     "difficulty": "국가 난이도",
@@ -472,7 +479,14 @@
     "atom_bomb": "원자 폭탄",
     "hydrogen_bomb": "수소 폭탄",
     "mirv": "다탄두 미사일",
-    "factory": "공장"
+    "factory": "공장",
+    "aircraft": "항공기",
+    "aircraft_carrier": "항공모함",
+    "anti_air_frigate": "대공 호위함",
+    "congress": "의회",
+    "naval_mine": "기뢰",
+    "submarine": "잠수함",
+    "torpedo": "어뢰"
   },
   "user_setting": {
     "title": "설정",
@@ -575,7 +589,17 @@
     "exit_game_info": "주 메뉴로 돌아가기",
     "background_music_volume": "배경 음악 음량",
     "sound_effects_volume": "효과음 음량",
-    "keybind_conflict_error": "키 {key}는 이미 다른 동작에 바인딩되어 있습니다."
+    "keybind_conflict_error": "키 {key}는 이미 다른 동작에 바인딩되어 있습니다.",
+    "build_aircraft_carrier": "항공모함 건조",
+    "build_aircraft_carrier_desc": "커서 아래에 항공모함을 건조합니다.",
+    "build_anti_air_frigate": "대공 호위함 건조",
+    "build_anti_air_frigate_desc": "커서 아래에 대공 호위함을 건조합니다.",
+    "build_congress": "의회 건설",
+    "build_congress_desc": "커서 아래에 의회를 건설합니다.",
+    "build_naval_mine": "기뢰 부설",
+    "build_naval_mine_desc": "커서 아래에 기뢰를 부설합니다.",
+    "build_submarine": "잠수함 건조",
+    "build_submarine_desc": "커서 아래에 잠수함을 건조합니다."
   },
   "chat": {
     "title": "빠른 채팅",
@@ -676,12 +700,17 @@
       "port": "무역선을 보내 금을 생산합니다",
       "defense_post": "주변 경계의 방어력을 강화합니다",
       "city": "최대 인구 수를 증가시킵니다",
-      "factory": "철도를 만들고 기차를 생성합니다"
+      "factory": "철도를 만들고 기차를 생성합니다",
+      "aircraft_carrier": "장거리 항공 타격 플랫폼",
+      "anti_air_frigate": "단거리 대공 방어로 함대를 호위합니다",
+      "congress": "적의 무역에 대한 관세를 해금합니다",
+      "naval_mine": "일회용 기뢰",
+      "submarine": "은밀한 어뢰 습격함"
     },
     "not_enough_money": "돈이 부족합니다"
   },
   "win_modal": {
-    "support_openfront": "OpenFront를 후원해주세요!",
+    "support_openfront": "TradeShips를 후원해주세요!",
     "territory_pattern": "영토 스킨을 구매하고 광고 없이 플레이하세요!",
     "died": "죽었습니다",
     "your_team": "우리팀이 승리했습니다!",
@@ -711,7 +740,8 @@
     "warships": "군함",
     "cities": "도시",
     "show_control": "조작 표시",
-    "show_units": "유닛 표시"
+    "show_units": "유닛 표시",
+    "control": "통제력"
   },
   "events_display": {
     "events": "이벤트",
@@ -753,7 +783,10 @@
     "unit_captured_by_enemy": "당신의 {unit}이(가) {name}에게 점령당했습니다",
     "captured_enemy_unit": "{name}에게서 {unit}을(를) 포획했습니다",
     "unit_destroyed": "당신의 {unit}이(가) 파괴되었습니다",
-    "no_boats_available": "배를 사용할 수 없습니다. 최대 {max}대"
+    "no_boats_available": "배를 사용할 수 없습니다. 최대 {max}대",
+    "economic_mission_started": "세계 무역 붐! {count, plural, one {#개 무역국이} other {#개 무역국이}} 골드 보너스를 받았습니다",
+    "tariff_imposed": "{name}의 무역에 관세를 부과했습니다",
+    "tariff_imposed_on_you": "{name}이(가) 당신의 무역에 관세를 부과했습니다!"
   },
   "player_type": {
     "player": "플레이어",
@@ -794,7 +827,9 @@
     "kick_confirm": "{name}님을 추방하시겠습니까?\n이 게임에 다시 참여할 수 없습니다.",
     "arc_up": "위쪽 호",
     "arc_down": "아래쪽 호",
-    "flip_rocket_trajectory": "로켓 궤적 뒤집기"
+    "flip_rocket_trajectory": "로켓 궤적 뒤집기",
+    "tariff": "관세",
+    "tariff_tooltip": "골드 {cost}(으)로 이 플레이어의 무역에 관세를 부과합니다"
   },
   "kick_reason": {
     "duplicate_session": "게임에서 추방되었습니다 (다른 탭에서 플레이 중이었을 수 있습니다)",
@@ -879,7 +914,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "유닛 삭제",
-    "delete_unit_description": "클릭하여 가장 가까운 유닛을 삭제합니다"
+    "delete_unit_description": "클릭하여 가장 가까운 유닛을 삭제합니다",
+    "specialize_description": "이 항구의 특화를 선택하세요: 무역 허브, 해군 기지 또는 항만 감시",
+    "specialize_title": "항구 특화"
   },
   "discord_user_header": {
     "avatar_alt": "아바타"
@@ -957,5 +994,36 @@
     "description": "(시험판)",
     "login_required": "승급전을 플레이하려면 로그인하세요!",
     "must_login": "승급전 매치메이킹을 플레이하려면 로그인해야 합니다."
+  },
+  "maritime_objective": {
+    "capturing": "점령 중",
+    "contested": "분쟁 중",
+    "controlled": "통제됨",
+    "hint": "승리하려면 중앙 해상 항로를 통제하세요",
+    "neutral": "중립"
+  },
+  "trade_routes": {
+    "contested": "분쟁 중",
+    "danger": "위험",
+    "escorts": "호위",
+    "risk": "리스크",
+    "routes": "항로",
+    "summary_title": "활성 상선 항로, 분쟁 중인 해상 항로 및 해군 호위",
+    "value": "가치"
+  },
+  "trade_stats": {
+    "arrivals": "도착",
+    "captures_by_me": "내가 나포함",
+    "gold_earned": "획득한 골드",
+    "gold_in_transit": "해상의 골드",
+    "pirated_arrivals": "약탈당한 도착",
+    "port": "항구",
+    "routes_active": "활성 항로",
+    "routes_contested": "분쟁 중인 항로",
+    "routes_escorted": "호위받는 항로",
+    "ships_captured": "나포한 선박",
+    "ships_lost": "잃은 선박",
+    "title": "무역",
+    "top_ports": "주요 수취 항구"
   }
 }

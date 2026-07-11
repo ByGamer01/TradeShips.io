@@ -62,7 +62,12 @@
       "missile_silo": "Nukleáris fegyverek indítására használható",
       "port": "Kereskedőhajókat küld, hogy arany termeljen",
       "sam_launcher": "Véd a közelgő nukleáris rakéták ellen",
-      "warship": "Elfogja a kereskedőhajókat, elpusztítja a hajókat és csónakokat"
+      "warship": "Elfogja a kereskedőhajókat, elpusztítja a hajókat és csónakokat",
+      "aircraft_carrier": "Nagy hatótávolságú légicsapás-platform",
+      "anti_air_frigate": "Flottákat kísér rövid hatótávú légvédelemmel",
+      "congress": "Vámokat old fel az ellenséges kereskedelem ellen",
+      "naval_mine": "Egyszer használatos tengeri akna",
+      "submarine": "Lopakodó torpedós portyázó"
     },
     "not_enough_money": "Nincs elég pénz",
     "warship_shift_hint": "Tartsd lenyomva a Shift billentyűt, és húzással jelölj ki egyszerre több hadihajót"
@@ -425,7 +430,10 @@
     "unit_voluntarily_deleted": "Az egység önként törölve",
     "wants_to_renew_alliance": "{name} meg akarja újítani a szövetséget",
     "unit_captured_by_enemy": "{name} elfoglalta {unit} egységedet",
-    "captured_enemy_unit": "{name} {unit} egységét elfoglaltad"
+    "captured_enemy_unit": "{name} {unit} egységét elfoglaltad",
+    "economic_mission_started": "Globális kereskedelmi fellendülés! {count, plural, one {# kereskedő nemzet kapott} other {# kereskedő nemzet kapott}} aranybónuszt",
+    "tariff_imposed": "Vámot vetettél ki {name} kereskedelmére",
+    "tariff_imposed_on_you": "{name} vámot vetett ki a kereskedelmedre!"
   },
   "flag_input": {
     "button_title": "Válassz egy zászlót!",
@@ -510,7 +518,8 @@
   "game_starting_modal": {
     "code_license": "AGPL-3.0 licenc alatt álló kód (garancia nélkül)",
     "credits": "Kreditek",
-    "title": "A játék indul..."
+    "title": "A játék indul...",
+    "based_on": "Az OpenFront alapján"
   },
   "graphics_setting": {
     "black": "Fekete",
@@ -640,7 +649,13 @@
     "ui_wilderness": "Vadvidék",
     "ui_your_team": "Saját csapat:",
     "video_tutorial": "Videó bemutató",
-    "video_tutorial_title": "OpenFront.io bemutató"
+    "video_tutorial_title": "TradeShips.io bemutató",
+    "maritime_contested": "Ha rivális flották holtversenyben állnak a legerősebb tengeri haderőért, a zóna vitatott, és a haladás befagy. Egy erősebb rivális 0%-ra csökkenti a birtokos irányítását, mielőtt elfoglalná.",
+    "maritime_desc": "A tengeri térképeken az nyer, aki a központi tengeri útvonalat irányítja. Tartsd a legerősebb tengeri haderőt a megjelölt zónában, hogy növeld az irányításodat: az első flotta, amely 100%-ot tart, megnyeri a játékot.",
+    "maritime_ffa": "Mindenki mindenki ellen: a cél egy kereskedelmi folyosó a térkép központi nyílt vizein át, zászlóval és világító sávval jelölve. Csak a folyosón belüli hajók számítanak.",
+    "maritime_power": "Tengeri haderő: a repülőgép-hordozók 6-ot érnek; a hadihajók, tengeralattjárók és légvédelmi fregattok 3-at; a szállítók, kereskedőhajók és repülőgépek 1-et.",
+    "maritime_team": "Csapatjátékok: a cél egy kör alakú zóna a nyílt tengeren, gyűrűvel és zászlóval jelölve. Az egész csapatod flottája összeadódik.",
+    "maritime_title": "Cél: a tengeri útvonal"
   },
   "host_modal": {
     "assigned_teams": "Hozzárendelt csapatok",
@@ -692,14 +707,14 @@
     "got_it": "Értem",
     "how": "Hogy",
     "later": "Később",
-    "modal_desc": "A böngésződ nem támogatja a teljes képernyős nézetet, de hozzáadhatod az OpenFrontot a kezdőképernyődhöz egy magával ragadóbb élményért:",
+    "modal_desc": "A böngésződ nem támogatja a teljes képernyős nézetet, de hozzáadhatod az TradeShipsot a kezdőképernyődhöz egy magával ragadóbb élményért:",
     "modal_title": "Teljes képernyő iOS-en",
     "never": "Soha",
     "step_add_to_home_label": "Hozzáadás a kezdőképernyőhöz",
     "step_open": "Megnyitás a kezdőképernyőről - teljes képernyős nézetet indít címsor nélkül",
     "step_scroll_and_tap": "Görgessen le, és kattintson",
     "step_share": "Koppintson a Megosztás gombra a böngészőjében",
-    "text": "Teljes képernyős nézethez add hozzá az OpenFront-ot a kezdőképernyődhöz"
+    "text": "Teljes képernyős nézethez add hozzá az TradeShips-ot a kezdőképernyődhöz"
   },
   "kick_reason": {
     "admin": "A lobbi adminisztrátora kirúgta",
@@ -718,7 +733,8 @@
     "show_control": "Vezérlés megjelenítése",
     "show_units": "Egységek megjelenítése",
     "team": "Csapat",
-    "warships": "Hadihajók"
+    "warships": "Hadihajók",
+    "control": "Irányítás"
   },
   "leaderboard_modal": {
     "clan": "Klán",
@@ -746,7 +762,7 @@
   "main": {
     "account": "Fiók",
     "clans": "Klánok",
-    "copyright": "© OpenFront™ and Contributors",
+    "copyright": "© TradeShips™ and Contributors",
     "create": "Váróterem Létrehozása",
     "discord_avatar_alt": "Discord profilkép",
     "game_info": "Játék infó",
@@ -765,7 +781,7 @@
     "solo": "Egyéni",
     "store": "Bolt",
     "terms_of_service": "Felhasználási feltételek",
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "troubleshooting": "Hibaelhárítás",
     "user_avatar_alt": "{username} profilképe",
     "wiki": "Wiki"
@@ -904,7 +920,7 @@
   },
   "news_box": {
     "dismiss": "Elvetés",
-    "firefox_warning": "Az OpenFront.io nem működik jól [Firefox-alapú böngészőkkel](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). A legjobb teljesítmény érdekében [Chromium-alapú böngésző](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) használatát javasoljuk.",
+    "firefox_warning": "Az TradeShips.io nem működik jól [Firefox-alapú böngészőkkel](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). A legjobb teljesítmény érdekében [Chromium-alapú böngésző](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) használatát javasoljuk.",
     "go_to_item": "Ugrás a(z) {num} elemre",
     "news": "HÍREK",
     "tournament": "BAJNOKSÁG",
@@ -961,7 +977,9 @@
     "target": "Célpont",
     "trading": "Kereskedés",
     "traitor": "Áruló",
-    "troops": "Katonák"
+    "troops": "Katonák",
+    "tariff": "Vám",
+    "tariff_tooltip": "Vess ki vámot erre a játékosra {cost} aranyért"
   },
   "player_stats_table": {
     "arrived": "Megérkezett",
@@ -1074,7 +1092,9 @@
   },
   "radial_menu": {
     "delete_unit_description": "Kattints a legközelebbi egység törléséhez",
-    "delete_unit_title": "Egység törlése"
+    "delete_unit_title": "Egység törlése",
+    "specialize_description": "Válaszd ki a kikötő szakosodását: kereskedelmi csomópont, haditengerészeti bázis vagy kikötői őrség",
+    "specialize_title": "Kikötő szakosítása"
   },
   "relation": {
     "default": "Alapértelmezett",
@@ -1190,7 +1210,7 @@
     "browser": "Böngésző",
     "canvas_2d_no_gpu": "Canvas 2D (GPU nélkül)",
     "charging": "Töltés",
-    "chromium_tip": "Az OpenFront Chromium alapú böngészőkön fut a legjobban.",
+    "chromium_tip": "Az TradeShips Chromium alapú böngészőkön fut a legjobban.",
     "copied_to_clipboard": "Információ másolva a vágólapra! Nyugodtan oszd meg Discordon, ha segítségre van szükséged.",
     "device_pixel_ratio": "Eszköz pixelaránya",
     "environment": "Környezet",
@@ -1223,7 +1243,14 @@
     "missile_silo": "Rakétasiló",
     "port": "Kikötő",
     "sam_launcher": "Rakétaelhárító rendszer",
-    "warship": "Hadihajó"
+    "warship": "Hadihajó",
+    "aircraft": "Repülőgép",
+    "aircraft_carrier": "Repülőgép-hordozó",
+    "anti_air_frigate": "Légvédelmi fregatt",
+    "congress": "Kongresszus",
+    "naval_mine": "Tengeri akna",
+    "submarine": "Tengeralattjáró",
+    "torpedo": "Torpedó"
   },
   "user_setting": {
     "alert_frame_desc": "Kapcsolja be a riasztási keretet. Ha engedélyezve van, a keret akkor jelenik meg, ha elárulnak vagy megtámadnak a szárazföldön.",
@@ -1351,7 +1378,17 @@
     "zoom_in": "Nagyítás",
     "zoom_in_desc": "Térkép nagyítása",
     "zoom_out": "Kicsinyítés",
-    "zoom_out_desc": "Térkép kicsinyítése"
+    "zoom_out_desc": "Térkép kicsinyítése",
+    "build_aircraft_carrier": "Repülőgép-hordozó építése",
+    "build_aircraft_carrier_desc": "Repülőgép-hordozót épít a kurzorod alá.",
+    "build_anti_air_frigate": "Légvédelmi fregatt építése",
+    "build_anti_air_frigate_desc": "Légvédelmi fregattot épít a kurzorod alá.",
+    "build_congress": "Kongresszus építése",
+    "build_congress_desc": "Kongresszust épít a kurzorod alá.",
+    "build_naval_mine": "Tengeri akna telepítése",
+    "build_naval_mine_desc": "Tengeri aknát telepít a kurzorod alá.",
+    "build_submarine": "Tengeralattjáró építése",
+    "build_submarine_desc": "Tengeralattjárót épít a kurzorod alá."
   },
   "username": {
     "enter_username": "Add meg a felhasználóneved",
@@ -1376,11 +1413,42 @@
     "other_won": "{player} nyert!",
     "requeue": "Új játék",
     "spectate": "Megfigyel",
-    "support_openfront": "Támogasd az OpenFrontot!",
+    "support_openfront": "Támogasd az TradeShipsot!",
     "territory_pattern": "Vásárolj egy territoriális mintát, hogy reklámmentes legyél!",
     "wishlist": "Tedd a kívánságlistádra a Steam-en!",
     "you_won": "Nyertél!",
     "your_team": "A csapatod nyert!",
     "youtube_tutorial": "Segítségre van szükséged?"
+  },
+  "maritime_objective": {
+    "capturing": "Elfoglalás alatt",
+    "contested": "Vitatott",
+    "controlled": "Irányítva",
+    "hint": "Irányítsd a központi tengeri útvonalat a győzelemhez",
+    "neutral": "Semleges"
+  },
+  "trade_routes": {
+    "contested": "Vitatott",
+    "danger": "Veszély",
+    "escorts": "Kíséretek",
+    "risk": "Kockázat",
+    "routes": "Útvonalak",
+    "summary_title": "Aktív kereskedelmi útvonalak, vitatott tengeri utak és haditengerészeti kíséretek",
+    "value": "Érték"
+  },
+  "trade_stats": {
+    "arrivals": "Érkezések",
+    "captures_by_me": "Általam zsákmányolt",
+    "gold_earned": "Szerzett arany",
+    "gold_in_transit": "Arany a tengeren",
+    "pirated_arrivals": "Kalóz érkezések",
+    "port": "Kikötő",
+    "routes_active": "Aktív útvonalak",
+    "routes_contested": "Vitatott útvonalak",
+    "routes_escorted": "Kísért útvonalak",
+    "ships_captured": "Zsákmányolt hajók",
+    "ships_lost": "Elvesztett hajók",
+    "title": "Kereskedelem",
+    "top_ports": "Fő fogadó kikötők"
   }
 }

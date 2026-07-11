@@ -9,7 +9,7 @@
     "close": "סגור"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "הצטרף לשרת הדיסקורד!",
     "login_discord": "התחבר עם דיסקורד",
     "checking_login": "בודק התחברות...",
@@ -112,7 +112,13 @@
     "icon_ally": "לחיצת יד - ברית. השחקן הזה בעל ברית שלך.",
     "icon_embargo": "סמל דולר עם קו - אמברגו. השחקן הזה החליט להפסיק לסחור איתך בצורה אוטומטית או ידנית.",
     "icon_request": "מעטפה - בקשת ברית. השחקן הזה מציע לך ברית.",
-    "info_enemy_panel": "מסך מידע אויב"
+    "info_enemy_panel": "מסך מידע אויב",
+    "maritime_contested": "כאשר ציים יריבים שווים בעוצמה הימית החזקה ביותר, האזור שנוי במחלוקת וההתקדמות קופאת. יריב חזק יותר מוריד את השליטה של המחזיק ל-0% לפני שהוא כובש אותו.",
+    "maritime_desc": "במפות ימיות מנצחים על ידי שליטה בנתיב הים המרכזי. החזק את הכוח הימי החזק ביותר בתוך האזור המסומן כדי להגדיל את שליטתך: הצי הראשון שמחזיק 100% מנצח במשחק.",
+    "maritime_ffa": "כל אחד לעצמו: המטרה היא מסדרון סחר דרך המים הפתוחים המרכזיים של המפה, מסומן בדגל ובנתיב זוהר. רק ספינות בתוך המסדרון נספרות.",
+    "maritime_power": "עוצמה ימית: נושאות מטוסים נספרות כ-6; ספינות מלחמה, צוללות ופריגטות נ\"מ נספרות כ-3; ספינות תובלה, ספינות סחר ומטוסים נספרים כ-1.",
+    "maritime_team": "משחקי קבוצות: המטרה היא אזור מעגלי בים הפתוח, מסומן בטבעת ובדגל. הצי של כל הקבוצה שלך מצטרף יחד.",
+    "maritime_title": "מטרה: נתיב הים"
   },
   "single_modal": {
     "title": "שחקן יחיד",
@@ -221,7 +227,8 @@
   },
   "game_starting_modal": {
     "title": "המשחק מתחיל...",
-    "desc": "מחכה שהלובי יתחיל. המתן בבקשה."
+    "desc": "מחכה שהלובי יתחיל. המתן בבקשה.",
+    "based_on": "מבוסס על OpenFront"
   },
   "difficulty": {
     "difficulty": "רמת קושי",
@@ -247,7 +254,14 @@
     "atom_bomb": "פצצת אטום",
     "hydrogen_bomb": "פצצת מימן",
     "mirv": "MIRV",
-    "factory": "מפעל"
+    "factory": "מפעל",
+    "aircraft": "מטוס",
+    "aircraft_carrier": "נושאת מטוסים",
+    "anti_air_frigate": "פריגטת נ\"מ",
+    "congress": "קונגרס",
+    "naval_mine": "מוקש ימי",
+    "submarine": "צוללת",
+    "torpedo": "טורפדו"
   },
   "user_setting": {
     "title": "הגדרות משתמש",
@@ -305,7 +319,17 @@
     "move_right": "הזז מצלמה ימינה",
     "move_right_desc": "מזיז את המצלמה לצד ימין",
     "reset": "איפוס",
-    "unbind": "בטל קיצור מקלדת"
+    "unbind": "בטל קיצור מקלדת",
+    "build_aircraft_carrier": "בנה נושאת מטוסים",
+    "build_aircraft_carrier_desc": "בונה נושאת מטוסים מתחת לסמן שלך.",
+    "build_anti_air_frigate": "בנה פריגטת נ\"מ",
+    "build_anti_air_frigate_desc": "בונה פריגטת נ\"מ מתחת לסמן שלך.",
+    "build_congress": "בנה קונגרס",
+    "build_congress_desc": "בונה קונגרס מתחת לסמן שלך.",
+    "build_naval_mine": "הנח מוקש ימי",
+    "build_naval_mine_desc": "מניח מוקש ימי מתחת לסמן שלך.",
+    "build_submarine": "בנה צוללת",
+    "build_submarine_desc": "בונה צוללת מתחת לסמן שלך."
   },
   "chat": {
     "title": "צ'אט מהיר",
@@ -390,7 +414,12 @@
       "warship": "לוכד ספינות סחר, הורס ספינות סחר וכיבוש.",
       "port": "שולח ספינות סחר כדי לייצר זהב",
       "defense_post": "מעלה הגנות של גבולות קרובים",
-      "city": "מעלה כמות אוכלוסיה מירבית"
+      "city": "מעלה כמות אוכלוסיה מירבית",
+      "aircraft_carrier": "פלטפורמת תקיפה אווירית ארוכת טווח",
+      "anti_air_frigate": "מלווה ציים עם הגנה אווירית לטווח קצר",
+      "congress": "פותח מכסים נגד סחר האויב",
+      "naval_mine": "מוקש ימי לשימוש חד-פעמי",
+      "submarine": "פושט טורפדו חמקן"
     },
     "not_enough_money": "אין מספיק זהב"
   },
@@ -414,7 +443,8 @@
     "gold": "זהב",
     "troops": "חיילים",
     "show_top_5": "הצג את החמישה העליונים",
-    "show_all": "הצג הכול"
+    "show_all": "הצג הכול",
+    "control": "שליטה"
   },
   "player_info_overlay": {
     "type": "סוג",
@@ -441,7 +471,10 @@
     "renew_alliance": "בקשה לחידוש",
     "focus": "מיקוד",
     "alliance_renewed": "הברית שלך עם {name} התחדשה",
-    "ignore": "התעלם"
+    "ignore": "התעלם",
+    "economic_mission_started": "פריחה מסחרית עולמית! {count, plural, one {אומת סחר # קיבלה} other {# אומות סחר קיבלו}} בונוס זהב",
+    "tariff_imposed": "הטלת מכס על הסחר של {name}",
+    "tariff_imposed_on_you": "{name} הטיל מכס על הסחר שלך!"
   },
   "unit_info_modal": {
     "structure_info": "מידע מבנה",
@@ -479,7 +512,9 @@
     "yes": "כן",
     "no": "לא",
     "none": "ללא",
-    "alliances": "בריתות"
+    "alliances": "בריתות",
+    "tariff": "מכס",
+    "tariff_tooltip": "הטל מכס על הסחר של שחקן זה תמורת {cost} זהב"
   },
   "replay_panel": {
     "replay_speed": "מהירות שידור חוזר",
@@ -538,5 +573,40 @@
       "grogu_head": "ראש גרוגו",
       "grogu": "גרוגו"
     }
+  },
+  "maritime_objective": {
+    "capturing": "בכיבוש",
+    "contested": "שנוי במחלוקת",
+    "controlled": "בשליטה",
+    "hint": "שלוט בנתיב הים המרכזי כדי לנצח",
+    "neutral": "ניטרלי"
+  },
+  "radial_menu": {
+    "specialize_description": "בחר את ההתמחות של נמל זה: מרכז סחר, בסיס ימי או משמר נמל",
+    "specialize_title": "התמחות נמל"
+  },
+  "trade_routes": {
+    "contested": "שנוי במחלוקת",
+    "danger": "סכנה",
+    "escorts": "ליוויים",
+    "risk": "סיכון",
+    "routes": "נתיבים",
+    "summary_title": "נתיבי סחר פעילים, נתיבי ים שנויים במחלוקת וליוויים ימיים",
+    "value": "ערך"
+  },
+  "trade_stats": {
+    "arrivals": "הגעות",
+    "captures_by_me": "נתפסו על ידי",
+    "gold_earned": "זהב שהורווח",
+    "gold_in_transit": "זהב בים",
+    "pirated_arrivals": "הגעות שנשדדו",
+    "port": "נמל",
+    "routes_active": "נתיבים פעילים",
+    "routes_contested": "נתיבים שנויים במחלוקת",
+    "routes_escorted": "נתיבים מלווים",
+    "ships_captured": "ספינות שנתפסו",
+    "ships_lost": "ספינות שאבדו",
+    "title": "סחר",
+    "top_ports": "נמלי היעד המובילים"
   }
 }

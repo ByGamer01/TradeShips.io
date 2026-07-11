@@ -26,7 +26,7 @@
     "enabled": "Sees"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "login_discord": "Logi sisse Discordiga",
     "sign_in": "Logi sisse",
     "discord_avatar_alt": "Discordi profiili avatar",
@@ -38,7 +38,7 @@
     "wiki": "Viki",
     "privacy_policy": "Privaatsuspoliitika",
     "terms_of_service": "Kasutustingimused",
-    "copyright": "© OpenFront™ ja kaastöölised",
+    "copyright": "© TradeShips™ ja kaastöölised",
     "play": "Mängi",
     "news": "Uudised",
     "store": "Pood",
@@ -65,7 +65,7 @@
     "copied_to_clipboard": "Info kopeeritud lõikelauale! Võid jagada seda julgesti meie Discordis, kui sul on abi vaja.",
     "os": "OS",
     "device_pixel_ratio": "Seadme pikslite suhe",
-    "chromium_tip": "OpenFront töötab kõige paremini Cromiumil põhinevatel brauseritel.",
+    "chromium_tip": "TradeShips töötab kõige paremini Cromiumil põhinevatel brauseritel.",
     "hardware_acceleration_tip": "Veendu, et sinu brauseri seadetes oleks lubatud riistvarakiirendus(hardware acceleration), et saavutada parim jõudlus.",
     "renderer": "Renderdaja",
     "max_texture_size": "Maksimaalne tekstuuri suurus",
@@ -85,7 +85,7 @@
   },
   "help_modal": {
     "video_tutorial": "Videoõpetus",
-    "video_tutorial_title": "OpenFront.io õpetus",
+    "video_tutorial_title": "TradeShips.io õpetus",
     "hotkeys": "Kiirklahvid",
     "table_key": "Klahv",
     "table_action": "Tegevus",
@@ -166,7 +166,7 @@
     "build_mirv": "MIRV",
     "build_mirv_desc": "Mängu kõige võimsam pomm. Jaguneb väiksemateks pommideks, mis katavad väga suure ala. Kahjustab ainult seda mängijat, kellele peale esimesena klõpsasid. Tekib lähimast raketisilost ja langeb piirkonda, kuhu algselt klõpsasid.",
     "player_icons": "Mängija ikoonid",
-    "troubleshooting_desc": "Kui sul tekib OpenFronti mängimise ajal jõudlusprobleeme, krahhe või muid tõrkeid, külasta palun meie tõrkeotsingu lehte, et saada abi levinud probleemide tuvastamisel ja lahendamisel:",
+    "troubleshooting_desc": "Kui sul tekib TradeShipsi mängimise ajal jõudlusprobleeme, krahhe või muid tõrkeid, külasta palun meie tõrkeotsingu lehte, et saada abi levinud probleemide tuvastamisel ja lahendamisel:",
     "icon_desc": "Näited mõningatest mängusisestest ikoonidest, millega võid kokku puutuda, ja nende tähendused:",
     "icon_crown": "Kroon - Esimene koht edetabelil.",
     "icon_traitor": "Katkine kilp - Reetur. See mängija on rünnanud oma liitlast.",
@@ -177,7 +177,13 @@
     "exit_confirmation": "Kas oled kindel, et soovid mängust lahkuda?",
     "bomb_direction": "Tuuma- või vesinikupommi kaare suund",
     "icon_alt_player_leaderboard": "Mängija edetabeli ikoon",
-    "icon_alt_team_leaderboard": "Tiimi edetabeli ikoon"
+    "icon_alt_team_leaderboard": "Tiimi edetabeli ikoon",
+    "maritime_contested": "Kui rivaalitsevad laevastikud on tugevaima mereväena viigis, on tsoon vaidlustatud ja edenemine külmub. Tugevam rivaal kahandab valdaja kontrolli 0%-ni, enne kui tsooni vallutab.",
+    "maritime_desc": "Merekaartidel võidab see, kes kontrollib keskset mereteed. Hoia tugevaim merevägi märgitud tsoonis, et kontrolli kasvatada: esimene laevastik, kes hoiab 100%, võidab mängu.",
+    "maritime_ffa": "Igaüks enda eest: eesmärk on kaubanduskoridor läbi kaardi keskse avavee, tähistatud lipu ja helendava rajaga. Loevad ainult koridoris olevad laevad.",
+    "maritime_power": "Merevägi: lennukikandjad loevad 6; sõjalaevad, allveelaevad ja õhutõrjefregatid 3; transpordid, kaubalaevad ja lennukid 1.",
+    "maritime_team": "Meeskonnamängud: eesmärk on ringikujuline tsoon avamerel, tähistatud rõnga ja lipuga. Kogu su meeskonna laevastik liidetakse kokku.",
+    "maritime_title": "Eesmärk: meretee"
   },
   "single_modal": {
     "random_spawn": "Juhuslik tekkekoht",
@@ -440,7 +446,8 @@
   "game_starting_modal": {
     "title": "Mäng algab...",
     "credits": "Krediit",
-    "code_license": "Kood litsentseeritud AGPL-3.0 alusel (garantiid ei ole)"
+    "code_license": "Kood litsentseeritud AGPL-3.0 alusel (garantiid ei ole)",
+    "based_on": "Põhineb OpenFrontil"
   },
   "difficulty": {
     "difficulty": "Robot-riigi raskustase",
@@ -472,7 +479,14 @@
     "atom_bomb": "Tuumapomm",
     "hydrogen_bomb": "Vesinikupomm",
     "mirv": "MIRV",
-    "factory": "Tehas"
+    "factory": "Tehas",
+    "aircraft": "Lennuk",
+    "aircraft_carrier": "Lennukikandja",
+    "anti_air_frigate": "Õhutõrjefregatt",
+    "congress": "Kongress",
+    "naval_mine": "Meremiin",
+    "submarine": "Allveelaev",
+    "torpedo": "Torpeedo"
   },
   "user_setting": {
     "title": "Seaded",
@@ -575,7 +589,17 @@
     "exit_game_info": "Tagasi peamenüüle",
     "background_music_volume": "Taustamuusika helitugevus",
     "sound_effects_volume": "Eriefektide helitugevus",
-    "keybind_conflict_error": "Nupp {key} on juba määratud teisele tegevusele."
+    "keybind_conflict_error": "Nupp {key} on juba määratud teisele tegevusele.",
+    "build_aircraft_carrier": "Ehita lennukikandja",
+    "build_aircraft_carrier_desc": "Ehitab kursori alla lennukikandja.",
+    "build_anti_air_frigate": "Ehita õhutõrjefregatt",
+    "build_anti_air_frigate_desc": "Ehitab kursori alla õhutõrjefregati.",
+    "build_congress": "Ehita kongress",
+    "build_congress_desc": "Ehitab kursori alla kongressi.",
+    "build_naval_mine": "Paigalda meremiin",
+    "build_naval_mine_desc": "Paigaldab kursori alla meremiini.",
+    "build_submarine": "Ehita allveelaev",
+    "build_submarine_desc": "Ehitab kursori alla allveelaeva."
   },
   "chat": {
     "title": "Kiirvestlus",
@@ -676,12 +700,17 @@
       "port": "Saada kaubalaevu, et genereerida kulda",
       "defense_post": "Tugevdab lähedalasuvaid piire teiste riikidega",
       "city": "Suurendab maksimaalset populatsiooni",
-      "factory": "Teeb raudteid ja ronge"
+      "factory": "Teeb raudteid ja ronge",
+      "aircraft_carrier": "Kaugmaa õhurünnaku platvorm",
+      "anti_air_frigate": "Saadab laevastikke lühimaa õhutõrjega",
+      "congress": "Avab tollid vaenlase kaubanduse vastu",
+      "naval_mine": "Ühekordne meremiin",
+      "submarine": "Varjatud torpeedoründaja"
     },
     "not_enough_money": "Pole piisavalt raha"
   },
   "win_modal": {
-    "support_openfront": "Toeta OpenFront'i!",
+    "support_openfront": "Toeta TradeShips'i!",
     "territory_pattern": "Osta territooriumi skin, et minna reklaami-vabaks!",
     "died": "Sa said surma",
     "your_team": "Sinu tiim võitis!",
@@ -711,7 +740,8 @@
     "warships": "Sõjalaevad",
     "cities": "Linnad",
     "show_control": "Näita kontrolli",
-    "show_units": "Näita vägesid"
+    "show_units": "Näita vägesid",
+    "control": "Kontroll"
   },
   "events_display": {
     "events": "Sündmused",
@@ -753,7 +783,10 @@
     "unit_captured_by_enemy": "Sinu {unit} püüti kinni {name} poolt",
     "captured_enemy_unit": "Püüdsid kinni {unit} {name} poolt",
     "unit_destroyed": "Sinu {unit} hävitati",
-    "no_boats_available": "Laevu pole rohkem saadaval, maks. {max}"
+    "no_boats_available": "Laevu pole rohkem saadaval, maks. {max}",
+    "economic_mission_started": "Ülemaailmne kaubandusbuum! {count, plural, one {# kaubandusriik sai} other {# kaubandusriiki said}} kuldboonuse",
+    "tariff_imposed": "Kehtestasid tolli mängija {name} kaubandusele",
+    "tariff_imposed_on_you": "{name} kehtestas sinu kaubandusele tolli!"
   },
   "player_type": {
     "player": "Mängija",
@@ -794,7 +827,9 @@
     "kick_confirm": "Kas visata välja {name}?\n\nNad ei saa siia mängu tagasi tulla.",
     "arc_up": "Ülespoole kaar",
     "arc_down": "Allapoole kaar",
-    "flip_rocket_trajectory": "Pööra raketi trajektoori"
+    "flip_rocket_trajectory": "Pööra raketi trajektoori",
+    "tariff": "Toll",
+    "tariff_tooltip": "Kehtesta selle mängija kaubandusele toll {cost} kulla eest"
   },
   "kick_reason": {
     "duplicate_session": "Mängust välja visatud (võib-olla mängisid teisel aknal)",
@@ -879,7 +914,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Kustuta Üksus",
-    "delete_unit_description": "Klõpsa, et kustutada lähim üksus"
+    "delete_unit_description": "Klõpsa, et kustutada lähim üksus",
+    "specialize_description": "Vali selle sadama spetsialiseerumine: kaubanduskeskus, mereväebaas või sadamavalve",
+    "specialize_title": "Spetsialiseeri sadam"
   },
   "discord_user_header": {
     "avatar_alt": "Avatar"
@@ -957,5 +994,36 @@
     "description": "(ALFA)",
     "login_required": "Logi sisse, et mängida edetabelimänge!",
     "must_login": "Sa pead olema sisse logitud, et mängida edetabelimänge!"
+  },
+  "maritime_objective": {
+    "capturing": "Vallutamisel",
+    "contested": "Vaidlustatud",
+    "controlled": "Kontrolli all",
+    "hint": "Võitmiseks kontrolli keskset mereteed",
+    "neutral": "Neutraalne"
+  },
+  "trade_routes": {
+    "contested": "Vaidlustatud",
+    "danger": "Oht",
+    "escorts": "Saatjad",
+    "risk": "Risk",
+    "routes": "Marsruudid",
+    "summary_title": "Aktiivsed kaubateed, vaidlustatud mereteed ja mereväe saatjad",
+    "value": "Väärtus"
+  },
+  "trade_stats": {
+    "arrivals": "Saabumised",
+    "captures_by_me": "Minu hõivatud",
+    "gold_earned": "Teenitud kuld",
+    "gold_in_transit": "Kuld merel",
+    "pirated_arrivals": "Rüüstatud saabumised",
+    "port": "Sadam",
+    "routes_active": "Aktiivsed marsruudid",
+    "routes_contested": "Vaidlustatud marsruudid",
+    "routes_escorted": "Saadetud marsruudid",
+    "ships_captured": "Hõivatud laevad",
+    "ships_lost": "Kaotatud laevad",
+    "title": "Kaubandus",
+    "top_ports": "Peamised sihtsadamad"
   }
 }

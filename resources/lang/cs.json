@@ -6,7 +6,7 @@
     "lang_code": "cs"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "Připoj se na Discord!",
     "login_discord": "Přihlásit se Discordem",
     "logged_in": "Přihlášen*a!",
@@ -101,7 +101,13 @@
     "icon_ally": "Podané ruce – spojenec. Tento hráč je tvým spojencem.",
     "icon_embargo": "Znak přeškrtlého dolaru - Embargo. Tento hráč s tebou přestal obchodovat buď automaticky nebo manuálně.",
     "icon_request": "Obálka - žádost o alianci. Tento hráč vám poslal žádost o alianci.",
-    "info_enemy_panel": "Informační panel nepřítele"
+    "info_enemy_panel": "Informační panel nepřítele",
+    "maritime_contested": "Když jsou soupeřící flotily vyrovnané jako nejsilnější námořní síla, zóna je sporná a postup se zastaví. Silnější soupeř sníží kontrolu držitele na 0 %, než ji obsadí.",
+    "maritime_desc": "Na námořních mapách vyhrává ten, kdo ovládá centrální námořní trasu. Udržuj nejsilnější námořní sílu uvnitř označené zóny, abys zvyšoval kontrolu: první flotila, která udrží 100 %, vyhrává hru.",
+    "maritime_ffa": "Každý sám za sebe: cílem je obchodní koridor přes centrální otevřené vody mapy, označený vlajkou a zářícím pruhem. Počítají se jen lodě uvnitř koridoru.",
+    "maritime_power": "Námořní síla: letadlové lodě se počítají za 6; válečné lodě, ponorky a protiletadlové fregaty za 3; transporty, obchodní lodě a letadla za 1.",
+    "maritime_team": "Týmové hry: cílem je kruhová zóna na otevřeném moři, označená prstencem a vlajkou. Flotila celého tvého týmu se sčítá.",
+    "maritime_title": "Cíl: námořní trasa"
   },
   "single_modal": {
     "title": "Jeden hráč",
@@ -191,7 +197,8 @@
   },
   "game_starting_modal": {
     "title": "Hra začíná...",
-    "desc": "Příprava na spuštění lobby. Vyčkejte."
+    "desc": "Příprava na spuštění lobby. Vyčkejte.",
+    "based_on": "Založeno na OpenFront"
   },
   "difficulty": {
     "difficulty": "Obtížnost",
@@ -216,7 +223,14 @@
     "sam_launcher": "Odpalovač SAM",
     "atom_bomb": "Atomová bomba",
     "hydrogen_bomb": "Vodíková bomba",
-    "mirv": "MIRV"
+    "mirv": "MIRV",
+    "aircraft": "Letadlo",
+    "aircraft_carrier": "Letadlová loď",
+    "anti_air_frigate": "Protiletadlová fregata",
+    "congress": "Kongres",
+    "naval_mine": "Námořní mina",
+    "submarine": "Ponorka",
+    "torpedo": "Torpédo"
   },
   "user_setting": {
     "title": "Uživatelská nastavení",
@@ -260,7 +274,17 @@
     "move_right": "Posunout Kameru doprava",
     "move_right_desc": "Posunout Kameru doprava",
     "reset": "Resetovat",
-    "unbind": "Odebrat"
+    "unbind": "Odebrat",
+    "build_aircraft_carrier": "Postavit letadlovou loď",
+    "build_aircraft_carrier_desc": "Postaví letadlovou loď pod kurzorem.",
+    "build_anti_air_frigate": "Postavit protiletadlovou fregatu",
+    "build_anti_air_frigate_desc": "Postaví protiletadlovou fregatu pod kurzorem.",
+    "build_congress": "Postavit Kongres",
+    "build_congress_desc": "Postaví Kongres pod kurzorem.",
+    "build_naval_mine": "Položit námořní minu",
+    "build_naval_mine_desc": "Položí námořní minu pod kurzorem.",
+    "build_submarine": "Postavit ponorku",
+    "build_submarine_desc": "Postaví ponorku pod kurzorem."
   },
   "chat": {
     "title": "Rychlý chat",
@@ -345,7 +369,12 @@
       "warship": "Zachytává obchodní lodě, ničí lodě a čluny",
       "port": "Odešle obchodní lodě pro generování zlata",
       "defense_post": "Zvýšit ochranu blízkých hranic",
-      "city": "Zvýšit maximální počet obyvatel"
+      "city": "Zvýšit maximální počet obyvatel",
+      "aircraft_carrier": "Platforma pro letecké údery na velkou vzdálenost",
+      "anti_air_frigate": "Doprovází flotily s protivzdušnou obranou krátkého dosahu",
+      "congress": "Odemyká cla proti nepřátelskému obchodu",
+      "naval_mine": "Námořní mina na jedno použití",
+      "submarine": "Skrytý torpédový nájezdník"
     },
     "not_enough_money": "Nedostatek peněz"
   },
@@ -365,7 +394,8 @@
     "player": "Hráč",
     "owned": "Vlastněno",
     "gold": "Zlato",
-    "troops": "Jednotky"
+    "troops": "Jednotky",
+    "control": "Kontrola"
   },
   "player_info_overlay": {
     "type": "Typ",
@@ -408,6 +438,48 @@
     "start_trade": "Začít obchodovat",
     "stop_trade": "Přestat obchodovat",
     "yes": "Ano",
-    "no": "Ne"
+    "no": "Ne",
+    "tariff": "Clo",
+    "tariff_tooltip": "Uval clo na obchod tohoto hráče za {cost} zlata"
+  },
+  "events_display": {
+    "economic_mission_started": "Světový obchodní boom! {count, plural, one {# obchodní národ získal} other {# obchodních národů získalo}} zlatý bonus",
+    "tariff_imposed": "Uvalil jsi clo na obchod hráče {name}",
+    "tariff_imposed_on_you": "{name} uvalil clo na tvůj obchod!"
+  },
+  "maritime_objective": {
+    "capturing": "Obsazuje se",
+    "contested": "Sporná",
+    "controlled": "Ovládnutá",
+    "hint": "Ovládni centrální námořní trasu a vyhraj",
+    "neutral": "Neutrální"
+  },
+  "radial_menu": {
+    "specialize_description": "Vyber specializaci tohoto přístavu: obchodní uzel, námořní základna nebo přístavní hlídka",
+    "specialize_title": "Specializovat přístav"
+  },
+  "trade_routes": {
+    "contested": "Sporná",
+    "danger": "Nebezpečí",
+    "escorts": "Doprovody",
+    "risk": "Riziko",
+    "routes": "Trasy",
+    "summary_title": "Aktivní obchodní trasy, sporné námořní cesty a námořní doprovody",
+    "value": "Hodnota"
+  },
+  "trade_stats": {
+    "arrivals": "Příjezdy",
+    "captures_by_me": "Zajato mnou",
+    "gold_earned": "Vydělané zlato",
+    "gold_in_transit": "Zlato na moři",
+    "pirated_arrivals": "Pirátské příjezdy",
+    "port": "Přístav",
+    "routes_active": "Aktivní trasy",
+    "routes_contested": "Sporné trasy",
+    "routes_escorted": "Doprovázené trasy",
+    "ships_captured": "Zajaté lodě",
+    "ships_lost": "Ztracené lodě",
+    "title": "Obchod",
+    "top_ports": "Hlavní cílové přístavy"
   }
 }

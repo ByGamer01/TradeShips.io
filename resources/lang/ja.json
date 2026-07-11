@@ -62,7 +62,12 @@
       "missile_silo": "ミサイルの発射に使用される",
       "port": "貿易船を送って資金を獲得する",
       "sam_launcher": "飛来する核ミサイルを迎撃する",
-      "warship": "貿易船を拿捕し、戦艦や輸送船を破壊する"
+      "warship": "貿易船を拿捕し、戦艦や輸送船を破壊する",
+      "aircraft_carrier": "長距離航空攻撃プラットフォーム",
+      "anti_air_frigate": "短距離対空防御で艦隊を護衛する",
+      "congress": "敵の貿易への関税を解放する",
+      "naval_mine": "使い捨ての機雷",
+      "submarine": "ステルス魚雷襲撃艦"
     },
     "not_enough_money": "資金不足",
     "warship_shift_hint": "Shiftを押しながらドラッグすると戦艦を複数選択できます"
@@ -425,7 +430,10 @@
     "unit_voluntarily_deleted": "ユニットは自己破壊しました",
     "wants_to_renew_alliance": "{name}が同盟の更新を要請しています",
     "unit_captured_by_enemy": "あなたの{unit}は{name}に鹵獲されました",
-    "captured_enemy_unit": "{unit}を{name}から奪い取りました"
+    "captured_enemy_unit": "{unit}を{name}から奪い取りました",
+    "economic_mission_started": "世界貿易ブーム！{count, plural, one {#つの貿易国が} other {#つの貿易国が}}ゴールドボーナスを獲得",
+    "tariff_imposed": "{name}の貿易に関税を課しました",
+    "tariff_imposed_on_you": "{name}があなたの貿易に関税を課しました！"
   },
   "flag_input": {
     "button_title": "国旗を選択！",
@@ -510,7 +518,8 @@
   "game_starting_modal": {
     "code_license": "本ゲームのコードは AGPL-3.0 ライセンスに基づき公開されています（無保証）",
     "credits": "クレジット",
-    "title": "ゲーム開始中..."
+    "title": "ゲーム開始中...",
+    "based_on": "OpenFrontベース"
   },
   "graphics_setting": {
     "black": "黒色",
@@ -620,7 +629,7 @@
     "radial_title": "円形メニュー",
     "table_action": "操作",
     "table_key": "キー",
-    "troubleshooting_desc": "OpenFrontの再生中にパフォーマンスの問題、クラッシュ、その他の問題が発生した場合は、トラブルシューティングページをご覧ください。問題の診断と修正に役立ちます：",
+    "troubleshooting_desc": "TradeShipsの再生中にパフォーマンスの問題、クラッシュ、その他の問題が発生した場合は、トラブルシューティングページをご覧ください。問題の診断と修正に役立ちます：",
     "ui_attack_ratio": "攻撃比率 - 攻撃時に使用する兵力の割合で、スライダーで調整でき、攻撃側の兵力が防御側より多いほど損失が減り、少ないと攻撃側の損害が増えますが、この効果は攻撃と防御の比率が2対1を超えるとそれ以上強化されません。\n",
     "ui_control": "コントロールパネル",
     "ui_control_desc": "コントロールパネルには以下が含まれます :",
@@ -640,7 +649,13 @@
     "ui_wilderness": "荒野",
     "ui_your_team": "あなたのチーム :",
     "video_tutorial": "チュートリアル動画",
-    "video_tutorial_title": "OpenFront.io チュートリアル"
+    "video_tutorial_title": "TradeShips.io チュートリアル",
+    "maritime_contested": "ライバル艦隊が最強の海軍力で並ぶと、ゾーンは係争状態になり進行が凍結します。より強いライバルは、奪取する前に保持者の支配率を0%まで削ります。",
+    "maritime_desc": "海洋マップでは中央の海上ルートを支配した者が勝利します。マークされたゾーン内に最強の海軍戦力を維持して支配率を上げましょう。最初に100%を保持した艦隊がゲームに勝利します。",
+    "maritime_ffa": "フリーフォーオール：目標はマップ中央の外洋を通る交易レーンの回廊で、旗と光るレーンで示されます。回廊内の艦船のみがカウントされます。",
+    "maritime_power": "海軍力：空母は6、軍艦・潜水艦・対空フリゲートは3、輸送船・交易船・航空機は1としてカウントされます。",
+    "maritime_team": "チーム戦：目標は外洋の円形ゾーンで、リングと旗で示されます。チーム全体の艦隊が合算されます。",
+    "maritime_title": "目標：海上ルート"
   },
   "host_modal": {
     "assigned_teams": "チーム編成",
@@ -692,14 +707,14 @@
     "got_it": "了解",
     "how": "詳細",
     "later": "あとで",
-    "modal_desc": "お使いのブラウザは全画面表示に対応していませんが、OpenFrontをホーム画面に追加することで、没入感のある体験をお楽しみいただけます：",
+    "modal_desc": "お使いのブラウザは全画面表示に対応していませんが、TradeShipsをホーム画面に追加することで、没入感のある体験をお楽しみいただけます：",
     "modal_title": "iOSでフルスクリーンにする",
     "never": "しない",
     "step_add_to_home_label": "ホーム画面に追加",
     "step_open": "ホーム画面から開く - アドレスバーなしでフルスクリーンを起動します",
     "step_scroll_and_tap": "下へスクロールしてタップ",
     "step_share": "ブラウザの共有ボタンをタップ",
-    "text": "フルスクリーンにするには、OpenFrontをホーム画面に追加してください"
+    "text": "フルスクリーンにするには、TradeShipsをホーム画面に追加してください"
   },
   "kick_reason": {
     "admin": "管理者によってキックされました。",
@@ -718,7 +733,8 @@
     "show_control": "操作方法を表示",
     "show_units": "ユニットを表示",
     "team": "チーム",
-    "warships": "戦艦"
+    "warships": "戦艦",
+    "control": "支配率"
   },
   "leaderboard_modal": {
     "clan": "クラン",
@@ -746,7 +762,7 @@
   "main": {
     "account": "アカウント",
     "clans": "クラン",
-    "copyright": "©️ OpenFront™ と貢献者",
+    "copyright": "©️ TradeShips™ と貢献者",
     "create": "ロビーを作成",
     "discord_avatar_alt": "Discordのプロフィールアバター",
     "game_info": "ゲームの情報",
@@ -765,7 +781,7 @@
     "solo": "ソロ",
     "store": "ストア",
     "terms_of_service": "利用規約",
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "troubleshooting": "トラブルシューティング",
     "user_avatar_alt": "{username}のアバター",
     "wiki": "Wiki"
@@ -904,7 +920,7 @@
   },
   "news_box": {
     "dismiss": "無視",
-    "firefox_warning": "OpenFront.ioは[Firefoxベースのブラウザ](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox)でうまく動作しません。良いパフォーマンスのために[Chromiumベースのブラウザ](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium)を使用するのをおすすめします。",
+    "firefox_warning": "TradeShips.ioは[Firefoxベースのブラウザ](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox)でうまく動作しません。良いパフォーマンスのために[Chromiumベースのブラウザ](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium)を使用するのをおすすめします。",
     "go_to_item": "{num}番目のアイテムに移動",
     "news": "お知らせ",
     "tournament": "トーナメント",
@@ -961,7 +977,9 @@
     "target": "ターゲット",
     "trading": "貿易",
     "traitor": "裏切り者かどうか",
-    "troops": "軍隊"
+    "troops": "軍隊",
+    "tariff": "関税",
+    "tariff_tooltip": "ゴールド{cost}でこのプレイヤーの貿易に関税を課す"
   },
   "player_stats_table": {
     "arrived": "到着",
@@ -1074,7 +1092,9 @@
   },
   "radial_menu": {
     "delete_unit_description": "クリックで最も近いユニットを削除します",
-    "delete_unit_title": "ユニットを削除する"
+    "delete_unit_title": "ユニットを削除する",
+    "specialize_description": "この港の特化を選択：交易ハブ、海軍基地、または港湾監視",
+    "specialize_title": "港の特化"
   },
   "relation": {
     "default": "デフォルト",
@@ -1190,7 +1210,7 @@
     "browser": "ブラウザ",
     "canvas_2d_no_gpu": "Canvas 2D (GPUなし)",
     "charging": "充電中",
-    "chromium_tip": "OpenFrontはChromiumベースのブラウザで最適に動作します。",
+    "chromium_tip": "TradeShipsはChromiumベースのブラウザで最適に動作します。",
     "copied_to_clipboard": "クリップボードに情報がコピーされました！ヘルプが必要な場合は、Discordで共有してください。",
     "device_pixel_ratio": "デバイスのピクセル比",
     "environment": "環境",
@@ -1223,7 +1243,14 @@
     "missile_silo": "ミサイル格納庫",
     "port": "港",
     "sam_launcher": "SAMランチャー",
-    "warship": "戦艦"
+    "warship": "戦艦",
+    "aircraft": "航空機",
+    "aircraft_carrier": "空母",
+    "anti_air_frigate": "対空フリゲート",
+    "congress": "議会",
+    "naval_mine": "機雷",
+    "submarine": "潜水艦",
+    "torpedo": "魚雷"
   },
   "user_setting": {
     "alert_frame_desc": "警告フレームの表示を切り替えます。有効時、裏切られたときや陸上から攻撃を受けたときにフレームが表示されます。",
@@ -1351,7 +1378,17 @@
     "zoom_in": "拡大",
     "zoom_in_desc": "画面を拡大します。",
     "zoom_out": "縮小",
-    "zoom_out_desc": "画面を縮小します。"
+    "zoom_out_desc": "画面を縮小します。",
+    "build_aircraft_carrier": "空母を建造",
+    "build_aircraft_carrier_desc": "カーソルの下に空母を建造します。",
+    "build_anti_air_frigate": "対空フリゲートを建造",
+    "build_anti_air_frigate_desc": "カーソルの下に対空フリゲートを建造します。",
+    "build_congress": "議会を建設",
+    "build_congress_desc": "カーソルの下に議会を建設します。",
+    "build_naval_mine": "機雷を敷設",
+    "build_naval_mine_desc": "カーソルの下に機雷を敷設します。",
+    "build_submarine": "潜水艦を建造",
+    "build_submarine_desc": "カーソルの下に潜水艦を建造します。"
   },
   "username": {
     "enter_username": "ユーザー名を入力。",
@@ -1376,11 +1413,42 @@
     "other_won": "{player}の勝利！",
     "requeue": "もう一度プレイする",
     "spectate": "観戦する",
-    "support_openfront": "OpenFront を支援！",
+    "support_openfront": "TradeShips を支援！",
     "territory_pattern": "広告を見て領土スキンを手に入れよう！",
     "wishlist": "Steamでウィッシュリストに追加して下さい！",
     "you_won": "勝利！",
     "your_team": "あなたのチームの勝利！",
     "youtube_tutorial": "ヘルプが必要ですか？"
+  },
+  "maritime_objective": {
+    "capturing": "占領中",
+    "contested": "係争中",
+    "controlled": "支配下",
+    "hint": "勝利するには中央の海上ルートを支配せよ",
+    "neutral": "中立"
+  },
+  "trade_routes": {
+    "contested": "係争中",
+    "danger": "危険",
+    "escorts": "護衛",
+    "risk": "リスク",
+    "routes": "ルート",
+    "summary_title": "活動中の交易ルート、係争中の海上レーン、海軍の護衛",
+    "value": "価値"
+  },
+  "trade_stats": {
+    "arrivals": "到着",
+    "captures_by_me": "自分が拿捕",
+    "gold_earned": "獲得ゴールド",
+    "gold_in_transit": "海上のゴールド",
+    "pirated_arrivals": "略奪された到着",
+    "port": "港",
+    "routes_active": "活動中のルート",
+    "routes_contested": "係争中のルート",
+    "routes_escorted": "護衛付きルート",
+    "ships_captured": "拿捕した船",
+    "ships_lost": "失った船",
+    "title": "貿易",
+    "top_ports": "主要受入港"
   }
 }

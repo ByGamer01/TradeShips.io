@@ -62,7 +62,12 @@
       "missile_silo": "Utilisé pour lancer des bombes nucléaires",
       "port": "Envoie des navires commerciaux pour produire de l'or",
       "sam_launcher": "Protège contre les bombes nucléaires",
-      "warship": "Capture les navires commerciaux, détruit les navires de guerre et les bateaux de transport"
+      "warship": "Capture les navires commerciaux, détruit les navires de guerre et les bateaux de transport",
+      "aircraft_carrier": "Plateforme de frappe aérienne à longue portée",
+      "anti_air_frigate": "Escorte les flottes avec une défense antiaérienne à courte portée",
+      "congress": "Débloque des droits de douane contre le commerce ennemi",
+      "naval_mine": "Explosif naval à usage unique",
+      "submarine": "Raider lance-torpilles furtif"
     },
     "not_enough_money": "Pas assez d'argent",
     "warship_shift_hint": "Maintenir la touche Maj et glisser le curseur pour sélectionner plusieurs navires de guerre à la fois"
@@ -425,7 +430,10 @@
     "unit_voluntarily_deleted": "Unité volontairement supprimée",
     "wants_to_renew_alliance": "{name} souhaite renouveler votre alliance",
     "unit_captured_by_enemy": "Votre {unit} a été capturé par {name}",
-    "captured_enemy_unit": "{unit} de {name} capturé"
+    "captured_enemy_unit": "{unit} de {name} capturé",
+    "economic_mission_started": "Boom commercial mondial ! {count, plural, one {# nation marchande a reçu} other {# nations marchandes ont reçu}} un bonus d'or",
+    "tariff_imposed": "Vous avez imposé un droit de douane sur le commerce de {name}",
+    "tariff_imposed_on_you": "{name} a imposé un droit de douane sur votre commerce !"
   },
   "flag_input": {
     "button_title": "Choisissez un drapeau !",
@@ -510,7 +518,8 @@
   "game_starting_modal": {
     "code_license": "Code sous licence AGPL-3.0 (sans garantie)",
     "credits": "Crédits",
-    "title": "La partie est en train de commencer..."
+    "title": "La partie est en train de commencer...",
+    "based_on": "Basé sur OpenFront"
   },
   "graphics_setting": {
     "black": "Noir",
@@ -620,7 +629,7 @@
     "radial_title": "Menu radial",
     "table_action": "Action",
     "table_key": "Touche",
-    "troubleshooting_desc": "Si vous rencontrez des problèmes de performance, des plantages ou d'autres problèmes lors de la lecture d'OpenFront, veuillez visiter notre page de dépannage pour vous aider à diagnostiquer et à résoudre les problèmes courants :",
+    "troubleshooting_desc": "Si vous rencontrez des problèmes de performance, des plantages ou d'autres problèmes lors de la lecture d'TradeShips, veuillez visiter notre page de dépannage pour vous aider à diagnostiquer et à résoudre les problèmes courants :",
     "ui_attack_ratio": "Ratio d'attaque - La quantité de troupes qui seront utilisées lors de votre attaque. Vous pouvez ajuster le ratio d'attaque en utilisant le curseur. Avoir plus de troupes attaquantes que défensives vous fera perdre moins de troupes dans l'attaque, quand en avoir moins va augmenter les dommages infligés à vos troupes attaquantes. L'effet ne dépasse pas le ratio de 2:1.",
     "ui_control": "Panneau de contrôle",
     "ui_control_desc": "Le panneau de contrôle contient les éléments suivants :",
@@ -640,7 +649,13 @@
     "ui_wilderness": "Région sauvage",
     "ui_your_team": "Votre équipe :",
     "video_tutorial": "Tutoriel vidéo",
-    "video_tutorial_title": "Tutoriel OpenFront.io"
+    "video_tutorial_title": "Tutoriel TradeShips.io",
+    "maritime_contested": "Quand des flottes rivales sont à égalité pour la plus grande puissance navale, la zone est contestée et la progression se fige. Un rival plus fort réduit le contrôle du détenteur jusqu'à 0 % avant de la capturer.",
+    "maritime_desc": "Sur les cartes maritimes, on gagne en contrôlant la route maritime centrale. Gardez la force navale la plus puissante dans la zone marquée pour augmenter votre contrôle : la première flotte à tenir 100 % gagne la partie.",
+    "maritime_ffa": "Chacun pour soi : l'objectif est un corridor commercial traversant les eaux libres centrales de la carte, marqué par un drapeau et une voie lumineuse. Seuls les navires dans le corridor comptent.",
+    "maritime_power": "Puissance navale : les porte-avions comptent 6 ; les navires de guerre, sous-marins et frégates antiaériennes comptent 3 ; les transports, navires marchands et aéronefs comptent 1.",
+    "maritime_team": "Parties en équipe : l'objectif est une zone circulaire en pleine mer, marquée par un anneau et un drapeau. La flotte de toute votre équipe s'additionne.",
+    "maritime_title": "Objectif : la route maritime"
   },
   "host_modal": {
     "assigned_teams": "Équipes Attribuées",
@@ -692,14 +707,14 @@
     "got_it": "J'ai compris",
     "how": "Comment",
     "later": "Plus tard",
-    "modal_desc": "Votre navigateur ne supporte pas le grand écran, mais vous pouvez ajouter OpenFront à votre écran d'accueil pour une meilleure expérience :",
+    "modal_desc": "Votre navigateur ne supporte pas le grand écran, mais vous pouvez ajouter TradeShips à votre écran d'accueil pour une meilleure expérience :",
     "modal_title": "Grand écran sur iOS",
     "never": "Jamais",
     "step_add_to_home_label": "Ajouter à l'écran d'accueil",
     "step_open": "Ouvrir depuis votre écran d'accueil — ouvre en grand écran sans la barre d'adresse",
     "step_scroll_and_tap": "Défilez vers le bas et tapotez",
     "step_share": "Tapotez le bouton \"Partager\" dans votre navigateur",
-    "text": "Pour le grand écran, ajouter OpenFront à votre écran d'accueil"
+    "text": "Pour le grand écran, ajouter TradeShips à votre écran d'accueil"
   },
   "kick_reason": {
     "admin": "Expulsé par un admin",
@@ -718,7 +733,8 @@
     "show_control": "Afficher les commandes",
     "show_units": "Afficher les unités",
     "team": "Équipe",
-    "warships": "Vaisseaux de guerre"
+    "warships": "Vaisseaux de guerre",
+    "control": "Contrôle"
   },
   "leaderboard_modal": {
     "clan": "Clan",
@@ -746,7 +762,7 @@
   "main": {
     "account": "Compte",
     "clans": "Clans",
-    "copyright": "©️ OpenFront™ et Contributeurs",
+    "copyright": "©️ TradeShips™ et Contributeurs",
     "create": "Créer un salon",
     "discord_avatar_alt": "Avatar du profil Discord",
     "game_info": "Infos sur la partie",
@@ -765,7 +781,7 @@
     "solo": "Solo",
     "store": "Boutique",
     "terms_of_service": "Conditions d'utilisation",
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "troubleshooting": "Dépannage",
     "user_avatar_alt": "Avatar de {username}",
     "wiki": "Wiki"
@@ -904,7 +920,7 @@
   },
   "news_box": {
     "dismiss": "Ignorer",
-    "firefox_warning": "OpenFront.io ne fonctionne pas bien avec [les navigateurs basés sur Firefox](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). Nous vous recommandons d'utiliser un navigateur [basé sur Chromium](https://en.wikipedia.org/wiki/Chromium_(web_browser) #Browsers_based_on_Chromium) pour de meilleures performances.",
+    "firefox_warning": "TradeShips.io ne fonctionne pas bien avec [les navigateurs basés sur Firefox](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox). Nous vous recommandons d'utiliser un navigateur [basé sur Chromium](https://en.wikipedia.org/wiki/Chromium_(web_browser) #Browsers_based_on_Chromium) pour de meilleures performances.",
     "go_to_item": "Aller à l'article {num}",
     "news": "NOUVEAUTÉS",
     "tournament": "TOURNOI",
@@ -961,7 +977,9 @@
     "target": "Cible",
     "trading": "Commerce",
     "traitor": "Traître",
-    "troops": "Troupes"
+    "troops": "Troupes",
+    "tariff": "Droit de douane",
+    "tariff_tooltip": "Imposez un droit de douane sur le commerce de ce joueur pour {cost} d'or"
   },
   "player_stats_table": {
     "arrived": "Arrivés",
@@ -1074,7 +1092,9 @@
   },
   "radial_menu": {
     "delete_unit_description": "Cliquez pour supprimer l'unité la plus proche",
-    "delete_unit_title": "Supprimer une unité"
+    "delete_unit_title": "Supprimer une unité",
+    "specialize_description": "Choisissez la spécialisation de ce port : hub commercial, base navale ou surveillance portuaire",
+    "specialize_title": "Spécialiser le port"
   },
   "relation": {
     "default": "Défaut",
@@ -1190,7 +1210,7 @@
     "browser": "Navigateur",
     "canvas_2d_no_gpu": "Canvas 2D (sans GPU)",
     "charging": "Chargement",
-    "chromium_tip": "OpenFront fonctionne mieux sur les navigateurs basés sur Chromium.",
+    "chromium_tip": "TradeShips fonctionne mieux sur les navigateurs basés sur Chromium.",
     "copied_to_clipboard": "Informations copiées dans le presse-papiers ! N'hésitez pas à le partager sur notre Discord si vous avez besoin d'aide.",
     "device_pixel_ratio": "Ratio de pixels de l'appareil",
     "environment": "Environnement",
@@ -1223,7 +1243,14 @@
     "missile_silo": "Silo à missiles",
     "port": "Port",
     "sam_launcher": "Lanceur de SAM",
-    "warship": "Navire de guerre"
+    "warship": "Navire de guerre",
+    "aircraft": "Aéronef",
+    "aircraft_carrier": "Porte-avions",
+    "anti_air_frigate": "Frégate antiaérienne",
+    "congress": "Congrès",
+    "naval_mine": "Mine navale",
+    "submarine": "Sous-marin",
+    "torpedo": "Torpille"
   },
   "user_setting": {
     "alert_frame_desc": "Activer/Désactiver le cadre d'alerte. Lorsqu'il est activé, le cadre s'affichera lorsque vous serez trahi ou attaqué par la terre.",
@@ -1351,7 +1378,17 @@
     "zoom_in": "Zoom avant",
     "zoom_in_desc": "Zoom sur la carte",
     "zoom_out": "Zoom arrière",
-    "zoom_out_desc": "Dézoom de la carte"
+    "zoom_out_desc": "Dézoom de la carte",
+    "build_aircraft_carrier": "Construire un porte-avions",
+    "build_aircraft_carrier_desc": "Construit un porte-avions sous votre curseur.",
+    "build_anti_air_frigate": "Construire une frégate antiaérienne",
+    "build_anti_air_frigate_desc": "Construit une frégate antiaérienne sous votre curseur.",
+    "build_congress": "Construire un Congrès",
+    "build_congress_desc": "Construit un Congrès sous votre curseur.",
+    "build_naval_mine": "Construire une mine navale",
+    "build_naval_mine_desc": "Construit une mine navale sous votre curseur.",
+    "build_submarine": "Construire un sous-marin",
+    "build_submarine_desc": "Construit un sous-marin sous votre curseur."
   },
   "username": {
     "enter_username": "Entrez votre nom d'utilisateur",
@@ -1376,11 +1413,42 @@
     "other_won": "{player} a gagné !",
     "requeue": "Rejouer",
     "spectate": "Regarder",
-    "support_openfront": "Soutenir OpenFront!",
+    "support_openfront": "Soutenir TradeShips!",
     "territory_pattern": "Achetez une décoration de territoire pour retirer les publicités !",
     "wishlist": "Liste de souhaits sur Steam !",
     "you_won": "Vous avez gagné !",
     "your_team": "Votre équipe a gagné !",
     "youtube_tutorial": "Besoin d'aide ?"
+  },
+  "maritime_objective": {
+    "capturing": "Capture en cours",
+    "contested": "Contestée",
+    "controlled": "Contrôlée",
+    "hint": "Contrôlez la route maritime centrale pour gagner",
+    "neutral": "Neutre"
+  },
+  "trade_routes": {
+    "contested": "Contestée",
+    "danger": "Danger",
+    "escorts": "Escortes",
+    "risk": "Risque",
+    "routes": "Routes",
+    "summary_title": "Routes marchandes actives, couloirs contestés et escortes navales",
+    "value": "Valeur"
+  },
+  "trade_stats": {
+    "arrivals": "Arrivées",
+    "captures_by_me": "Capturés par moi",
+    "gold_earned": "Or gagné",
+    "gold_in_transit": "Or en mer",
+    "pirated_arrivals": "Arrivées piratées",
+    "port": "Port",
+    "routes_active": "Routes actives",
+    "routes_contested": "Routes contestées",
+    "routes_escorted": "Routes escortées",
+    "ships_captured": "Navires capturés",
+    "ships_lost": "Navires perdus",
+    "title": "Commerce",
+    "top_ports": "Principaux ports de destination"
   }
 }

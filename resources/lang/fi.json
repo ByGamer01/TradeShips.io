@@ -9,7 +9,7 @@
     "close": "Sulje"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "Liity Discordiin!",
     "login_discord": "Kirjaudu sisään Discordilla",
     "checking_login": "Tarkistetaan sisäänkirjautumista...",
@@ -119,7 +119,13 @@
     "icon_embargo": "Yliviivattu dollari - kauppasaarto. Tämä pelaaja on lopettanut kapuankäynnin kanssasi automaattisesti tai manuaalisesti.",
     "icon_request": "Kirjekutsu - Liittopyyntö. Tämä pelaaja on lähettänyt sinulle liittokutsun.",
     "info_enemy_panel": "Vihollisen tietopaneeli",
-    "exit_confirmation": "Haluatko varmasti poistua pelistä?"
+    "exit_confirmation": "Haluatko varmasti poistua pelistä?",
+    "maritime_contested": "Kun kilpailevat laivastot ovat tasoissa vahvimpana merivoimana, alue on kiistanalainen ja edistyminen jäätyy. Vahvempi kilpailija laskee haltijan hallinnan 0 %:iin ennen alueen valtaamista.",
+    "maritime_desc": "Merikartoilla voittaa se, joka hallitsee keskeistä meriväylää. Pidä vahvin merivoima merkityllä alueella kasvattaaksesi hallintaasi: ensimmäinen laivasto, joka pitää 100 %, voittaa pelin.",
+    "maritime_ffa": "Kaikki kaikkia vastaan: tavoitteena on kauppakäytävä kartan keskeisten avovesien halki, merkitty lipulla ja hohtavalla väylällä. Vain käytävän sisällä olevat alukset lasketaan.",
+    "maritime_power": "Merivoima: lentotukialukset lasketaan 6:na; sota-alukset, sukellusveneet ja ilmatorjuntafregatit 3:na; kuljetukset, kauppalaivat ja lentokoneet 1:nä.",
+    "maritime_team": "Joukkuepelit: tavoitteena on ympyränmuotoinen alue avomerellä, merkitty renkaalla ja lipulla. Koko joukkueesi laivasto lasketaan yhteen.",
+    "maritime_title": "Tavoite: meriväylä"
   },
   "single_modal": {
     "title": "Yksinpeli",
@@ -246,7 +252,8 @@
   },
   "game_starting_modal": {
     "title": "Peli alkaa...",
-    "desc": "Valmistellaan aulan aloittamista. Odota hetki."
+    "desc": "Valmistellaan aulan aloittamista. Odota hetki.",
+    "based_on": "Perustuu OpenFrontiin"
   },
   "difficulty": {
     "difficulty": "Vaikeustaso",
@@ -272,7 +279,14 @@
     "atom_bomb": "Atomipommi",
     "hydrogen_bomb": "Vetypommi",
     "mirv": "MIRV",
-    "factory": "Tehdas"
+    "factory": "Tehdas",
+    "aircraft": "Lentokone",
+    "aircraft_carrier": "Lentotukialus",
+    "anti_air_frigate": "Ilmatorjuntafregatti",
+    "congress": "Kongressi",
+    "naval_mine": "Merimiina",
+    "submarine": "Sukellusvene",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "title": "Käyttäjäasetukset",
@@ -355,7 +369,17 @@
     "terrain_enabled": "Maastonäkymä käytössä",
     "terrain_disabled": "Maastonäkymä pois käytöstä",
     "exit_game_label": "Poistu pelistä",
-    "exit_game_info": "Palaa päävalikkoon"
+    "exit_game_info": "Palaa päävalikkoon",
+    "build_aircraft_carrier": "Rakenna lentotukialus",
+    "build_aircraft_carrier_desc": "Rakentaa lentotukialuksen kursorisi alle.",
+    "build_anti_air_frigate": "Rakenna ilmatorjuntafregatti",
+    "build_anti_air_frigate_desc": "Rakentaa ilmatorjuntafregatin kursorisi alle.",
+    "build_congress": "Rakenna kongressi",
+    "build_congress_desc": "Rakentaa kongressin kursorisi alle.",
+    "build_naval_mine": "Aseta merimiina",
+    "build_naval_mine_desc": "Asettaa merimiinan kursorisi alle.",
+    "build_submarine": "Rakenna sukellusvene",
+    "build_submarine_desc": "Rakentaa sukellusveneen kursorisi alle."
   },
   "chat": {
     "title": "Pikaviestit",
@@ -456,12 +480,17 @@
       "port": "Lähettää kauppa-aluksia tuottaakseen kultaa",
       "defense_post": "Parantaa läheisten rajojen puolustusta",
       "city": "Lisää enimmäisväkilukuasi",
-      "factory": "Luo rautateitä ja lähettää junia"
+      "factory": "Luo rautateitä ja lähettää junia",
+      "aircraft_carrier": "Pitkän kantaman ilmaiskualusta",
+      "anti_air_frigate": "Saattaa laivastoja lyhyen kantaman ilmatorjunnalla",
+      "congress": "Avaa tullit vihollisen kauppaa vastaan",
+      "naval_mine": "Kertakäyttöinen merimiina",
+      "submarine": "Häiveominainen torpedohyökkääjä"
     },
     "not_enough_money": "Ei tarpeeksi rahaa"
   },
   "win_modal": {
-    "support_openfront": "Tue OpenFrontia!",
+    "support_openfront": "Tue TradeShipsia!",
     "territory_pattern": "Osta aluekuvio tukeaksesi OpenFrontia!",
     "died": "Sinä kuolit",
     "your_team": "Joukkueesi voitti!",
@@ -486,7 +515,8 @@
     "warships": "Sotalaivat",
     "cities": "Kaupungit",
     "show_control": "Näytä kontrolli",
-    "show_units": "Näytä yksiköt"
+    "show_units": "Näytä yksiköt",
+    "control": "Hallinta"
   },
   "player_info_overlay": {
     "type": "Tyyppi",
@@ -528,7 +558,10 @@
     "reject_alliance": "Hylkää",
     "alliance_renewed": "Liittosi pelaajan {name} kanssa sai jatkoa",
     "ignore": "Sivuuta",
-    "unit_voluntarily_deleted": "Yksikkö poistettu vapaaehtoisesti"
+    "unit_voluntarily_deleted": "Yksikkö poistettu vapaaehtoisesti",
+    "economic_mission_started": "Maailmanlaajuinen kauppabuumi! {count, plural, one {# kauppakansakunta sai} other {# kauppakansakuntaa sai}} kultabonuksen",
+    "tariff_imposed": "Asetit tullin pelaajan {name} kaupalle",
+    "tariff_imposed_on_you": "{name} asetti tullin kaupallesi!"
   },
   "unit_info_modal": {
     "structure_info": "Rakennuksen tiedot",
@@ -565,7 +598,9 @@
     "no": "Ei",
     "none": "Tyhjä",
     "alliances": "Liittoumat",
-    "flag": "Lippu"
+    "flag": "Lippu",
+    "tariff": "Tulli",
+    "tariff_tooltip": "Aseta tulli tämän pelaajan kaupalle hintaan {cost} kultaa"
   },
   "replay_panel": {
     "replay_speed": "Uusinnan nopeus",
@@ -643,6 +678,39 @@
   },
   "radial_menu": {
     "delete_unit_title": "Poista yksikkö",
-    "delete_unit_description": "Napsauta poistaaksesi lähimmän yksikön"
+    "delete_unit_description": "Napsauta poistaaksesi lähimmän yksikön",
+    "specialize_description": "Valitse sataman erikoistuminen: kauppakeskus, laivastotukikohta tai satamavartio",
+    "specialize_title": "Erikoista satama"
+  },
+  "maritime_objective": {
+    "capturing": "Vallataan",
+    "contested": "Kiistanalainen",
+    "controlled": "Hallinnassa",
+    "hint": "Hallitse keskeistä meriväylää voittaaksesi",
+    "neutral": "Neutraali"
+  },
+  "trade_routes": {
+    "contested": "Kiistanalainen",
+    "danger": "Vaara",
+    "escorts": "Saattueet",
+    "risk": "Riski",
+    "routes": "Reitit",
+    "summary_title": "Aktiiviset kauppareitit, kiistanalaiset meriväylät ja laivastosaattueet",
+    "value": "Arvo"
+  },
+  "trade_stats": {
+    "arrivals": "Saapumiset",
+    "captures_by_me": "Kaappaamani",
+    "gold_earned": "Ansaittu kulta",
+    "gold_in_transit": "Kulta merellä",
+    "pirated_arrivals": "Kaapatut saapumiset",
+    "port": "Satama",
+    "routes_active": "Aktiiviset reitit",
+    "routes_contested": "Kiistanalaiset reitit",
+    "routes_escorted": "Saatetut reitit",
+    "ships_captured": "Kaapatut alukset",
+    "ships_lost": "Menetetyt alukset",
+    "title": "Kauppa",
+    "top_ports": "Tärkeimmät vastaanottosatamat"
   }
 }
