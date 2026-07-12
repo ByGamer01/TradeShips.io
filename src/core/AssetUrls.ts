@@ -70,6 +70,7 @@ export function buildAssetUrl(
 declare global {
   var __ASSET_MANIFEST__: AssetManifest | undefined;
   var __CDN_BASE__: string | undefined;
+  var __ASSET_ORIGIN__: string | undefined;
 }
 
 export function getAssetManifest(): AssetManifest {
@@ -96,8 +97,23 @@ export function getCdnBase(): string {
   return globalThis.__CDN_BASE__ ?? "";
 }
 
+export function fetchableAssetUrl(url: string, origin?: string): string {
+  if (isAbsoluteUrl(url) || !url.startsWith("/")) {
+    return url;
+  }
+
+  const assetOrigin = origin ?? globalThis.__ASSET_ORIGIN__;
+  if (!assetOrigin) {
+    return url;
+  }
+
+  return new URL(url, assetOrigin).toString();
+}
+
 export function assetUrl(path: string): string {
-  return buildAssetUrl(path, getAssetManifest(), getCdnBase());
+  return fetchableAssetUrl(
+    buildAssetUrl(path, getAssetManifest(), getCdnBase()),
+  );
 }
 
 // Rewrites Vite's emitted /assets/... references in the built index.html to

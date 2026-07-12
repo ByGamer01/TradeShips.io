@@ -42,6 +42,7 @@ export interface InitMessage extends BaseWorkerMessage {
   gameStartInfo: GameStartInfo;
   clientID: ClientID | undefined;
   cdnBase: string;
+  assetOrigin: string;
 }
 
 export interface TurnMessage extends BaseWorkerMessage {
