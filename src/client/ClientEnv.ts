@@ -42,6 +42,7 @@ export class ClientEnv {
       jwtAudience: bc.jwtAudience,
       instanceId: bc.instanceId,
       gitCommit: bc.gitCommit,
+      externalApiEnabled: bc.externalApiEnabled === true,
     };
     return ClientEnv.values;
   }
@@ -67,6 +68,9 @@ export class ClientEnv {
   }
   static gitCommit(): string {
     return ClientEnv.get().gitCommit;
+  }
+  static externalApiEnabled(): boolean {
+    return ClientEnv.get().externalApiEnabled;
   }
   static jwtIssuer(): string {
     const audience = ClientEnv.jwtAudience();
@@ -96,7 +100,8 @@ export class ClientEnv {
     return 100;
   }
   static gameCreationRate(): number {
-    return 2 * 60 * 1000;
+    // Keep in sync with ServerEnv.gameCreationRate.
+    return 5 * 1000;
   }
   static workerIndex(gameID: GameID): number {
     return simpleHash(gameID) % ClientEnv.numWorkers();
@@ -117,4 +122,5 @@ export interface ClientEnvValues {
   jwtAudience: string;
   instanceId: string;
   gitCommit: string;
+  externalApiEnabled: boolean;
 }

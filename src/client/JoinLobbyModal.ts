@@ -21,8 +21,8 @@ import {
   PublicGameInfo,
 } from "../core/Schemas";
 import {
-  DISABLED_ARSENAL,
   Difficulty,
+  DISABLED_ARSENAL,
   GameMapSize,
   GameMode,
   GameType,
@@ -160,6 +160,7 @@ export class JoinLobbyModal extends BaseModal {
                           this.gameConfig?.nations ?? "default",
                           this.nationCount,
                         )}
+                        .maxPlayers=${this.gameConfig?.maxPlayers ?? 0}
                       ></lobby-player-view>
                     `
                   : ""}
@@ -966,6 +967,10 @@ export class JoinLobbyModal extends BaseModal {
   private async checkArchivedGame(
     lobbyId: string,
   ): Promise<"success" | "not_found" | "version_mismatch" | "error"> {
+    if (!ClientEnv.externalApiEnabled()) {
+      return "not_found";
+    }
+
     const archiveResponse = await fetch(`${getApiBase()}/game/${lobbyId}`, {
       method: "GET",
       headers: {

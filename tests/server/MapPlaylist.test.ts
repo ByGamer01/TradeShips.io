@@ -3,6 +3,7 @@ import path from "path";
 import {
   DISABLED_ARSENAL,
   GameMapType,
+  GameMode,
   UnitType,
 } from "../../src/core/game/Game";
 import { maps } from "../../src/core/game/Maps.gen";
@@ -158,9 +159,10 @@ describe("MapPlaylist public starting gold", () => {
 
       expect([undefined, 1_000_000, 5_000_000, 25_000_000]).toContain(gold);
       expect(config.publicGameModifiers?.startingGold).toBe(gold);
-      // 25M keeps disabling nations (no PVP immunity for them).
-      if (gold !== undefined && gold >= 25_000_000) {
-        expect(config.nations).toBe("disabled");
+      // Nations backfill empty lobbies: enabled in FFA (any gold), disabled
+      // only in plain team draws.
+      if (config.gameMode === GameMode.FFA) {
+        expect(config.nations).toBe("default");
       }
     }
 

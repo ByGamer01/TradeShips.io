@@ -111,7 +111,9 @@ export class ServerEnv {
     return 100;
   }
   static gameCreationRate(): number {
-    return 2 * 60 * 1000;
+    // Short join window while the player base is small: nations backfill the
+    // lobby anyway, so waiting longer only delays the game.
+    return 5 * 1000;
   }
   static workerIndex(gameID: GameID): number {
     return simpleHash(gameID) % ServerEnv.numWorkers();
@@ -155,6 +157,9 @@ export class ServerEnv {
   }
   static apiKey(): string {
     return process.env.API_KEY ?? "";
+  }
+  static externalApiEnabled(): boolean {
+    return process.env.EXTERNAL_API_ENABLED === "true";
   }
   static adminHeader(): string {
     return "x-admin-key";

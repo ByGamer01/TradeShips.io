@@ -312,9 +312,12 @@ class Client {
     });
     modalRouter.register("flag-input", { tag: "flag-input-modal" });
 
-    // Prefetch turnstile token so it is available when
-    // the user joins a lobby.
-    this.turnstileTokenPromise = getTurnstileToken();
+    // Prefetch turnstile token so it is available when the user joins a
+    // lobby. TradeShips alpha can run without the external API/Turnstile
+    // bridge, so do not request a browser token unless that integration is on.
+    this.turnstileTokenPromise = ClientEnv.externalApiEnabled()
+      ? getTurnstileToken()
+      : null;
 
     // Wait for components to render before setting version
     await customElements.whenDefined("mobile-nav-bar");
@@ -1012,6 +1015,7 @@ class Client {
   ): Promise<string | null> {
     if (
       ClientEnv.env() === GameEnv.Dev ||
+      !ClientEnv.externalApiEnabled() ||
       lobby.gameStartInfo?.config.gameType === GameType.Singleplayer
     ) {
       return null;

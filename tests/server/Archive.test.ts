@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../src/server/ServerEnv", () => ({
   ServerEnv: {
+    externalApiEnabled: () => true,
     jwtIssuer: () => "https://archive.test.invalid",
     apiKey: () => "test-key",
     gitCommit: () => "DEV",

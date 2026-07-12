@@ -82,6 +82,25 @@ describe("ServerEnv.jwtIssuer", () => {
   });
 });
 
+describe("ServerEnv.externalApiEnabled", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  test("defaults disabled for TradeShips alpha", () => {
+    vi.stubEnv("EXTERNAL_API_ENABLED", "");
+    expect(ServerEnv.externalApiEnabled()).toBe(false);
+  });
+
+  test("is enabled only by explicit true", () => {
+    vi.stubEnv("EXTERNAL_API_ENABLED", "true");
+    expect(ServerEnv.externalApiEnabled()).toBe(true);
+
+    vi.stubEnv("EXTERNAL_API_ENABLED", "1");
+    expect(ServerEnv.externalApiEnabled()).toBe(false);
+  });
+});
+
 describe("ServerEnv.allowedFlares", () => {
   afterEach(() => {
     vi.unstubAllEnvs();

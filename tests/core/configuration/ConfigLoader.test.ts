@@ -35,6 +35,7 @@ describe("ClientEnv", () => {
       jwtAudience: "openfront.dev",
       instanceId: "TEST_ID",
       gitCommit: "abc123",
+      externalApiEnabled: true,
     };
     const fetchSpy = vi.spyOn(globalThis, "fetch");
 
@@ -43,7 +44,21 @@ describe("ClientEnv", () => {
     expect(ClientEnv.turnstileSiteKey()).toBe("test-key");
     expect(ClientEnv.jwtAudience()).toBe("openfront.dev");
     expect(ClientEnv.instanceId()).toBe("TEST_ID");
+    expect(ClientEnv.externalApiEnabled()).toBe(true);
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  test("external API defaults disabled for TradeShips alpha", () => {
+    window.BOOTSTRAP_CONFIG = {
+      gameEnv: "prod",
+      numWorkers: 2,
+      turnstileSiteKey: "k",
+      jwtAudience: "tradeships.io",
+      instanceId: "x",
+      gitCommit: "abc123",
+    };
+
+    expect(ClientEnv.externalApiEnabled()).toBe(false);
   });
 
   test("throws when BOOTSTRAP_CONFIG is undefined", () => {
