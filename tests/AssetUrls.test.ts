@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { buildAssetUrl, rewriteAssetsForCdn } from "../src/core/AssetUrls";
+import {
+  buildAssetUrl,
+  fetchableAssetUrl,
+  rewriteAssetsForCdn,
+} from "../src/core/AssetUrls";
 
 describe("AssetUrls", () => {
   test("returns hashed URLs for direct asset matches", () => {
@@ -99,6 +103,28 @@ describe("AssetUrls", () => {
         "https://cdn.example.com///",
       ),
     ).toBe("https://cdn.example.com/_assets/images/Favicon.hash.svg");
+  });
+
+  test("resolves root-relative worker asset URLs against the page origin", () => {
+    expect(
+      fetchableAssetUrl(
+        "/_assets/maps/falklandislands/manifest.hash.json",
+        "https://tradeships.io",
+      ),
+    ).toBe(
+      "https://tradeships.io/_assets/maps/falklandislands/manifest.hash.json",
+    );
+  });
+
+  test("keeps absolute worker asset URLs unchanged", () => {
+    expect(
+      fetchableAssetUrl(
+        "https://cdn.example.com/_assets/maps/falklandislands/manifest.hash.json",
+        "https://tradeships.io",
+      ),
+    ).toBe(
+      "https://cdn.example.com/_assets/maps/falklandislands/manifest.hash.json",
+    );
   });
 });
 
