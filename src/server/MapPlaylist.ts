@@ -37,7 +37,6 @@ const SPECIAL_ONLY_MAPS = new Set<GameMapType>();
 
 // Hard cap on player count for performance. Applied after compact-map reduction.
 const MAX_PLAYER_COUNT = 125;
-const FORCED_PUBLIC_STARTING_GOLD = 25_000_000;
 
 const TEAM_WEIGHTS: { config: TeamCountConfig; weight: number }[] = [
   { config: 2, weight: 10 },
@@ -103,13 +102,6 @@ const MUTUALLY_EXCLUSIVE_MODIFIERS: [ModifierKey, ModifierKey][] = [
   ["startingGold25M", "startingGold1M"],
   ["isHardNations", "startingGold25M"],
 ];
-const FORCED_STARTING_GOLD_EXCLUDED_MODIFIERS: readonly ModifierKey[] = [
-  "startingGold1M",
-  "startingGold5M",
-  "startingGold25M",
-  "isHardNations",
-];
-
 export class MapPlaylist {
   private playlists: Record<PublicGameType, GameMapType[]> = {
     ffa: [],
@@ -207,20 +199,18 @@ export class MapPlaylist {
       excludedModifiers.push("startingGold25M"); // Nations are disabled if that modifier is active (Because of PVP immunity)
       excludedModifiers.push("isPeaceTime"); // Nations don't have PVP immunity
     }
-    excludedModifiers.push(...FORCED_STARTING_GOLD_EXCLUDED_MODIFIERS);
-
     const poolResult = this.getRandomSpecialGameModifiers(excludedModifiers);
     let {
       isCrowded,
+      startingGold,
       isCompact,
       isRandomSpawn,
       goldMultiplier,
       isAlliancesDisabled,
+      isHardNations,
       isPortsDisabled,
       isPeaceTime,
     } = poolResult;
-    const startingGold = FORCED_PUBLIC_STARTING_GOLD;
-    const isHardNations = undefined;
 
     // Crowded modifier: if the map's biggest player count (first number of calculateMapPlayerCounts) is 60 or lower (small maps),
     // set player count to MAX_PLAYER_COUNT (or 60 if compact map is also enabled)
@@ -236,6 +226,8 @@ export class MapPlaylist {
         if (
           !isRandomSpawn &&
           !isCompact &&
+          !isHardNations &&
+          startingGold === undefined &&
           goldMultiplier === undefined &&
           !isAlliancesDisabled &&
           !isPortsDisabled &&
@@ -249,11 +241,13 @@ export class MapPlaylist {
           ({
             isRandomSpawn,
             isCompact,
+            startingGold,
             goldMultiplier,
             isAlliancesDisabled,
             isPortsDisabled,
             isPeaceTime,
           } = fallback);
+          ({ isHardNations } = fallback);
         }
       }
     }
