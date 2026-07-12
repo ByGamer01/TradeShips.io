@@ -36,6 +36,7 @@ export class LobbyTeamView extends LitElement {
   @property({ type: Function }) onKickPlayer?: (clientID: string) => void;
   @property({ type: Number }) nationCount: number = 0;
   @property({ type: Boolean }) isPublicGame: boolean = false;
+  @property({ type: Number }) maxPlayers: number = 0;
 
   private get theme(): Theme {
     return themeProvider.current();
@@ -51,6 +52,16 @@ export class LobbyTeamView extends LitElement {
   private get effectiveNationCount(): number {
     if (this.isPublicGame && this.teamCount === HumansVsNations) {
       return this.clients.length;
+    }
+    // Public FFA lobbies backfill every unclaimed human slot with a nation at
+    // game start, so preview that real count instead of the map's base count.
+    if (
+      this.isPublicGame &&
+      this.gameMode === GameMode.FFA &&
+      this.nationCount > 0 &&
+      this.maxPlayers > 0
+    ) {
+      return Math.max(0, this.maxPlayers - this.clients.length);
     }
     return this.nationCount;
   }
@@ -196,7 +207,23 @@ export class LobbyTeamView extends LitElement {
               : html``}
         </span>`;
       },
-    )} `;
+    )}
+    ${this.renderNationTags()} `;
+  }
+
+  /** Dimmed tags for the nations that will fill the remaining slots. */
+  private renderNationTags() {
+    if (this.gameMode !== GameMode.FFA || this.effectiveNationCount <= 0) {
+      return html``;
+    }
+    const label = translateText("host_modal.nation_player");
+    return html`${Array.from(
+      { length: this.effectiveNationCount },
+      (_, i) =>
+        html`<span class="player-tag opacity-50">
+          <span class="text-white">🏴 ${label} ${i + 1}</span>
+        </span>`,
+    )}`;
   }
 
   private renderTeamCard(preview: TeamPreviewData, isEmpty: boolean = false) {

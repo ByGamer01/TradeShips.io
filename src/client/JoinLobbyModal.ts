@@ -21,8 +21,8 @@ import {
   PublicGameInfo,
 } from "../core/Schemas";
 import {
-  DISABLED_ARSENAL,
   Difficulty,
+  DISABLED_ARSENAL,
   GameMapSize,
   GameMode,
   GameType,
@@ -160,6 +160,7 @@ export class JoinLobbyModal extends BaseModal {
                           this.gameConfig?.nations ?? "default",
                           this.nationCount,
                         )}
+                        .maxPlayers=${this.gameConfig?.maxPlayers ?? 0}
                       ></lobby-player-view>
                     `
                   : ""}
