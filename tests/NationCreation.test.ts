@@ -289,3 +289,66 @@ describe("createNationsForGame: additionalNations pool", () => {
     expect(new Set(names).size).toBe(8);
   });
 });
+
+describe("createNationsForGame: public player-quota backfill", () => {
+  function makePublicGameStart(
+    maxPlayers: number | undefined,
+    numHumans: number,
+  ): GameStartInfo {
+    const base = makeGameStart(0);
+    const config: GameConfig = {
+      ...base.config,
+      gameType: GameType.Public,
+      nations: "default",
+      maxPlayers,
+    };
+    return { ...base, config };
+  }
+
+  test("backfills unclaimed human slots with nations", () => {
+    const manifest = makeManifestNations(4);
+    const random = new PseudoRandom(7);
+
+    const nations = createNationsForGame(
+      makePublicGameStart(20, 3),
+      manifest,
+      makeAdditionalNations(["Ex1", "Ex2"]),
+      3,
+      random,
+    );
+
+    expect(nations).toHaveLength(17);
+    const names = nationNames(nations);
+    expect(new Set(names).size).toBe(17);
+  });
+
+  test("keeps the manifest roster when it already covers the quota", () => {
+    const manifest = makeManifestNations(10);
+    const random = new PseudoRandom(7);
+
+    const nations = createNationsForGame(
+      makePublicGameStart(8, 4),
+      manifest,
+      [],
+      4,
+      random,
+    );
+
+    expect(nations).toHaveLength(10);
+  });
+
+  test("no quota applies when maxPlayers is absent", () => {
+    const manifest = makeManifestNations(5);
+    const random = new PseudoRandom(7);
+
+    const nations = createNationsForGame(
+      makePublicGameStart(undefined, 1),
+      manifest,
+      [],
+      1,
+      random,
+    );
+
+    expect(nations).toHaveLength(5);
+  });
+});

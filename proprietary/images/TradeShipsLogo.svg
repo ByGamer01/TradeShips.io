@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1364 259" role="img" aria-label="TradeShips.io">
+  <defs>
+    <linearGradient id="tsWord" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7fdcef"/>
+      <stop offset="0.55" stop-color="#4db6c9"/>
+      <stop offset="1" stop-color="#1b7f9e"/>
+    </linearGradient>
+    <linearGradient id="tsSail" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9f7fb"/>
+      <stop offset="1" stop-color="#b7c4cc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ship glyph -->
+  <g transform="translate(28,18)">
+    <!-- pennant -->
+    <path d="M118 6 L118 30 L166 18 Z" fill="#e9c46a"/>
+    <rect x="112" y="4" width="7" height="128" rx="3" fill="#e9f7fb"/>
+    <!-- main sail -->
+    <path d="M104 26 L104 128 L28 128 Q60 82 104 26 Z" fill="url(#tsSail)"/>
+    <!-- fore sail -->
+    <path d="M128 42 L128 128 L196 128 Q168 84 128 42 Z" fill="#4db6c9"/>
+    <!-- hull -->
+    <path d="M6 142 L218 142 L188 186 Q186 190 180 190 L46 190 Q40 190 38 186 Z" fill="#1b7f9e"/>
+    <path d="M6 142 L218 142 L212 152 L12 152 Z" fill="#e9c46a" opacity="0.9"/>
+    <!-- waves -->
+    <path d="M-10 206 Q16 190 42 206 T94 206 T146 206 T198 206 T250 206"
+      fill="none" stroke="#4db6c9" stroke-width="10" stroke-linecap="round"/>
+    <path d="M6 230 Q32 214 58 230 T110 230 T162 230 T214 230"
+      fill="none" stroke="#1b7f9e" stroke-width="9" stroke-linecap="round" opacity="0.8"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g font-family="'Arial Black','Segoe UI Black',Arial,Helvetica,sans-serif"
+     font-weight="900" font-style="italic">
+    <text x="292" y="160" font-size="124" fill="url(#tsWord)"
+      textLength="880" lengthAdjust="spacingAndGlyphs">TRADESHIPS</text>
+    <text x="1200" y="160" font-size="72" fill="#e9c46a"
+      textLength="132" lengthAdjust="spacingAndGlyphs">.IO</text>
+  </g>
+  <!-- keel line under the wordmark -->
+  <path d="M296 186 L1150 186 L1128 202 L318 202 Z" fill="#e9c46a" opacity="0.85"/>
+  <path d="M1170 186 L1332 186 L1310 202 L1192 202 Z" fill="#2fb6cc" opacity="0.85"/>
+</svg>

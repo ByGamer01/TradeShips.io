@@ -78,7 +78,13 @@
     "icon_traitor": "Espadas cruzadas - Traidor. Este jogador atacou um aliado.",
     "icon_ally": "Aperto de Mãos - Aliado. Esse jogador é seu aliado.",
     "info_enemy_panel": "Painel de informações Inimigo",
-    "action_emote": "Abrir menu de emotes"
+    "action_emote": "Abrir menu de emotes",
+    "maritime_contested": "Quando frotas rivais empatam como maior poder naval, a zona fica disputada e o progresso congela. Um rival mais forte reduz o controle do detentor até 0% antes de capturá-la.",
+    "maritime_desc": "Nos mapas marítimos, vence quem controla a rota marítima central. Mantenha a força naval mais poderosa dentro da zona marcada para aumentar seu controle: a primeira frota a manter 100% vence a partida.",
+    "maritime_ffa": "Todos contra todos: o objetivo é um corredor comercial pelas águas abertas centrais do mapa, marcado com uma bandeira e uma faixa luminosa. Só contam os navios dentro do corredor.",
+    "maritime_power": "Poder naval: porta-aviões contam 6; navios de guerra, submarinos e fragatas antiaéreas contam 3; transportes, navios mercantes e aeronaves contam 1.",
+    "maritime_team": "Partidas em equipe: o objetivo é uma zona circular em mar aberto, marcada com um anel e uma bandeira. A frota de toda a sua equipe soma.",
+    "maritime_title": "Objetivo: a rota marítima"
   },
   "single_modal": {
     "title": "Um Jogador",
@@ -161,7 +167,8 @@
   },
   "game_starting_modal": {
     "title": "Jogo está Iniciando...",
-    "desc": "Preparando para começar a sala. Por favor, aguarde."
+    "desc": "Preparando para começar a sala. Por favor, aguarde.",
+    "based_on": "Baseado em OpenFront"
   },
   "lang": {
     "en": "Brazilian Portuguese",
@@ -175,5 +182,82 @@
   },
   "select_lang": {
     "title": "Selecionar idioma"
+  },
+  "build_menu": {
+    "desc": {
+      "aircraft_carrier": "Plataforma de ataque aéreo de longo alcance",
+      "anti_air_frigate": "Escolta frotas com antiaéreos de curto alcance",
+      "congress": "Desbloqueia tarifas contra o comércio inimigo",
+      "naval_mine": "Explosivo naval de uso único",
+      "submarine": "Atacante torpedeiro furtivo"
+    }
+  },
+  "events_display": {
+    "economic_mission_started": "Boom comercial global! {count, plural, one {# nação comerciante recebeu} other {# nações comerciantes receberam}} um bônus de ouro",
+    "tariff_imposed": "Você impôs uma tarifa sobre o comércio de {name}",
+    "tariff_imposed_on_you": "{name} impôs uma tarifa sobre o seu comércio!"
+  },
+  "leaderboard": {
+    "control": "Controle"
+  },
+  "maritime_objective": {
+    "capturing": "Capturando",
+    "contested": "Disputada",
+    "controlled": "Controlada",
+    "hint": "Controle a rota marítima central para vencer",
+    "neutral": "Neutra"
+  },
+  "player_panel": {
+    "tariff": "Tarifa",
+    "tariff_tooltip": "Imponha uma tarifa sobre o comércio deste jogador por {cost} de ouro"
+  },
+  "radial_menu": {
+    "specialize_description": "Escolha a especialização deste porto: polo comercial, base naval ou vigilância portuária",
+    "specialize_title": "Especializar porto"
+  },
+  "trade_routes": {
+    "contested": "Disputada",
+    "danger": "Perigo",
+    "escorts": "Escoltas",
+    "risk": "Risco",
+    "routes": "Rotas",
+    "summary_title": "Rotas mercantes ativas, corredores disputados e escoltas navais",
+    "value": "Valor"
+  },
+  "trade_stats": {
+    "arrivals": "Chegadas",
+    "captures_by_me": "Capturados por mim",
+    "gold_earned": "Ouro ganho",
+    "gold_in_transit": "Ouro no mar",
+    "pirated_arrivals": "Chegadas pirateadas",
+    "port": "Porto",
+    "routes_active": "Rotas ativas",
+    "routes_contested": "Rotas disputadas",
+    "routes_escorted": "Rotas escoltadas",
+    "ships_captured": "Navios capturados",
+    "ships_lost": "Navios perdidos",
+    "title": "Comércio",
+    "top_ports": "Principais portos receptores"
+  },
+  "unit_type": {
+    "aircraft": "Aeronave",
+    "aircraft_carrier": "Porta-aviões",
+    "anti_air_frigate": "Fragata antiaérea",
+    "congress": "Congresso",
+    "naval_mine": "Mina naval",
+    "submarine": "Submarino",
+    "torpedo": "Torpedo"
+  },
+  "user_setting": {
+    "build_aircraft_carrier": "Construir porta-aviões",
+    "build_aircraft_carrier_desc": "Constrói um porta-aviões sob o cursor.",
+    "build_anti_air_frigate": "Construir fragata antiaérea",
+    "build_anti_air_frigate_desc": "Constrói uma fragata antiaérea sob o cursor.",
+    "build_congress": "Construir Congresso",
+    "build_congress_desc": "Constrói um Congresso sob o cursor.",
+    "build_naval_mine": "Construir mina naval",
+    "build_naval_mine_desc": "Constrói uma mina naval sob o cursor.",
+    "build_submarine": "Construir submarino",
+    "build_submarine_desc": "Constrói um submarino sob o cursor."
   }
 }

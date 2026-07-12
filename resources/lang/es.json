@@ -6,7 +6,7 @@
     "lang_code": "es"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "¡Únete al Discord!",
     "login_discord": "Iniciar sesión con Discord",
     "logged_in": "¡Sesión iniciada!",
@@ -101,7 +101,13 @@
     "icon_ally": "Apretón de manos - Aliado. Este jugador es tu aliado.",
     "icon_embargo": "Señal de Stop con dólar - Embargo. Este jugador ha dejado de comerciar contigo de forma automática o manual.",
     "icon_request": "Sobre - Solicitud de alianza. Este jugador te ha enviado una solicitud de alianza.",
-    "info_enemy_panel": "Panel de información de enemigo"
+    "info_enemy_panel": "Panel de información de enemigo",
+    "maritime_contested": "Cuando flotas rivales empatan como mayor poder naval, la zona queda en disputa y el progreso se congela. Un rival más fuerte reduce el control del poseedor hasta el 0% antes de capturarla.",
+    "maritime_desc": "En los mapas marítimos se gana controlando la ruta marítima central. Mantén la fuerza naval más poderosa dentro de la zona marcada para aumentar tu control: la primera flota que mantenga el 100% gana la partida.",
+    "maritime_ffa": "Todos contra todos: el objetivo es un corredor comercial a través de las aguas abiertas centrales del mapa, marcado con una bandera y un carril luminoso. Solo cuentan los barcos dentro del corredor.",
+    "maritime_power": "Poder naval: los portaaviones cuentan 6; los buques de guerra, submarinos y fragatas antiaéreas cuentan 3; los transportes, barcos mercantes y aeronaves cuentan 1.",
+    "maritime_team": "Partidas por equipos: el objetivo es una zona circular en mar abierto, marcada con un anillo y una bandera. La flota de todo tu equipo suma.",
+    "maritime_title": "Objetivo: la ruta marítima"
   },
   "single_modal": {
     "title": "Un jugador",
@@ -191,7 +197,8 @@
   },
   "game_starting_modal": {
     "title": "La partida está comenzando...",
-    "desc": "Preparando la partida. Por favor, espera."
+    "desc": "Preparando la partida. Por favor, espera.",
+    "based_on": "Basado en OpenFront"
   },
   "difficulty": {
     "difficulty": "Dificultad",
@@ -216,7 +223,14 @@
     "sam_launcher": "Misil tierra-aire",
     "atom_bomb": "Bomba atómica",
     "hydrogen_bomb": "Bomba de hidrógeno",
-    "mirv": "MIRV"
+    "mirv": "MIRV",
+    "aircraft": "Aeronave",
+    "aircraft_carrier": "Portaaviones",
+    "anti_air_frigate": "Fragata antiaérea",
+    "congress": "Congreso",
+    "naval_mine": "Mina naval",
+    "submarine": "Submarino",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "title": "Ajustes de Usuario",
@@ -260,7 +274,17 @@
     "move_right": "Mover Cámara a la Derecha",
     "move_right_desc": "Mueve la cámara hacia la derecha",
     "reset": "Restablecer",
-    "unbind": "Desvincular"
+    "unbind": "Desvincular",
+    "build_aircraft_carrier": "Construir portaaviones",
+    "build_aircraft_carrier_desc": "Construye un portaaviones bajo el cursor.",
+    "build_anti_air_frigate": "Construir fragata antiaérea",
+    "build_anti_air_frigate_desc": "Construye una fragata antiaérea bajo el cursor.",
+    "build_congress": "Construir Congreso",
+    "build_congress_desc": "Construye un Congreso bajo el cursor.",
+    "build_naval_mine": "Construir mina naval",
+    "build_naval_mine_desc": "Construye una mina naval bajo el cursor.",
+    "build_submarine": "Construir submarino",
+    "build_submarine_desc": "Construye un submarino bajo el cursor."
   },
   "chat": {
     "title": "Chat rápido",
@@ -345,7 +369,12 @@
       "warship": "Captura barcos comerciales y destruye barcos de guerra",
       "port": "Envía barcos comerciales para generar oro",
       "defense_post": "Aumenta las defensas de las fronteras cercanas",
-      "city": "Aumenta la población máxima"
+      "city": "Aumenta la población máxima",
+      "aircraft_carrier": "Plataforma de ataque aéreo de largo alcance",
+      "anti_air_frigate": "Escolta flotas con antiaéreos de corto alcance",
+      "congress": "Desbloquea aranceles contra el comercio enemigo",
+      "naval_mine": "Explosivo naval de un solo uso",
+      "submarine": "Asaltante torpedero furtivo"
     },
     "not_enough_money": "Dinero insuficiente"
   },
@@ -365,7 +394,8 @@
     "player": "Jugador",
     "owned": "En propiedad",
     "gold": "Oro",
-    "troops": "Tropas"
+    "troops": "Tropas",
+    "control": "Control"
   },
   "player_info_overlay": {
     "type": "Tipo",
@@ -408,6 +438,48 @@
     "start_trade": "Empezar a comerciar",
     "stop_trade": "Parar de comerciar",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "tariff": "Arancel",
+    "tariff_tooltip": "Impón un arancel al comercio de este jugador por {cost} de oro"
+  },
+  "events_display": {
+    "economic_mission_started": "¡Auge comercial global! {count, plural, one {# nación comerciante recibió} other {# naciones comerciantes recibieron}} una bonificación de oro",
+    "tariff_imposed": "Impusiste un arancel al comercio de {name}",
+    "tariff_imposed_on_you": "¡{name} impuso un arancel a tu comercio!"
+  },
+  "maritime_objective": {
+    "capturing": "Capturando",
+    "contested": "En disputa",
+    "controlled": "Controlada",
+    "hint": "Controla la ruta marítima central para ganar",
+    "neutral": "Neutral"
+  },
+  "radial_menu": {
+    "specialize_description": "Elige la especialización de este puerto: centro comercial, base naval o vigilancia portuaria",
+    "specialize_title": "Especializar puerto"
+  },
+  "trade_routes": {
+    "contested": "En disputa",
+    "danger": "Peligro",
+    "escorts": "Escoltas",
+    "risk": "Riesgo",
+    "routes": "Rutas",
+    "summary_title": "Rutas mercantes activas, corredores en disputa y escoltas navales",
+    "value": "Valor"
+  },
+  "trade_stats": {
+    "arrivals": "Llegadas",
+    "captures_by_me": "Capturados por mí",
+    "gold_earned": "Oro ganado",
+    "gold_in_transit": "Oro en el mar",
+    "pirated_arrivals": "Llegadas pirateadas",
+    "port": "Puerto",
+    "routes_active": "Rutas activas",
+    "routes_contested": "Rutas en disputa",
+    "routes_escorted": "Rutas escoltadas",
+    "ships_captured": "Barcos capturados",
+    "ships_lost": "Barcos perdidos",
+    "title": "Comercio",
+    "top_ports": "Principales puertos receptores"
   }
 }

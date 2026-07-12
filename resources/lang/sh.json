@@ -6,7 +6,7 @@
     "lang_code": "sh"
   },
   "main": {
-    "title": "OpenFront (ALFA)",
+    "title": "TradeShips (ALFA)",
     "join_discord": "Pridruži se Diskordu!",
     "create_lobby": "Napravi čekaonicu",
     "join_lobby": "Pridruži se čekaonici",
@@ -85,7 +85,13 @@
     "icon_crown": "Kruna - Ovo je igrač broj 1 na ljestvici",
     "icon_traitor": "Ukršteni mačevi - Izdajica. Ovaj igrač je napao saveznika.",
     "icon_ally": "Rukovanje - Saveznik. Ovaj igrač ti je saveznik.",
-    "info_enemy_panel": "Informacije o neprijatelju"
+    "info_enemy_panel": "Informacije o neprijatelju",
+    "maritime_contested": "Kada su suparničke flote izjednačene kao najjača pomorska sila, zona je osporavana i napredak se zamrzava. Jači suparnik smanjuje kontrolu držaoca do 0% pre nego što je zauzme.",
+    "maritime_desc": "Na pomorskim mapama pobeđuje onaj ko kontroliše centralnu pomorsku rutu. Drži najjaču pomorsku silu unutar označene zone da povećaš kontrolu: prva flota koja zadrži 100% pobeđuje.",
+    "maritime_ffa": "Svako za sebe: cilj je trgovački koridor kroz centralne otvorene vode mape, označen zastavom i svetlećom trakom. Računaju se samo brodovi unutar koridora.",
+    "maritime_power": "Pomorska sila: nosači aviona vrede 6; ratni brodovi, podmornice i protivvazdušne fregate vrede 3; transporti, trgovački brodovi i avioni vrede 1.",
+    "maritime_team": "Timske igre: cilj je kružna zona na otvorenom moru, označena prstenom i zastavom. Flota celog tvog tima se sabira.",
+    "maritime_title": "Cilj: pomorska ruta"
   },
   "single_modal": {
     "title": "Igraj sam",
@@ -164,7 +170,8 @@
   },
   "game_starting_modal": {
     "title": "Partija počinje...",
-    "desc": "Čekaonica se priprema za start. Ček' malo."
+    "desc": "Čekaonica se priprema za start. Ček' malo.",
+    "based_on": "Zasnovano na OpenFront"
   },
   "difficulty": {
     "difficulty": "Težina",
@@ -218,11 +225,86 @@
     "move_right": "Pomeri kameru udesno",
     "move_right_desc": "Pomera kameru udesno",
     "reset": "Resetuj",
-    "unbind": "Obriši prečicu"
+    "unbind": "Obriši prečicu",
+    "build_aircraft_carrier": "Izgradi nosač aviona",
+    "build_aircraft_carrier_desc": "Gradi nosač aviona ispod kursora.",
+    "build_anti_air_frigate": "Izgradi protivvazdušnu fregatu",
+    "build_anti_air_frigate_desc": "Gradi protivvazdušnu fregatu ispod kursora.",
+    "build_congress": "Izgradi Kongres",
+    "build_congress_desc": "Gradi Kongres ispod kursora.",
+    "build_naval_mine": "Postavi pomorsku minu",
+    "build_naval_mine_desc": "Postavlja pomorsku minu ispod kursora.",
+    "build_submarine": "Izgradi podmornicu",
+    "build_submarine_desc": "Gradi podmornicu ispod kursora."
   },
   "map_categories": {
     "continental": "Kontinentalne",
     "regional": "Regionalne",
     "fantasy": "Druge"
+  },
+  "build_menu": {
+    "desc": {
+      "aircraft_carrier": "Platforma za vazdušne udare dugog dometa",
+      "anti_air_frigate": "Prati flote s protivvazdušnom odbranom kratkog dometa",
+      "congress": "Otključava carine protiv neprijateljske trgovine",
+      "naval_mine": "Pomorska mina za jednokratnu upotrebu",
+      "submarine": "Prikriveni torpedni napadač"
+    }
+  },
+  "events_display": {
+    "economic_mission_started": "Svetski trgovinski bum! {count, plural, one {# trgovačka nacija je primila} other {# trgovačkih nacija je primilo}} zlatni bonus",
+    "tariff_imposed": "Uveo si carinu na trgovinu igrača {name}",
+    "tariff_imposed_on_you": "{name} je uveo carinu na tvoju trgovinu!"
+  },
+  "leaderboard": {
+    "control": "Kontrola"
+  },
+  "maritime_objective": {
+    "capturing": "Zauzima se",
+    "contested": "Osporavana",
+    "controlled": "Pod kontrolom",
+    "hint": "Kontroliši centralnu pomorsku rutu da pobediš",
+    "neutral": "Neutralna"
+  },
+  "player_panel": {
+    "tariff": "Carina",
+    "tariff_tooltip": "Uvedi carinu na trgovinu ovog igrača za {cost} zlata"
+  },
+  "radial_menu": {
+    "specialize_description": "Izaberi specijalizaciju ove luke: trgovačko čvorište, pomorska baza ili lučka straža",
+    "specialize_title": "Specijalizuj luku"
+  },
+  "trade_routes": {
+    "contested": "Osporavana",
+    "danger": "Opasnost",
+    "escorts": "Pratnje",
+    "risk": "Rizik",
+    "routes": "Rute",
+    "summary_title": "Aktivne trgovačke rute, osporavani pomorski putevi i pomorske pratnje",
+    "value": "Vrednost"
+  },
+  "trade_stats": {
+    "arrivals": "Dolasci",
+    "captures_by_me": "Zarobljeno od mene",
+    "gold_earned": "Zarađeno zlato",
+    "gold_in_transit": "Zlato na moru",
+    "pirated_arrivals": "Piratski dolasci",
+    "port": "Luka",
+    "routes_active": "Aktivne rute",
+    "routes_contested": "Osporavane rute",
+    "routes_escorted": "Rute s pratnjom",
+    "ships_captured": "Zarobljeni brodovi",
+    "ships_lost": "Izgubljeni brodovi",
+    "title": "Trgovina",
+    "top_ports": "Glavne odredišne luke"
+  },
+  "unit_type": {
+    "aircraft": "Avion",
+    "aircraft_carrier": "Nosač aviona",
+    "anti_air_frigate": "Protivvazdušna fregata",
+    "congress": "Kongres",
+    "naval_mine": "Pomorska mina",
+    "submarine": "Podmornica",
+    "torpedo": "Torpedo"
   }
 }

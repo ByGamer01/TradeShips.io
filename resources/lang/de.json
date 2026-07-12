@@ -20,7 +20,7 @@
     "none": "Nichts"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "Discord",
     "login_discord": "Anmelden mit Discord",
     "checking_login": "Überprüfe Login...",
@@ -129,7 +129,13 @@
     "icon_embargo": "Dollar Stoppschild - Embargo. Dieser Spieler hat den Handel mit Dir automatisch oder manuell eingestellt.",
     "icon_request": "Umschlag - Allianzanfrage. Dieser Spieler hat dir eine Allianzanfrage geschickt.",
     "info_enemy_panel": "Gegner-Infobereich",
-    "exit_confirmation": "Bist du sicher, dass du das Spiel verlassen möchtest?"
+    "exit_confirmation": "Bist du sicher, dass du das Spiel verlassen möchtest?",
+    "maritime_contested": "Wenn rivalisierende Flotten bei der stärksten Seemacht gleichauf liegen, ist die Zone umkämpft und der Fortschritt friert ein. Ein stärkerer Rivale senkt die Kontrolle des Inhabers auf 0 %, bevor er sie erobert.",
+    "maritime_desc": "Auf maritimen Karten gewinnt, wer die zentrale Seeroute kontrolliert. Halte die stärkste Seestreitmacht in der markierten Zone, um deine Kontrolle zu steigern: Die erste Flotte, die 100 % hält, gewinnt das Spiel.",
+    "maritime_ffa": "Jeder gegen jeden: Das Ziel ist ein Handelskorridor durch das zentrale offene Gewässer der Karte, markiert durch eine Flagge und eine leuchtende Fahrrinne. Nur Schiffe im Korridor zählen.",
+    "maritime_power": "Seemacht: Flugzeugträger zählen 6; Kriegsschiffe, U-Boote und Flugabwehr-Fregatten zählen 3; Transporter, Handelsschiffe und Flugzeuge zählen 1.",
+    "maritime_team": "Teamspiele: Das Ziel ist eine kreisförmige Zone auf offener See, markiert durch einen Ring und eine Flagge. Die Flotte deines gesamten Teams zählt zusammen.",
+    "maritime_title": "Ziel: die Seeroute"
   },
   "single_modal": {
     "title": "Einzelspieler",
@@ -298,7 +304,8 @@
   "game_starting_modal": {
     "title": "Das Spiel startet...",
     "credits": "Credits",
-    "code_license": "Code lizenziert unter AGPL-3.0 (ohne Gewährleistung)"
+    "code_license": "Code lizenziert unter AGPL-3.0 (ohne Gewährleistung)",
+    "based_on": "Basiert auf OpenFront"
   },
   "difficulty": {
     "difficulty": "Schwierigkeitsgrad",
@@ -324,7 +331,14 @@
     "atom_bomb": "Atombombe",
     "hydrogen_bomb": "Wasserstoffbombe",
     "mirv": "MIRV-Rakete",
-    "factory": "Fabrik"
+    "factory": "Fabrik",
+    "aircraft": "Flugzeug",
+    "aircraft_carrier": "Flugzeugträger",
+    "anti_air_frigate": "Flugabwehr-Fregatte",
+    "congress": "Kongress",
+    "naval_mine": "Seemine",
+    "submarine": "U-Boot",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "title": "Benutzer Einstellungen",
@@ -416,7 +430,17 @@
     "exit_game_label": "Spiel verlassen",
     "exit_game_info": "Zurück zum Hauptmenü",
     "background_music_volume": "Musiklautstärke",
-    "sound_effects_volume": "Soundeffektlautstärke"
+    "sound_effects_volume": "Soundeffektlautstärke",
+    "build_aircraft_carrier": "Flugzeugträger bauen",
+    "build_aircraft_carrier_desc": "Baut einen Flugzeugträger unter deinem Cursor.",
+    "build_anti_air_frigate": "Flugabwehr-Fregatte bauen",
+    "build_anti_air_frigate_desc": "Baut eine Flugabwehr-Fregatte unter deinem Cursor.",
+    "build_congress": "Kongress bauen",
+    "build_congress_desc": "Baut einen Kongress unter deinem Cursor.",
+    "build_naval_mine": "Seemine bauen",
+    "build_naval_mine_desc": "Baut eine Seemine unter deinem Cursor.",
+    "build_submarine": "U-Boot bauen",
+    "build_submarine_desc": "Baut ein U-Boot unter deinem Cursor."
   },
   "chat": {
     "title": "Chat",
@@ -517,12 +541,17 @@
       "port": "Sendet Handelsschiffe, um Gold zu generieren",
       "defense_post": "Erhöht die Verteidigung der umliegenden Grenzen",
       "city": "Erhöht die Bevölkerungsgrenze",
-      "factory": "Baut Eisenbahnen und schickt Züge auf die Strecke"
+      "factory": "Baut Eisenbahnen und schickt Züge auf die Strecke",
+      "aircraft_carrier": "Luftschlag-Plattform mit großer Reichweite",
+      "anti_air_frigate": "Eskortiert Flotten mit Kurzstrecken-Flugabwehr",
+      "congress": "Schaltet Zölle gegen feindlichen Handel frei",
+      "naval_mine": "Seesprengstoff zur einmaligen Verwendung",
+      "submarine": "Getarnter Torpedo-Jäger"
     },
     "not_enough_money": "Nicht genug Geld"
   },
   "win_modal": {
-    "support_openfront": "Unterstütze OpenFront!",
+    "support_openfront": "Unterstütze TradeShips!",
     "territory_pattern": "Kaufe ein Gebietsmuster, um werbefrei zu spielen!",
     "died": "Du bist gestorben",
     "your_team": "Dein Team hat gewonnen!",
@@ -555,7 +584,8 @@
     "warships": "Kriegsschiffe",
     "cities": "Städte",
     "show_control": "Steuerung anzeigen",
-    "show_units": "Einheiten anzeigen"
+    "show_units": "Einheiten anzeigen",
+    "control": "Kontrolle"
   },
   "player_info_overlay": {
     "type": "Typ",
@@ -601,7 +631,10 @@
     "wants_to_renew_alliance": "{name} möchte eure Allianz erneuern",
     "ignore": "Ignorieren",
     "unit_voluntarily_deleted": "Einheit freiwillig gelöscht",
-    "betrayal_debuff_ends": "Noch {time} Sekunden, bis der Verrats-Malus endet"
+    "betrayal_debuff_ends": "Noch {time} Sekunden, bis der Verrats-Malus endet",
+    "economic_mission_started": "Globaler Handelsboom! {count, plural, one {# Handelsnation erhielt} other {# Handelsnationen erhielten}} einen Goldbonus",
+    "tariff_imposed": "Du hast einen Zoll auf den Handel von {name} verhängt",
+    "tariff_imposed_on_you": "{name} hat einen Zoll auf deinen Handel verhängt!"
   },
   "unit_info_modal": {
     "structure_info": "Gebäudeinformation",
@@ -653,7 +686,9 @@
     "send_alliance": "Allianz senden",
     "send_troops": "Truppen senden",
     "send_gold": "Gold senden",
-    "emotes": "Emojis"
+    "emotes": "Emojis",
+    "tariff": "Zoll",
+    "tariff_tooltip": "Verhänge für {cost} Gold einen Zoll auf den Handel dieses Spielers"
   },
   "send_troops_modal": {
     "title_with_name": "Truppen an {name} senden",
@@ -733,7 +768,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Einheit löschen",
-    "delete_unit_description": "Klicken, um die nächstgelegene Einheit zu löschen"
+    "delete_unit_description": "Klicken, um die nächstgelegene Einheit zu löschen",
+    "specialize_description": "Wähle die Spezialisierung dieses Hafens: Handelszentrum, Marinebasis oder Hafenwache",
+    "specialize_title": "Hafen spezialisieren"
   },
   "discord_user_header": {
     "avatar_alt": "Profilbild"
@@ -804,5 +841,36 @@
     "stats_games_played": "Gespielte Spiele",
     "mode_ffa": "Jeder gegen jeden",
     "mode_team": "Team"
+  },
+  "maritime_objective": {
+    "capturing": "Wird erobert",
+    "contested": "Umkämpft",
+    "controlled": "Kontrolliert",
+    "hint": "Kontrolliere die zentrale Seeroute, um zu gewinnen",
+    "neutral": "Neutral"
+  },
+  "trade_routes": {
+    "contested": "Umkämpft",
+    "danger": "Gefahr",
+    "escorts": "Eskorten",
+    "risk": "Risiko",
+    "routes": "Routen",
+    "summary_title": "Aktive Handelsrouten, umkämpfte Seewege und Marineeskorten",
+    "value": "Wert"
+  },
+  "trade_stats": {
+    "arrivals": "Ankünfte",
+    "captures_by_me": "Von mir gekapert",
+    "gold_earned": "Verdientes Gold",
+    "gold_in_transit": "Gold auf See",
+    "pirated_arrivals": "Gekaperte Ankünfte",
+    "port": "Hafen",
+    "routes_active": "Aktive Routen",
+    "routes_contested": "Umkämpfte Routen",
+    "routes_escorted": "Eskortierte Routen",
+    "ships_captured": "Gekaperte Schiffe",
+    "ships_lost": "Verlorene Schiffe",
+    "title": "Handel",
+    "top_ports": "Wichtigste Empfangshäfen"
   }
 }

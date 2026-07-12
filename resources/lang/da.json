@@ -9,7 +9,7 @@
     "close": "Luk"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "Deltag i vores Discord!",
     "login_discord": "Log ind med Discord",
     "checking_login": "Tjekker login...",
@@ -119,7 +119,13 @@
     "icon_embargo": "Dollar-stoptegn – Embargo. Denne spiller har stoppet handlen med dig automatisk eller manuelt.",
     "icon_request": "Konvolut - anmodning om Alliance. Denne spiller har sendt dig en allianceanmodning.",
     "info_enemy_panel": "Fjende-info panel",
-    "exit_confirmation": "Er du sikker på du vil afslutte spillet?"
+    "exit_confirmation": "Er du sikker på du vil afslutte spillet?",
+    "maritime_contested": "Når rivaliserende flåder står lige som den stærkeste flådemagt, er zonen omstridt, og fremskridtet fryser. En stærkere rival dræner indehaverens kontrol ned til 0 %, før zonen erobres.",
+    "maritime_desc": "På maritime kort vinder man ved at kontrollere den centrale sørute. Hold den stærkeste flådestyrke inde i den markerede zone for at øge din kontrol: den første flåde, der holder 100 %, vinder spillet.",
+    "maritime_ffa": "Alle mod alle: målet er en handelskorridor gennem kortets centrale åbne farvand, markeret med et flag og en lysende sejlrende. Kun skibe inde i korridoren tæller.",
+    "maritime_power": "Flådemagt: hangarskibe tæller 6; krigsskibe, ubåde og antiluftfregatter tæller 3; transporter, handelsskibe og fly tæller 1.",
+    "maritime_team": "Holdspil: målet er en cirkulær zone på åbent hav, markeret med en ring og et flag. Hele dit holds flåde tæller sammen.",
+    "maritime_title": "Mål: søruten"
   },
   "single_modal": {
     "title": "Enkeltspiller",
@@ -232,7 +238,8 @@
   },
   "game_starting_modal": {
     "title": "Spillet Starter...",
-    "desc": "Forbereder lobbyen på at starte. Vent venligst."
+    "desc": "Forbereder lobbyen på at starte. Vent venligst.",
+    "based_on": "Baseret på OpenFront"
   },
   "difficulty": {
     "difficulty": "Sværhedsgrad",
@@ -258,7 +265,14 @@
     "atom_bomb": "Atombombe",
     "hydrogen_bomb": "Brintbombe",
     "mirv": "MIRV",
-    "factory": "Fabrik"
+    "factory": "Fabrik",
+    "aircraft": "Fly",
+    "aircraft_carrier": "Hangarskib",
+    "anti_air_frigate": "Antiluftfregat",
+    "congress": "Kongres",
+    "naval_mine": "Sømine",
+    "submarine": "Ubåd",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "title": "Brugerindstillinger",
@@ -341,7 +355,17 @@
     "terrain_enabled": "Terrænvisning aktiveret",
     "terrain_disabled": "Terrænvisning deaktiveret",
     "exit_game_label": "Afslut Spil",
-    "exit_game_info": "Tilbage til hovedmenu"
+    "exit_game_info": "Tilbage til hovedmenu",
+    "build_aircraft_carrier": "Byg hangarskib",
+    "build_aircraft_carrier_desc": "Bygger et hangarskib under din markør.",
+    "build_anti_air_frigate": "Byg antiluftfregat",
+    "build_anti_air_frigate_desc": "Bygger en antiluftfregat under din markør.",
+    "build_congress": "Byg kongres",
+    "build_congress_desc": "Bygger en kongres under din markør.",
+    "build_naval_mine": "Byg sømine",
+    "build_naval_mine_desc": "Bygger en sømine under din markør.",
+    "build_submarine": "Byg ubåd",
+    "build_submarine_desc": "Bygger en ubåd under din markør."
   },
   "chat": {
     "title": "Hurtig Chat",
@@ -427,7 +451,12 @@
       "port": "Sender handelsskibe for at generere guld",
       "defense_post": "Forstærker forsvaret af nærliggende grænser",
       "city": "Øger maksimal befolkning",
-      "factory": "Opretter jernbaner og sender tog afsted"
+      "factory": "Opretter jernbaner og sender tog afsted",
+      "aircraft_carrier": "Langtrækkende platform til luftangreb",
+      "anti_air_frigate": "Eskorterer flåder med kortrækkende antiluftskyts",
+      "congress": "Låser op for told mod fjendtlig handel",
+      "naval_mine": "Sømine til engangsbrug",
+      "submarine": "Skjult torpedojæger"
     },
     "not_enough_money": "Ikke nok penge"
   },
@@ -449,7 +478,8 @@
     "team": "Hold",
     "owned": "Ejet",
     "gold": "Guld",
-    "troops": "Tropper"
+    "troops": "Tropper",
+    "control": "Kontrol"
   },
   "player_info_overlay": {
     "type": "Type",
@@ -491,7 +521,10 @@
     "reject_alliance": "Afvis",
     "alliance_renewed": "Din alliance med {name} er blevet fornyet",
     "ignore": "Ignorér",
-    "unit_voluntarily_deleted": "Enhed slettet frivilligt"
+    "unit_voluntarily_deleted": "Enhed slettet frivilligt",
+    "economic_mission_started": "Globalt handelsboom! {count, plural, one {# handelsnation modtog} other {# handelsnationer modtog}} en guldbonus",
+    "tariff_imposed": "Du har pålagt {name}s handel en told",
+    "tariff_imposed_on_you": "{name} har pålagt din handel en told!"
   },
   "unit_info_modal": {
     "structure_info": "Strukturinfo",
@@ -527,7 +560,9 @@
     "yes": "Ja",
     "no": "Nej",
     "none": "Ingen",
-    "alliances": "Alliancer"
+    "alliances": "Alliancer",
+    "tariff": "Told",
+    "tariff_tooltip": "Pålæg denne spillers handel en told for {cost} guld"
   },
   "replay_panel": {
     "replay_speed": "Genafspilnings hastighed",
@@ -600,6 +635,39 @@
   },
   "radial_menu": {
     "delete_unit_title": "Slet Enhed",
-    "delete_unit_description": "Tryk for at slette den nærmeste enhed"
+    "delete_unit_description": "Tryk for at slette den nærmeste enhed",
+    "specialize_description": "Vælg denne havns specialisering: handelsknudepunkt, flådebase eller havnevagt",
+    "specialize_title": "Specialiser havn"
+  },
+  "maritime_objective": {
+    "capturing": "Erobres",
+    "contested": "Omstridt",
+    "controlled": "Kontrolleret",
+    "hint": "Kontroller den centrale sørute for at vinde",
+    "neutral": "Neutral"
+  },
+  "trade_routes": {
+    "contested": "Omstridt",
+    "danger": "Fare",
+    "escorts": "Eskorter",
+    "risk": "Risiko",
+    "routes": "Ruter",
+    "summary_title": "Aktive handelsruter, omstridte sejlruter og flådeeskorter",
+    "value": "Værdi"
+  },
+  "trade_stats": {
+    "arrivals": "Ankomster",
+    "captures_by_me": "Erobret af mig",
+    "gold_earned": "Optjent guld",
+    "gold_in_transit": "Guld til søs",
+    "pirated_arrivals": "Kaprede ankomster",
+    "port": "Havn",
+    "routes_active": "Aktive ruter",
+    "routes_contested": "Omstridte ruter",
+    "routes_escorted": "Eskorterede ruter",
+    "ships_captured": "Kaprede skibe",
+    "ships_lost": "Tabte skibe",
+    "title": "Handel",
+    "top_ports": "Vigtigste modtagerhavne"
   }
 }

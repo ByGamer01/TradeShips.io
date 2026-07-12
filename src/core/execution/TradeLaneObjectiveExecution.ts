@@ -61,6 +61,14 @@ export class TradeLaneObjectiveExecution implements Execution {
     this.wirePath = path.filter(
       (_, i) => i % WIRE_PATH_STRIDE === 0 || i === path.length - 1,
     );
+
+    const lane = this.lane;
+    mg.setMaritimeZone({
+      center: () => this.center,
+      contains: (tile) => lane.membership[tile] === 1,
+      // Spine tiles are open water by construction.
+      randomPatrolTile: (rand) => rand.randElement(lane.path),
+    });
   }
 
   tick(ticks: number): void {

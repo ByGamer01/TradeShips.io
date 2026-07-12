@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { findTradeLane } from "../../../src/core/game/TradeLaneFinder";
+import {
+  findOpenWaterAnchor,
+  findTradeLane,
+} from "../../../src/core/game/TradeLaneFinder";
 import { setup } from "../../util/Setup";
 
 describe("findTradeLane", () => {
@@ -73,9 +76,52 @@ describe("findTradeLane", () => {
     }
   });
 
+  it("trims the corridor to a compact stretch around its center", async () => {
+    const game = await setup("world");
+
+    const lane = findTradeLane(game, game.miniMap())!;
+
+    // 25% of min(2000, 1000) = 250 full-map tiles → ≤125 mini spine points.
+    expect(lane.path.length).toBeLessThanOrEqual(126);
+  });
+
   it("returns null on a map without enough water", async () => {
     const game = await setup("plains");
 
     expect(findTradeLane(game, game.miniMap())).toBeNull();
+  });
+});
+
+describe("findOpenWaterAnchor", () => {
+  it("anchors in open water of the main water body, off the map edge", async () => {
+    const game = await setup("world");
+
+    const anchor = findOpenWaterAnchor(game, game.miniMap());
+
+    expect(anchor).not.toBeNull();
+    expect(game.isWater(anchor!)).toBe(true);
+    const x = anchor! % game.width();
+    const y = (anchor! - x) / game.width();
+    const distToEdge = Math.min(
+      x,
+      y,
+      game.width() - 1 - x,
+      game.height() - 1 - y,
+    );
+    expect(distToEdge).toBeGreaterThan(20);
+  });
+
+  it("is deterministic", async () => {
+    const game = await setup("half_land_half_ocean");
+
+    expect(findOpenWaterAnchor(game, game.miniMap())).toBe(
+      findOpenWaterAnchor(game, game.miniMap()),
+    );
+  });
+
+  it("returns null without water", async () => {
+    const game = await setup("plains");
+
+    expect(findOpenWaterAnchor(game, game.miniMap())).toBeNull();
   });
 });

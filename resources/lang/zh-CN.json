@@ -29,7 +29,7 @@
     "map_default": "地图默认值"
   },
   "main": {
-    "title": "OpenFront (内测版)",
+    "title": "TradeShips (内测版)",
     "login_discord": "用 Discord 登录",
     "sign_in": "登录",
     "discord_avatar_alt": "Discord 头像",
@@ -41,7 +41,7 @@
     "wiki": "游戏百科",
     "privacy_policy": "隐私政策",
     "terms_of_service": "服务条款",
-    "copyright": "© OpenFront™ 和贡献者们",
+    "copyright": "© TradeShips™ 和贡献者们",
     "play": "游戏",
     "news": "公告",
     "store": "商店",
@@ -67,7 +67,7 @@
     "copied_to_clipboard": "信息已复制到剪贴板！如果你需要帮助，可以随时在我们的Discord上分享它。",
     "os": "操作系统",
     "device_pixel_ratio": "设备像素比",
-    "chromium_tip": "OpenFront 在基于 Chromium 的浏览器上运行最佳。",
+    "chromium_tip": "TradeShips 在基于 Chromium 的浏览器上运行最佳。",
     "hardware_acceleration_tip": "确保在您的浏览器设置中启用硬件加速以实现最佳性能。",
     "renderer": "渲染器",
     "max_texture_size": "最大纹理尺寸",
@@ -87,7 +87,7 @@
   },
   "help_modal": {
     "video_tutorial": "视频教程",
-    "video_tutorial_title": "OpenFront.io 教程",
+    "video_tutorial_title": "TradeShips.io 教程",
     "hotkeys": "快捷键",
     "table_key": "键",
     "table_action": "动作",
@@ -177,7 +177,7 @@
     "build_mirv": "MIRV",
     "build_mirv_desc": "游戏中最强大的导弹。会分裂成多个小型导弹，覆盖大范围区域。只会对你最初点击发射时所选的玩家造成伤害。从最近的导弹发射井发射，并落在你最初点击发射的位置。",
     "player_icons": "玩家图标",
-    "troubleshooting_desc": "如果您在游玩 OpenFront 时遇到性能问题、崩溃或其他问题，请访问我们的故障排除页面以帮助诊断和修复常见问题：",
+    "troubleshooting_desc": "如果您在游玩 TradeShips 时遇到性能问题、崩溃或其他问题，请访问我们的故障排除页面以帮助诊断和修复常见问题：",
     "icon_desc": "您将遇到的一些游戏内图标及其含义的示例：",
     "icon_crown": "皇冠 - 榜一玩家。这是排行榜上第一名的玩家。",
     "icon_traitor": "破损的盾牌 - 叛徒。该玩家攻击了盟友。",
@@ -189,7 +189,13 @@
     "bomb_direction": "原子弹 / 氢弹抛物线方向",
     "icon_alt_player_leaderboard": "玩家排行榜图标",
     "icon_alt_team_leaderboard": "团队排行榜图标",
-    "game_id_tooltip": "游戏 ID"
+    "game_id_tooltip": "游戏 ID",
+    "maritime_contested": "当敌对舰队在最强海军力量上持平时，该区域进入争夺状态，进度冻结。更强的对手会先将持有者的控制度削减到0%，然后夺取该区域。",
+    "maritime_desc": "在海洋地图上，控制中央海上航线即可获胜。将最强的海军力量保持在标记区域内以提升控制度：首个保持100%的舰队赢得游戏。",
+    "maritime_ffa": "自由混战：目标是穿过地图中央开阔水域的贸易走廊，以旗帜和发光航道标记。只有走廊内的舰船才计入。",
+    "maritime_power": "海军力量：航空母舰计6分；军舰、潜艇和防空护卫舰计3分；运输船、商船和飞机计1分。",
+    "maritime_team": "团队模式：目标是公海上的圆形区域，以圆环和旗帜标记。全队的舰队合并计算。",
+    "maritime_title": "目标：海上航线"
   },
   "single_modal": {
     "random_spawn": "随机出生点",
@@ -491,7 +497,8 @@
   "game_starting_modal": {
     "title": "游戏正在启动...",
     "credits": "鸣谢",
-    "code_license": "代码采用 AGPL-3.0 许可证授权（无担保）"
+    "code_license": "代码采用 AGPL-3.0 许可证授权（无担保）",
+    "based_on": "基于 OpenFront"
   },
   "difficulty": {
     "difficulty": "国家难度",
@@ -548,7 +555,14 @@
     "atom_bomb": "原子弹",
     "hydrogen_bomb": "氢弹",
     "mirv": "MIRV",
-    "factory": "工厂"
+    "factory": "工厂",
+    "aircraft": "飞机",
+    "aircraft_carrier": "航空母舰",
+    "anti_air_frigate": "防空护卫舰",
+    "congress": "国会",
+    "naval_mine": "水雷",
+    "submarine": "潜艇",
+    "torpedo": "鱼雷"
   },
   "user_setting": {
     "title": "设置",
@@ -669,7 +683,17 @@
     "sound_effects_volume": "音效音量",
     "keybind_conflict_error": "按键 {key} 已经绑定到另一动作上了。",
     "structure_sprites_label": "建筑贴图",
-    "structure_sprites_desc": "切换建筑贴图"
+    "structure_sprites_desc": "切换建筑贴图",
+    "build_aircraft_carrier": "建造航空母舰",
+    "build_aircraft_carrier_desc": "在光标下建造一艘航空母舰。",
+    "build_anti_air_frigate": "建造防空护卫舰",
+    "build_anti_air_frigate_desc": "在光标下建造一艘防空护卫舰。",
+    "build_congress": "建造国会",
+    "build_congress_desc": "在光标下建造一座国会。",
+    "build_naval_mine": "布设水雷",
+    "build_naval_mine_desc": "在光标下布设一枚水雷。",
+    "build_submarine": "建造潜艇",
+    "build_submarine_desc": "在光标下建造一艘潜艇。"
   },
   "chat": {
     "title": "快捷聊天",
@@ -771,13 +795,18 @@
       "port": "发送商船来获得黄金",
       "defense_post": "增加附近边界的防御力",
       "city": "增加最大人口",
-      "factory": "创建铁轨并生成火车"
+      "factory": "创建铁轨并生成火车",
+      "aircraft_carrier": "远程空中打击平台",
+      "anti_air_frigate": "以短程防空护航舰队",
+      "congress": "解锁针对敌方贸易的关税",
+      "naval_mine": "一次性水雷",
+      "submarine": "隐形鱼雷袭击舰"
     },
     "warship_shift_hint": "按住 Shift 并拖动以一次性选择多艘军舰",
     "not_enough_money": "金钱不足"
   },
   "win_modal": {
-    "support_openfront": "支持 OpenFront！",
+    "support_openfront": "支持 TradeShips！",
     "territory_pattern": "购买皮肤即可去除广告！",
     "died": "你已经死了",
     "your_team": "你的队伍获胜了！",
@@ -807,7 +836,8 @@
     "cities": "城市",
     "show_control": "显示面板",
     "show_units": "显示单位",
-    "hide": "隐藏"
+    "hide": "隐藏",
+    "control": "控制度"
   },
   "events_display": {
     "retreating": "正在撤退",
@@ -850,7 +880,10 @@
     "unit_destroyed": "你的 {unit} 已被摧毁",
     "no_boats_available": "无可用船，最多 {max} 个",
     "events": "事件",
-    "received_gold_from_trade": "与 {name} 贸易获得了 {gold} 黄金"
+    "received_gold_from_trade": "与 {name} 贸易获得了 {gold} 黄金",
+    "economic_mission_started": "全球贸易繁荣！{count, plural, one {#个贸易国获得了} other {#个贸易国获得了}}黄金奖励",
+    "tariff_imposed": "你对{name}的贸易征收了关税",
+    "tariff_imposed_on_you": "{name}对你的贸易征收了关税！"
   },
   "player_type": {
     "player": "玩家",
@@ -891,7 +924,9 @@
     "kick_confirm": "要踢掉 {name} 吗？\n\n他无法再重新加入此游戏。",
     "arc_up": "向上的弧",
     "arc_down": "向下的弧",
-    "flip_rocket_trajectory": "翻转火箭轨道"
+    "flip_rocket_trajectory": "翻转火箭轨道",
+    "tariff": "关税",
+    "tariff_tooltip": "花费{cost}黄金对该玩家的贸易征收关税"
   },
   "kick_reason": {
     "duplicate_session": "已被踢出游戏（也可能你正在另一个标签页上玩游戏）",
@@ -1005,7 +1040,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "删除单位",
-    "delete_unit_description": "点击删除最近的单位"
+    "delete_unit_description": "点击删除最近的单位",
+    "specialize_description": "选择该港口的专精：贸易枢纽、海军基地或港口瞭望",
+    "specialize_title": "港口专精"
   },
   "discord_user_header": {
     "avatar_alt": "头像"
@@ -1092,12 +1129,12 @@
     "firefox_warning": "Openfront.io 在 [基于 Firefox 的浏览器](https://simple.wikipedia.org/wiki/Web_browsers_based_on_Firefox) 上表现不佳。我们推荐你使用 [基于 Chromium 的浏览器](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium) 来获得最佳性能体验。"
   },
   "ios_banner": {
-    "text": "将 OpenFront 添加到主屏幕，获得全屏体验",
+    "text": "将 TradeShips 添加到主屏幕，获得全屏体验",
     "how": "如何操作",
     "later": "稍后",
     "never": "从不",
     "modal_title": "在 iOS 上全屏使用",
-    "modal_desc": "您的浏览器不支持全屏，但您可以将 OpenFront 添加到您的主屏幕以获得沉浸体验：",
+    "modal_desc": "您的浏览器不支持全屏，但您可以将 TradeShips 添加到您的主屏幕以获得沉浸体验：",
     "step_share": "点击浏览器中的“分享”按钮",
     "step_scroll_and_tap": "向下滚动并点击",
     "step_add_to_home_label": "添加到主屏幕",
@@ -1107,5 +1144,36 @@
   "fullscreen": {
     "enter": "进入全屏",
     "exit": "退出全屏"
+  },
+  "maritime_objective": {
+    "capturing": "占领中",
+    "contested": "争夺中",
+    "controlled": "已控制",
+    "hint": "控制中央海上航线以获胜",
+    "neutral": "中立"
+  },
+  "trade_routes": {
+    "contested": "争夺中",
+    "danger": "危险",
+    "escorts": "护航",
+    "risk": "风险",
+    "routes": "航线",
+    "summary_title": "活跃商船航线、争夺中的海上航道和海军护航",
+    "value": "价值"
+  },
+  "trade_stats": {
+    "arrivals": "到港",
+    "captures_by_me": "我俘获的",
+    "gold_earned": "赚取的黄金",
+    "gold_in_transit": "海上的黄金",
+    "pirated_arrivals": "遭劫掠的到港",
+    "port": "港口",
+    "routes_active": "活跃航线",
+    "routes_contested": "争夺中的航线",
+    "routes_escorted": "受护航的航线",
+    "ships_captured": "俘获的船只",
+    "ships_lost": "损失的船只",
+    "title": "贸易",
+    "top_ports": "主要接收港口"
   }
 }

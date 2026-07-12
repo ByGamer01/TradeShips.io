@@ -9,7 +9,7 @@
     "close": "Zapri"
   },
   "main": {
-    "title": "OpenFront (Alfa)",
+    "title": "TradeShips (Alfa)",
     "join_discord": "Pridruži se našemu Discord serverju!",
     "login_discord": "Prijava z Discord računom",
     "checking_login": "Preverjanje prijave...",
@@ -119,7 +119,13 @@
     "icon_embargo": "Znak stop za dolar - Embargo. Ta igralec je samodejno ali ročno prenehal trgovati z vami.",
     "icon_request": "Ovojnica - Zahteva za zavezništvo. Ta igralec vam je poslal zahtevo za zavezništvo.",
     "info_enemy_panel": "Informacijska plošča o sovražniku",
-    "exit_confirmation": "Ste prepričani, da želite zapustiti igro?"
+    "exit_confirmation": "Ste prepričani, da želite zapustiti igro?",
+    "maritime_contested": "Ko so tekmece flote izenačene kot najmočnejša pomorska sila, je cona sporna in napredek zamrzne. Močnejši tekmec zniža nadzor imetnika na 0 %, preden jo zavzame.",
+    "maritime_desc": "Na pomorskih zemljevidih zmaga tisti, ki nadzoruje osrednjo morsko pot. Ohranjaj najmočnejšo pomorsko silo znotraj označene cone, da povečuješ nadzor: prva flota, ki zadrži 100 %, zmaga.",
+    "maritime_ffa": "Vsak zase: cilj je trgovski koridor skozi osrednje odprte vode zemljevida, označen z zastavo in svetlečim pasom. Štejejo samo ladje znotraj koridorja.",
+    "maritime_power": "Pomorska sila: letalonosilke štejejo 6; vojne ladje, podmornice in protiletalske fregate štejejo 3; transporti, trgovske ladje in letala štejejo 1.",
+    "maritime_team": "Ekipne igre: cilj je krožna cona na odprtem morju, označena z obročem in zastavo. Flota celotne tvoje ekipe se sešteva.",
+    "maritime_title": "Cilj: morska pot"
   },
   "single_modal": {
     "title": "En igralec",
@@ -249,7 +255,8 @@
   },
   "game_starting_modal": {
     "title": "Igra se začenja...",
-    "desc": "Priprava na začetek sobe. Prosimo, počakajte."
+    "desc": "Priprava na začetek sobe. Prosimo, počakajte.",
+    "based_on": "Temelji na OpenFront"
   },
   "difficulty": {
     "difficulty": "Težavnost",
@@ -275,7 +282,14 @@
     "atom_bomb": "Atomska bomba",
     "hydrogen_bomb": "Vodikova bomba",
     "mirv": "MIRV",
-    "factory": "Tovarna"
+    "factory": "Tovarna",
+    "aircraft": "Letalo",
+    "aircraft_carrier": "Letalonosilka",
+    "anti_air_frigate": "Protiletalska fregata",
+    "congress": "Kongres",
+    "naval_mine": "Pomorska mina",
+    "submarine": "Podmornica",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "title": "Uporabniške nastavitve",
@@ -360,7 +374,17 @@
     "terrain_enabled": "Terenski pogled vklopljen",
     "terrain_disabled": "Terenski pogled izklopljen",
     "exit_game_label": "Zapri Igro",
-    "exit_game_info": "Vrnitev na glavni meni"
+    "exit_game_info": "Vrnitev na glavni meni",
+    "build_aircraft_carrier": "Zgradi letalonosilko",
+    "build_aircraft_carrier_desc": "Zgradi letalonosilko pod kazalcem.",
+    "build_anti_air_frigate": "Zgradi protiletalsko fregato",
+    "build_anti_air_frigate_desc": "Zgradi protiletalsko fregato pod kazalcem.",
+    "build_congress": "Zgradi Kongres",
+    "build_congress_desc": "Zgradi Kongres pod kazalcem.",
+    "build_naval_mine": "Postavi pomorsko mino",
+    "build_naval_mine_desc": "Postavi pomorsko mino pod kazalcem.",
+    "build_submarine": "Zgradi podmornico",
+    "build_submarine_desc": "Zgradi podmornico pod kazalcem."
   },
   "chat": {
     "title": "Hitri klepet",
@@ -461,12 +485,17 @@
       "port": "Pošilja trgovske ladje za pridobivanje zlata",
       "defense_post": "Poveča obrambo bližnjih meja",
       "city": "Poveča največjo populacijo",
-      "factory": "Ustvarja železnice in ustvarja vlake"
+      "factory": "Ustvarja železnice in ustvarja vlake",
+      "aircraft_carrier": "Platforma za letalske napade dolgega dosega",
+      "anti_air_frigate": "Spremlja flote s protiletalsko obrambo kratkega dosega",
+      "congress": "Odklene carine proti sovražni trgovini",
+      "naval_mine": "Pomorska mina za enkratno uporabo",
+      "submarine": "Prikriti torpedni napadalec"
     },
     "not_enough_money": "Ni dovolj denarja"
   },
   "win_modal": {
-    "support_openfront": "Podprite OpenFront!",
+    "support_openfront": "Podprite TradeShips!",
     "territory_pattern": "Kupite vzorec teritorija, da podprete OpenFront!",
     "died": "Umrl si",
     "your_team": "Vaša ekipa je zmagala!",
@@ -491,7 +520,8 @@
     "warships": "Bojne ladje",
     "cities": "Mesta",
     "show_control": "Pokaži kontrole",
-    "show_units": "Pokaži enote"
+    "show_units": "Pokaži enote",
+    "control": "Nadzor"
   },
   "player_info_overlay": {
     "type": "Tip",
@@ -534,7 +564,10 @@
     "reject_alliance": "Zavrni",
     "alliance_renewed": "Vaše zavezništvo z {name} je bilo obnovljeno",
     "ignore": "Prezri",
-    "unit_voluntarily_deleted": "Enota je bila prostovoljno odstranjena"
+    "unit_voluntarily_deleted": "Enota je bila prostovoljno odstranjena",
+    "economic_mission_started": "Svetovni trgovinski razcvet! {count, plural, one {# trgovska država je prejela} other {# trgovskih držav je prejelo}} zlati bonus",
+    "tariff_imposed": "Uvedel si carino na trgovino igralca {name}",
+    "tariff_imposed_on_you": "{name} je uvedel carino na tvojo trgovino!"
   },
   "unit_info_modal": {
     "structure_info": "Informacije o strukturi",
@@ -571,7 +604,9 @@
     "no": "Ne",
     "none": "Noben",
     "alliances": "Zavezništva",
-    "flag": "Zastava"
+    "flag": "Zastava",
+    "tariff": "Carina",
+    "tariff_tooltip": "Uvedi carino na trgovino tega igralca za {cost} zlata"
   },
   "replay_panel": {
     "replay_speed": "Hitrost ponovnega predvajanja",
@@ -649,7 +684,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Pobriši enoto",
-    "delete_unit_description": "Pritisni za odstranitev najbližjih enot"
+    "delete_unit_description": "Pritisni za odstranitev najbližjih enot",
+    "specialize_description": "Izberi specializacijo tega pristanišča: trgovsko vozlišče, mornariška baza ali pristaniška straža",
+    "specialize_title": "Specializiraj pristanišče"
   },
   "discord_user_header": {
     "avatar_alt": "Avatar"
@@ -708,5 +745,36 @@
     "map": "Mapa",
     "difficulty": "Težavnost",
     "type": "Tip"
+  },
+  "maritime_objective": {
+    "capturing": "Zavzemanje",
+    "contested": "Sporna",
+    "controlled": "Pod nadzorom",
+    "hint": "Nadzoruj osrednjo morsko pot za zmago",
+    "neutral": "Nevtralna"
+  },
+  "trade_routes": {
+    "contested": "Sporna",
+    "danger": "Nevarnost",
+    "escorts": "Spremstva",
+    "risk": "Tveganje",
+    "routes": "Poti",
+    "summary_title": "Aktivne trgovske poti, sporne morske poti in mornariška spremstva",
+    "value": "Vrednost"
+  },
+  "trade_stats": {
+    "arrivals": "Prihodi",
+    "captures_by_me": "Zajel jaz",
+    "gold_earned": "Zasluženo zlato",
+    "gold_in_transit": "Zlato na morju",
+    "pirated_arrivals": "Piratski prihodi",
+    "port": "Pristanišče",
+    "routes_active": "Aktivne poti",
+    "routes_contested": "Sporne poti",
+    "routes_escorted": "Spremljane poti",
+    "ships_captured": "Zajete ladje",
+    "ships_lost": "Izgubljene ladje",
+    "title": "Trgovina",
+    "top_ports": "Glavna namembna pristanišča"
   }
 }

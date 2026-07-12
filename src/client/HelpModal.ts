@@ -122,6 +122,74 @@ export class HelpModal extends BaseModal {
             </div>
           </section>
 
+          <!-- Sea Route Objective Section -->
+          <section class="mb-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="text-blue-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="6" y1="3" x2="6" y2="21"></line>
+                  <path d="M6 4 L18 7 L6 10"></path>
+                </svg>
+              </div>
+              <h3
+                class="text-xl font-bold uppercase tracking-widest text-white/90"
+              >
+                ${translateText("help_modal.maritime_title")}
+              </h3>
+              <div
+                class="flex-1 h-px bg-gradient-to-r from-blue-500/50 to-transparent"
+              ></div>
+            </div>
+
+            <div
+              class="bg-black/20 rounded-xl border border-white/10 p-6 hover:bg-white/5 transition-colors"
+            >
+              <p class="mb-4 leading-relaxed text-white/70 text-sm">
+                ${translateText("help_modal.maritime_desc")}
+              </p>
+              <ul class="space-y-3 text-white/70 text-sm">
+                <li class="flex items-center gap-3">
+                  <img
+                    src=${assetUrl("images/BoatIconWhite.svg")}
+                    class="w-8 h-8 scale-75 origin-left"
+                  />
+                  <span>${translateText("help_modal.maritime_ffa")}</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <img
+                    src=${assetUrl("images/AllianceIconWhite.svg")}
+                    class="w-8 h-8 scale-75 origin-left"
+                  />
+                  <span>${translateText("help_modal.maritime_team")}</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <img
+                    src=${assetUrl("images/BattleshipIconWhite.svg")}
+                    class="w-8 h-8 scale-75 origin-left"
+                  />
+                  <span>${translateText("help_modal.maritime_power")}</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <img
+                    src=${assetUrl("images/AircraftCarrierIconWhite.svg")}
+                    class="w-8 h-8 scale-75 origin-left"
+                  />
+                  <span>${translateText("help_modal.maritime_contested")}</span>
+                </li>
+              </ul>
+            </div>
+          </section>
+
           <!-- Troubleshooting Section -->
           <div class="flex items-center gap-3 mb-3">
             <div class="text-blue-400">

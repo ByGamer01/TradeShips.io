@@ -1,6 +1,7 @@
 import { Config } from "../configuration/Config";
 import { AbstractGraph } from "../pathfinding/algorithms/AbstractGraph";
 import { PathFinder } from "../pathfinding/types";
+import { PseudoRandom } from "../PseudoRandom";
 import { AllPlayersStats, ClientID } from "../Schemas";
 import { formatPlayerDisplayName } from "../Util";
 import { GameMap, TileRef } from "./GameMap";
@@ -885,6 +886,22 @@ export interface Game extends GameMap {
 
   /** Queue a land tile for conversion to water (batched every few ticks). Tile must be unowned. */
   queueWaterConversion(tile: TileRef): void;
+
+  /**
+   * Maritime objective zone (TradeShips), registered by the objective
+   * execution at init. `null` until an objective exists (non-maritime maps).
+   * Lets AI behaviors contest the zone without reaching into the execution.
+   */
+  maritimeZone(): MaritimeZone | null;
+  setMaritimeZone(zone: MaritimeZone): void;
+}
+
+/** Queryable view of the maritime objective area (circle or trade lane). */
+export interface MaritimeZone {
+  center(): TileRef;
+  contains(tile: TileRef): boolean;
+  /** Deterministic water tile inside the zone, suitable as a patrol target. */
+  randomPatrolTile(rand: PseudoRandom): TileRef;
 }
 
 export interface PlayerActions {

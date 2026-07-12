@@ -29,6 +29,11 @@ const OPEN_WATER_MAGNITUDE = 10;
 // endpoints prefer interior tiles, so the route threads between the islands.
 const EDGE_MARGIN_PERCENT = 10;
 const MAX_EDGE_MARGIN = 24;
+// The corridor is a compact stretch around its flag, not a map-spanning
+// highway: the spine is trimmed to this % of the map's smaller dimension
+// (never below a few widths so it still reads as a route).
+const TARGET_LENGTH_PERCENT = 25;
+const MIN_LENGTH_WIDTHS = 6;
 
 function edgeMargin(miniMap: GameMap): number {
   const minDim = Math.min(miniMap.width(), miniMap.height());
@@ -64,45 +69,179 @@ export function findTradeLane(
   const component = largestWaterComponent(miniMap);
   if (component === null) return null;
 
-  // Double-BFS diameter approximation inside the component: farthest tile
-  // from the deterministic seed, then farthest tile from that endpoint.
-  // Interior tiles are preferred so endpoints don't sit in map corners.
+  // The corridor grows outward from the open-water anchor (the map's most
+  // open central sea): both endpoints are the farthest water tiles within
+  // half the target length of the anchor. This keeps the route threading
+  // the central waters instead of circling the islands along the cheap
+  // open ocean at the map rim.
+  const anchor = openWaterAnchorMini(miniMap, component);
+  if (anchor === null) return null;
+
   const margin = edgeMargin(miniMap);
-  const endA = bfsFarthest(
-    miniMap,
-    component.cc,
-    component.id,
-    component.seed,
-    margin,
-  );
-  const endB = bfsFarthest(
-    miniMap,
-    component.cc,
-    component.id,
-    endA.tile,
-    margin,
-  );
+  const capMini = (targetMiniLength(map, halfWidth) / 2) | 0;
+  const fromAnchor = bfsDistances(miniMap, component, anchor);
+  const endA = farthestEligible(miniMap, fromAnchor, fromAnchor, capMini, margin);
+  if (endA === null) return null;
+  const fromA = bfsDistances(miniMap, component, endA);
+  const endB = farthestEligible(miniMap, fromA, fromAnchor, capMini, margin);
+  if (endB === null) return null;
 
   // Degenerate corridor: shorter than its own width once scaled to full map.
-  if (endB.dist * 2 < halfWidth * 2) return null;
+  if (fromA[endB] * 2 < halfWidth * 2) return null;
 
   const miniPath = openWaterPath(
     miniMap,
     component.cc,
     component.id,
-    endA.tile,
-    endB.tile,
+    endA,
+    endB,
     margin,
   );
   if (miniPath === null) return null;
 
-  return buildLane(map, miniMap, miniPath, halfWidth);
+  return buildLane(
+    map,
+    miniMap,
+    trimToCenter(miniPath, map, halfWidth),
+    halfWidth,
+  );
+}
+
+/** Corridor target length in minimap tiles (half full-map resolution). */
+function targetMiniLength(map: GameMap, halfWidth: number): number {
+  const maxFullLength = Math.max(
+    halfWidth * MIN_LENGTH_WIDTHS,
+    ((Math.min(map.width(), map.height()) * TARGET_LENGTH_PERCENT) / 100) | 0,
+  );
+  return (maxFullLength / 2) | 0;
+}
+
+/**
+ * Farthest tile by `rank` distance among tiles within `cap` of the anchor,
+ * preferring tiles at least `margin` from the map edge (any tile within the
+ * cap as fallback). Deterministic: strict-improvement scan in tile order.
+ */
+function farthestEligible(
+  miniMap: GameMap,
+  rank: Int32Array,
+  fromAnchor: Int32Array,
+  cap: number,
+  margin: number,
+): TileRef | null {
+  const width = miniMap.width();
+  const height = miniMap.height();
+  let best = -1;
+  let bestRank = -1;
+  let fallback = -1;
+  let fallbackRank = -1;
+  for (let tile = 0; tile < rank.length; tile++) {
+    if (rank[tile] === -1 || fromAnchor[tile] === -1 || fromAnchor[tile] > cap) {
+      continue;
+    }
+    if (rank[tile] > fallbackRank) {
+      fallbackRank = rank[tile];
+      fallback = tile;
+    }
+    const x = tile % width;
+    const y = (tile - x) / width;
+    const distToEdge = Math.min(x, y, width - 1 - x, height - 1 - y);
+    if (distToEdge >= margin && rank[tile] > bestRank) {
+      bestRank = rank[tile];
+      best = tile;
+    }
+  }
+  const chosen = best !== -1 ? best : fallback;
+  return chosen === -1 ? null : (chosen as TileRef);
+}
+
+/**
+ * Keep only the middle stretch of the spine so the objective is a compact
+ * capture zone around the flag rather than a map-spanning highway. The full
+ * path is still what anchors the corridor in the most open central water.
+ */
+function trimToCenter(
+  miniPath: TileRef[],
+  map: GameMap,
+  halfWidth: number,
+): TileRef[] {
+  const maxMiniLength = targetMiniLength(map, halfWidth);
+  if (miniPath.length <= maxMiniLength) return miniPath;
+
+  const mid = (miniPath.length / 2) | 0;
+  const start = Math.max(0, mid - ((maxMiniLength / 2) | 0));
+  return miniPath.slice(start, start + maxMiniLength);
+}
+
+/**
+ * Most open water tile of the map's largest water body, preferring tiles
+ * near the map center. Used to anchor the Team-mode circular objective so
+ * it never lands in a tiny inland bay next to the geometric map center.
+ * Deterministic: strict improvement scan in tile order.
+ */
+export function findOpenWaterAnchor(
+  map: GameMap,
+  miniMap: GameMap,
+): TileRef | null {
+  const component = largestWaterComponent(miniMap);
+  if (component === null) return null;
+
+  const best = openWaterAnchorMini(miniMap, component);
+  if (best === null) return null;
+
+  const miniX = best % miniMap.width();
+  const miniY = (best - miniX) / miniMap.width();
+  for (let dy = 0; dy < 2; dy++) {
+    for (let dx = 0; dx < 2; dx++) {
+      const x = miniX * 2 + dx;
+      const y = miniY * 2 + dy;
+      if (!map.isValidCoord(x, y)) continue;
+      const tile = map.ref(x, y);
+      if (map.isWater(tile)) return tile;
+    }
+  }
+  return null;
+}
+
+/** Minimap tile of the open-water anchor; see findOpenWaterAnchor. */
+function openWaterAnchorMini(
+  miniMap: GameMap,
+  component: LargestComponent,
+): TileRef | null {
+  const width = miniMap.width();
+  const height = miniMap.height();
+  const centerX = (width / 2) | 0;
+  const centerY = (height / 2) | 0;
+
+  let best = -1;
+  let bestOpenness = -1;
+  let bestDist = 0;
+  const numTiles = width * height;
+  for (let tile = 0; tile < numTiles; tile++) {
+    if (component.cc.getComponentId(tile as TileRef) !== component.id) {
+      continue;
+    }
+    const x = tile % width;
+    const y = (tile - x) / width;
+    const distToEdge = Math.min(x, y, width - 1 - x, height - 1 - y);
+    // Map-edge water is "open" by magnitude but visually the map frame;
+    // capping by edge distance keeps the anchor in real open sea.
+    const openness = Math.min(miniMap.magnitude(tile as TileRef), distToEdge);
+    const dist = Math.abs(x - centerX) + Math.abs(y - centerY);
+    if (
+      openness > bestOpenness ||
+      (openness === bestOpenness && dist < bestDist)
+    ) {
+      best = tile;
+      bestOpenness = openness;
+      bestDist = dist;
+    }
+  }
+  return best === -1 ? null : (best as TileRef);
 }
 
 interface LargestComponent {
   cc: ConnectedComponents;
   id: number;
-  seed: TileRef;
 }
 
 function largestWaterComponent(miniMap: GameMap): LargestComponent | null {
@@ -111,17 +250,10 @@ function largestWaterComponent(miniMap: GameMap): LargestComponent | null {
 
   const numTiles = miniMap.width() * miniMap.height();
   const sizes = new Map<number, number>();
-  const seeds = new Map<number, TileRef>();
   for (let tile = 0; tile < numTiles; tile++) {
     const id = cc.getComponentId(tile as TileRef);
     if (id === 0 || id === LAND_MARKER) continue;
-    const size = sizes.get(id);
-    if (size === undefined) {
-      sizes.set(id, 1);
-      seeds.set(id, tile as TileRef);
-    } else {
-      sizes.set(id, size + 1);
-    }
+    sizes.set(id, (sizes.get(id) ?? 0) + 1);
   }
 
   let bestId = 0;
@@ -136,26 +268,22 @@ function largestWaterComponent(miniMap: GameMap): LargestComponent | null {
   if (bestId === 0 || bestSize * 100 < numTiles * MIN_COMPONENT_PERCENT) {
     return null;
   }
-  return { cc, id: bestId, seed: seeds.get(bestId)! };
+  return { cc, id: bestId };
 }
 
 /**
- * Plain FIFO BFS restricted to one water component. Returns the farthest
- * tile (first encountered at the max distance, which is deterministic given
- * the fixed queue order) and its distance. Tiles at least `margin` from the
- * map edge are preferred; the true farthest tile is the fallback for
- * components that live entirely along the border.
+ * Plain FIFO BFS over one water component. Returns per-tile distances from
+ * `start` (-1 = unreached), deterministic given the fixed neighbor order.
  */
-function bfsFarthest(
+function bfsDistances(
   miniMap: GameMap,
-  cc: ConnectedComponents,
-  componentId: number,
+  component: LargestComponent,
   start: TileRef,
-  margin: number,
-): { tile: TileRef; dist: number } {
+): Int32Array {
+  const cc = component.cc;
+  const componentId = component.id;
   const width = miniMap.width();
-  const height = miniMap.height();
-  const numTiles = width * height;
+  const numTiles = width * miniMap.height();
   const dist = new Int32Array(numTiles).fill(-1);
   const queue = new Int32Array(numTiles);
   let head = 0;
@@ -163,10 +291,6 @@ function bfsFarthest(
 
   dist[start] = 0;
   queue[tail++] = start;
-  let far = start;
-  let farDist = 0;
-  let interiorFar = -1;
-  let interiorFarDist = -1;
 
   while (head < tail) {
     const tile = queue[head++];
@@ -184,24 +308,10 @@ function bfsFarthest(
       }
       dist[n] = d;
       queue[tail++] = n;
-      if (d > farDist) {
-        farDist = d;
-        far = n as TileRef;
-      }
-      const nx = n % width;
-      const ny = (n - nx) / width;
-      const distToEdge = Math.min(nx, ny, width - 1 - nx, height - 1 - ny);
-      if (distToEdge >= margin && d > interiorFarDist) {
-        interiorFarDist = d;
-        interiorFar = n;
-      }
     }
   }
 
-  if (interiorFar !== -1) {
-    return { tile: interiorFar as TileRef, dist: interiorFarDist };
-  }
-  return { tile: far, dist: farDist };
+  return dist;
 }
 
 /**

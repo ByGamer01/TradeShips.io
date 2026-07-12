@@ -27,7 +27,7 @@
     "map_default": "Peta Default"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "login_discord": "Masuk dengan Discord",
     "sign_in": "Masuk",
     "discord_avatar_alt": "Avatar profil Discord",
@@ -39,7 +39,7 @@
     "wiki": "Wiki",
     "privacy_policy": "Kebijakan Privasi",
     "terms_of_service": "Ketentuan Layanan",
-    "copyright": "© OpenFront™ dan para kontributor",
+    "copyright": "© TradeShips™ dan para kontributor",
     "play": "Main",
     "news": "Berita",
     "store": "Toko",
@@ -65,7 +65,7 @@
     "copied_to_clipboard": "Informasinya sudah disalin ke clipboard! Silakan bagikan di Discord kami jika Anda membutuhkan bantuan.",
     "os": "OS",
     "device_pixel_ratio": "Rasio Piksel Perangkat",
-    "chromium_tip": "OpenFront berjalan paling baik pada browser berbasis Chromium.",
+    "chromium_tip": "TradeShips berjalan paling baik pada browser berbasis Chromium.",
     "hardware_acceleration_tip": "Pastikan akselerasi perangkat keras diaktifkan di pengaturan browser Anda untuk performa optimal.",
     "renderer": "Renderer",
     "max_texture_size": "Maks Ukuran Tekstur",
@@ -85,7 +85,7 @@
   },
   "help_modal": {
     "video_tutorial": "Video Panduan",
-    "video_tutorial_title": "Panduan OpenFront.io",
+    "video_tutorial_title": "Panduan TradeShips.io",
     "hotkeys": "Tombol pintas",
     "table_key": "Kunci",
     "table_action": "Tindakan",
@@ -169,7 +169,7 @@
     "build_mirv": "MIRV",
     "build_mirv_desc": "Bom paling kuat di dalam permainan. Akan terpecah menjadi bom-bom yang lebih kecil dan mencakup area wilayah yang sangat luas. Hanya memberikan kerusakan kepada pemain yang pertama kali kamu klik saat membangunnya.\nSenjata ini muncul dari Silo Rudal terdekat dan akan mendarat di area yang pertama kali kamu klik saat membangunnya.",
     "player_icons": "Ikon Pemain",
-    "troubleshooting_desc": "Jika Anda mengalami masalah performa, crash, atau masalah lain saat memainkan OpenFront, silakan kunjungi halaman Penyelesaian Masalah kami untuk mendapatkan bantuan dalam mendiagnosis dan memperbaiki masalah umum:",
+    "troubleshooting_desc": "Jika Anda mengalami masalah performa, crash, atau masalah lain saat memainkan TradeShips, silakan kunjungi halaman Penyelesaian Masalah kami untuk mendapatkan bantuan dalam mendiagnosis dan memperbaiki masalah umum:",
     "icon_desc": "Berikut beberapa ikon yang akan kamu temui di dalam permainan beserta artinya:",
     "icon_crown": "Mahkota – Peringkat 1. Pemain teratas di papan peringkat.",
     "icon_traitor": "Perisai Retak – Pengkhianat. Pemain ini menyerang sekutu.",
@@ -180,7 +180,13 @@
     "exit_confirmation": "Apakah yakin keluar dari game?",
     "bomb_direction": "Arah busur bom atom/hidrogen",
     "icon_alt_player_leaderboard": "Ikon Papan Peringkat Pemain",
-    "icon_alt_team_leaderboard": "Ikon Papan Peringkat Tim"
+    "icon_alt_team_leaderboard": "Ikon Papan Peringkat Tim",
+    "maritime_contested": "Saat armada saingan seri sebagai kekuatan laut terkuat, zona menjadi diperebutkan dan kemajuan membeku. Saingan yang lebih kuat menguras kendali pemegang hingga 0% sebelum merebutnya.",
+    "maritime_desc": "Di peta maritim, kemenangan diraih dengan menguasai jalur laut pusat. Pertahankan kekuatan laut terkuat di dalam zona yang ditandai untuk meningkatkan kendalimu: armada pertama yang mempertahankan 100% memenangkan permainan.",
+    "maritime_ffa": "Bebas untuk semua: tujuannya adalah koridor jalur dagang melalui perairan terbuka pusat peta, ditandai dengan bendera dan jalur bercahaya. Hanya kapal di dalam koridor yang dihitung.",
+    "maritime_power": "Kekuatan laut: kapal induk dihitung 6; kapal perang, kapal selam, dan fregat antiudara dihitung 3; kapal angkut, kapal dagang, dan pesawat dihitung 1.",
+    "maritime_team": "Permainan tim: tujuannya adalah zona melingkar di laut lepas, ditandai dengan cincin dan bendera. Armada seluruh timmu dijumlahkan.",
+    "maritime_title": "Tujuan: Jalur Laut"
   },
   "single_modal": {
     "random_spawn": "Kemunculan acak",
@@ -458,7 +464,8 @@
   "game_starting_modal": {
     "title": "Memulai Permainan...",
     "credits": "Kredit",
-    "code_license": "Kode berlisensi AGPL-3.0 (tanpa garansi)"
+    "code_license": "Kode berlisensi AGPL-3.0 (tanpa garansi)",
+    "based_on": "Berbasis OpenFront"
   },
   "difficulty": {
     "difficulty": "Kesulitan Negara",
@@ -503,7 +510,14 @@
     "atom_bomb": "Bom Atom",
     "hydrogen_bomb": "Bom Hidrogen",
     "mirv": "MIRV",
-    "factory": "Pabrik"
+    "factory": "Pabrik",
+    "aircraft": "Pesawat",
+    "aircraft_carrier": "Kapal Induk",
+    "anti_air_frigate": "Fregat Antiudara",
+    "congress": "Kongres",
+    "naval_mine": "Ranjau Laut",
+    "submarine": "Kapal Selam",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "title": "Pengaturan",
@@ -610,7 +624,17 @@
     "exit_game_info": "Kembali ke menu utama",
     "background_music_volume": "Volume latar belakang musik",
     "sound_effects_volume": "Volume Efek Suara",
-    "keybind_conflict_error": "Tombol {key} sudah terikat ke aksi lain."
+    "keybind_conflict_error": "Tombol {key} sudah terikat ke aksi lain.",
+    "build_aircraft_carrier": "Bangun Kapal Induk",
+    "build_aircraft_carrier_desc": "Membangun kapal induk di bawah kursormu.",
+    "build_anti_air_frigate": "Bangun Fregat Antiudara",
+    "build_anti_air_frigate_desc": "Membangun fregat antiudara di bawah kursormu.",
+    "build_congress": "Bangun Kongres",
+    "build_congress_desc": "Membangun Kongres di bawah kursormu.",
+    "build_naval_mine": "Pasang Ranjau Laut",
+    "build_naval_mine_desc": "Memasang ranjau laut di bawah kursormu.",
+    "build_submarine": "Bangun Kapal Selam",
+    "build_submarine_desc": "Membangun kapal selam di bawah kursormu."
   },
   "chat": {
     "title": "Obrolan Cepat",
@@ -712,12 +736,17 @@
       "port": "Mengirim kapal untuk mendapatkan emas",
       "defense_post": "Meningkatkan pertahanan perbatasan",
       "city": "Meningkatkan jumlah maksimal populasi",
-      "factory": "Membuat rel dan memunculkan kereta"
+      "factory": "Membuat rel dan memunculkan kereta",
+      "aircraft_carrier": "Platform serangan udara jarak jauh",
+      "anti_air_frigate": "Mengawal armada dengan pertahanan udara jarak pendek",
+      "congress": "Membuka tarif terhadap perdagangan musuh",
+      "naval_mine": "Ranjau laut sekali pakai",
+      "submarine": "Penyerang torpedo siluman"
     },
     "not_enough_money": "Uang tidak cukup"
   },
   "win_modal": {
-    "support_openfront": "Dukung OpenFront!",
+    "support_openfront": "Dukung TradeShips!",
     "territory_pattern": "Beli skin wilayah untuk bebas iklan!",
     "died": "Anda meninggal",
     "your_team": "Tim Anda menang!",
@@ -747,7 +776,8 @@
     "warships": "Kapal Perang",
     "cities": "Kota-Kota",
     "show_control": "Tampilkan Kontrol",
-    "show_units": "Tampilkan Unit"
+    "show_units": "Tampilkan Unit",
+    "control": "Kendali"
   },
   "events_display": {
     "events": "Acara",
@@ -789,7 +819,10 @@
     "unit_captured_by_enemy": "{unit} Anda ditangkap oleh {name}",
     "captured_enemy_unit": "Menangkap {unit} dari {name}",
     "unit_destroyed": "{unit} Anda dihancurkan",
-    "no_boats_available": "Tidak ada kapal yang tersedia, maksmial {max}"
+    "no_boats_available": "Tidak ada kapal yang tersedia, maksmial {max}",
+    "economic_mission_started": "Ledakan perdagangan global! {count, plural, one {# negara dagang menerima} other {# negara dagang menerima}} bonus emas",
+    "tariff_imposed": "Kamu mengenakan tarif pada perdagangan {name}",
+    "tariff_imposed_on_you": "{name} mengenakan tarif pada perdaganganmu!"
   },
   "player_type": {
     "player": "Pemain",
@@ -830,7 +863,9 @@
     "kick_confirm": "Keluarkan {name}?\n\nDia tidak dapat bergabung kembali dalam permainan ini.",
     "arc_up": "Lengkungan ke Atas",
     "arc_down": "Lengkungan ke Bawah",
-    "flip_rocket_trajectory": "Balikkan lintasan roket"
+    "flip_rocket_trajectory": "Balikkan lintasan roket",
+    "tariff": "Tarif",
+    "tariff_tooltip": "Kenakan tarif pada perdagangan pemain ini seharga {cost} emas"
   },
   "kick_reason": {
     "duplicate_session": "Dikeluarkan dari permainan (kamu mungkin bermain di tab yang lain)",
@@ -918,7 +953,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Hapus Unit",
-    "delete_unit_description": "Klik untuk menghapus unit terdekat"
+    "delete_unit_description": "Klik untuk menghapus unit terdekat",
+    "specialize_description": "Pilih spesialisasi pelabuhan ini: pusat dagang, pangkalan laut, atau penjaga pelabuhan",
+    "specialize_title": "Spesialisasi Pelabuhan"
   },
   "discord_user_header": {
     "avatar_alt": "Avatar"
@@ -992,5 +1029,36 @@
     "description": "(ALPHA)",
     "login_required": "Masuk untuk bermain peringkat!",
     "must_login": "Anda harus masuk untuk bermain di pertandingan 1v1 Ranked."
+  },
+  "maritime_objective": {
+    "capturing": "Sedang direbut",
+    "contested": "Diperebutkan",
+    "controlled": "Dikuasai",
+    "hint": "Kuasai jalur laut pusat untuk menang",
+    "neutral": "Netral"
+  },
+  "trade_routes": {
+    "contested": "Diperebutkan",
+    "danger": "Bahaya",
+    "escorts": "Pengawal",
+    "risk": "Risiko",
+    "routes": "Rute",
+    "summary_title": "Rute dagang aktif, jalur laut yang diperebutkan, dan pengawalan angkatan laut",
+    "value": "Nilai"
+  },
+  "trade_stats": {
+    "arrivals": "Kedatangan",
+    "captures_by_me": "Direbut olehku",
+    "gold_earned": "Emas diperoleh",
+    "gold_in_transit": "Emas di laut",
+    "pirated_arrivals": "Kedatangan dibajak",
+    "port": "Pelabuhan",
+    "routes_active": "Rute aktif",
+    "routes_contested": "Rute diperebutkan",
+    "routes_escorted": "Rute dikawal",
+    "ships_captured": "Kapal direbut",
+    "ships_lost": "Kapal hilang",
+    "title": "Perdagangan",
+    "top_ports": "Pelabuhan penerima teratas"
   }
 }

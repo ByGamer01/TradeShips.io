@@ -147,16 +147,24 @@ describe("MapPlaylist maritime map curation", () => {
 });
 
 describe("MapPlaylist public starting gold", () => {
-  test("every special maritime rotation draw is forced to 25M starting gold", async () => {
+  test("special rotation draws starting gold from the modifier pool, not a forced value", async () => {
     const playlist = new MapPlaylist();
+    const seen = new Set<number | undefined>();
 
     for (let i = 0; i < 40; i++) {
       const config = await playlist.gameConfig("special");
+      const gold = config.startingGold as number | undefined;
+      seen.add(gold);
 
-      expect(config.startingGold).toBe(25_000_000);
-      expect(config.publicGameModifiers?.startingGold).toBe(25_000_000);
-      expect(config.publicGameModifiers?.isHardNations).toBeFalsy();
-      expect(config.nations).toBe("disabled");
+      expect([undefined, 1_000_000, 5_000_000, 25_000_000]).toContain(gold);
+      expect(config.publicGameModifiers?.startingGold).toBe(gold);
+      // 25M keeps disabling nations (no PVP immunity for them).
+      if (gold !== undefined && gold >= 25_000_000) {
+        expect(config.nations).toBe("disabled");
+      }
     }
+
+    // Random pool: 40 draws must not all land on the same gold value.
+    expect(seen.size).toBeGreaterThan(1);
   }, 15_000);
 });

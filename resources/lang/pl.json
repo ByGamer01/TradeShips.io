@@ -20,7 +20,7 @@
     "none": "Brak"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "Dołącz do Discord'a!",
     "login_discord": "Zaloguj się przez Discorda",
     "checking_login": "Sprawdzanie logowania...",
@@ -131,7 +131,13 @@
     "icon_embargo": "Symbol przekreślonego dolara – Embargo. Ten gracz wstrzymał handel z Tobą, samemu lub przez system.",
     "icon_request": "Koperta – Prośba o sojusz. Ten gracz wysłał Ci prośbę o sojusz.",
     "info_enemy_panel": "Panel informacji o wrogu",
-    "exit_confirmation": "Czy na pewno chcesz wyjść z gry?"
+    "exit_confirmation": "Czy na pewno chcesz wyjść z gry?",
+    "maritime_contested": "Gdy rywalizujące floty remisują jako najsilniejsza potęga morska, strefa jest sporna, a postęp zamiera. Silniejszy rywal obniża kontrolę posiadacza do 0%, zanim ją przejmie.",
+    "maritime_desc": "Na mapach morskich wygrywa ten, kto kontroluje centralny szlak morski. Utrzymuj najsilniejszą flotę w oznaczonej strefie, aby zwiększać kontrolę: pierwsza flota, która utrzyma 100%, wygrywa grę.",
+    "maritime_ffa": "Każdy na siebie: celem jest korytarz handlowy przez centralne otwarte wody mapy, oznaczony flagą i świetlistym pasem. Liczą się tylko okręty wewnątrz korytarza.",
+    "maritime_power": "Potęga morska: lotniskowce liczą się jako 6; okręty wojenne, okręty podwodne i fregaty przeciwlotnicze jako 3; transporty, statki handlowe i samoloty jako 1.",
+    "maritime_team": "Gry drużynowe: celem jest okrągła strefa na otwartym morzu, oznaczona pierścieniem i flagą. Flota całej twojej drużyny się sumuje.",
+    "maritime_title": "Cel: szlak morski"
   },
   "single_modal": {
     "title": "Gra jednoosobowa",
@@ -278,7 +284,8 @@
   "game_starting_modal": {
     "title": "Gra się rozpoczyna...",
     "credits": "Autorzy",
-    "code_license": "Kod licencjonowany zgodnie z AGPL-3.0 (bez gwarancji)"
+    "code_license": "Kod licencjonowany zgodnie z AGPL-3.0 (bez gwarancji)",
+    "based_on": "Oparte na OpenFront"
   },
   "difficulty": {
     "difficulty": "Poziom trudności",
@@ -304,7 +311,14 @@
     "atom_bomb": "Bomba atomowa",
     "hydrogen_bomb": "Bomba wodorowa",
     "mirv": "MIRV",
-    "factory": "Fabryka"
+    "factory": "Fabryka",
+    "aircraft": "Samolot",
+    "aircraft_carrier": "Lotniskowiec",
+    "anti_air_frigate": "Fregata przeciwlotnicza",
+    "congress": "Kongres",
+    "naval_mine": "Mina morska",
+    "submarine": "Okręt podwodny",
+    "torpedo": "Torpeda"
   },
   "user_setting": {
     "title": "Ustawienia użytkownika",
@@ -396,7 +410,17 @@
     "exit_game_label": "Wyjdź z gry",
     "exit_game_info": "Powrót do menu głównego",
     "background_music_volume": "Głośność muzyki w tle",
-    "sound_effects_volume": "Głośność efektów dźwiękowych"
+    "sound_effects_volume": "Głośność efektów dźwiękowych",
+    "build_aircraft_carrier": "Zbuduj lotniskowiec",
+    "build_aircraft_carrier_desc": "Buduje lotniskowiec pod kursorem.",
+    "build_anti_air_frigate": "Zbuduj fregatę przeciwlotniczą",
+    "build_anti_air_frigate_desc": "Buduje fregatę przeciwlotniczą pod kursorem.",
+    "build_congress": "Zbuduj Kongres",
+    "build_congress_desc": "Buduje Kongres pod kursorem.",
+    "build_naval_mine": "Postaw minę morską",
+    "build_naval_mine_desc": "Stawia minę morską pod kursorem.",
+    "build_submarine": "Zbuduj okręt podwodny",
+    "build_submarine_desc": "Buduje okręt podwodny pod kursorem."
   },
   "chat": {
     "title": "Szybka rozmowa",
@@ -497,12 +521,17 @@
       "port": "Wysyła statki handlowe, aby wygenerować złoto",
       "defense_post": "Wzmacnia obronę pobliskich granic",
       "city": "Zwiększa maksymalną populację",
-      "factory": "Tworzy linie kolejowe i przywołuje pociągi"
+      "factory": "Tworzy linie kolejowe i przywołuje pociągi",
+      "aircraft_carrier": "Platforma dalekiego uderzenia lotniczego",
+      "anti_air_frigate": "Eskortuje floty z obroną przeciwlotniczą krótkiego zasięgu",
+      "congress": "Odblokowuje cła przeciw wrogiemu handlowi",
+      "naval_mine": "Jednorazowa mina morska",
+      "submarine": "Skryty rajder torpedowy"
     },
     "not_enough_money": "Za mało złota"
   },
   "win_modal": {
-    "support_openfront": "Wesprzyj OpenFront!",
+    "support_openfront": "Wesprzyj TradeShips!",
     "territory_pattern": "Kup skórkę na terytorium, aby zwolnić z reklam!",
     "died": "Nie żyjesz",
     "your_team": "Twoja drużyna wygrała!",
@@ -528,7 +557,8 @@
     "warships": "Okręty wojenne",
     "cities": "Miasta",
     "show_control": "Pokaż okupację",
-    "show_units": "Pokaż jednostki"
+    "show_units": "Pokaż jednostki",
+    "control": "Kontrola"
   },
   "player_info_overlay": {
     "type": "Rodzaj",
@@ -571,7 +601,10 @@
     "reject_alliance": "Odrzuć",
     "alliance_renewed": "Twój sojusz z {name} został przedłużony",
     "ignore": "Ignoruj",
-    "unit_voluntarily_deleted": "Jednostka została dobrowolnie usunięta"
+    "unit_voluntarily_deleted": "Jednostka została dobrowolnie usunięta",
+    "economic_mission_started": "Światowy boom handlowy! {count, plural, one {# państwo handlowe otrzymało} other {# państw handlowych otrzymało}} premię w złocie",
+    "tariff_imposed": "Nałożyłeś cło na handel gracza {name}",
+    "tariff_imposed_on_you": "{name} nałożył cło na twój handel!"
   },
   "unit_info_modal": {
     "structure_info": "Informacje o strukturze",
@@ -624,7 +657,9 @@
     "send_alliance": "Poproś o Sojusz",
     "send_troops": "Wyślij wojska",
     "send_gold": "Wyślij Złoto",
-    "emotes": "Emotikony"
+    "emotes": "Emotikony",
+    "tariff": "Cło",
+    "tariff_tooltip": "Nałóż cło na handel tego gracza za {cost} złota"
   },
   "send_troops_modal": {
     "title_with_name": "Wyślij wojsko do {name}",
@@ -688,7 +723,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Usuń jednostkę",
-    "delete_unit_description": "Kliknij, aby usunąć najbliższą jednostkę"
+    "delete_unit_description": "Kliknij, aby usunąć najbliższą jednostkę",
+    "specialize_description": "Wybierz specjalizację tego portu: węzeł handlowy, baza morska lub straż portowa",
+    "specialize_title": "Specjalizuj port"
   },
   "discord_user_header": {
     "avatar_alt": "Awatar"
@@ -759,5 +796,36 @@
     "stats_games_played": "Gry zagrane",
     "mode_ffa": "Każdy na Każdego",
     "mode_team": "Drużyna"
+  },
+  "maritime_objective": {
+    "capturing": "Przejmowana",
+    "contested": "Sporna",
+    "controlled": "Kontrolowana",
+    "hint": "Kontroluj centralny szlak morski, aby wygrać",
+    "neutral": "Neutralna"
+  },
+  "trade_routes": {
+    "contested": "Sporna",
+    "danger": "Zagrożenie",
+    "escorts": "Eskorty",
+    "risk": "Ryzyko",
+    "routes": "Szlaki",
+    "summary_title": "Aktywne szlaki kupieckie, sporne szlaki morskie i eskorty marynarki",
+    "value": "Wartość"
+  },
+  "trade_stats": {
+    "arrivals": "Przybycia",
+    "captures_by_me": "Przejęte przeze mnie",
+    "gold_earned": "Zarobione złoto",
+    "gold_in_transit": "Złoto na morzu",
+    "pirated_arrivals": "Spirackie przybycia",
+    "port": "Port",
+    "routes_active": "Aktywne szlaki",
+    "routes_contested": "Sporne szlaki",
+    "routes_escorted": "Eskortowane szlaki",
+    "ships_captured": "Przejęte statki",
+    "ships_lost": "Stracone statki",
+    "title": "Handel",
+    "top_ports": "Główne porty docelowe"
   }
 }

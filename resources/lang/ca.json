@@ -26,7 +26,7 @@
     "enabled": "Activat"
   },
   "main": {
-    "title": "OpenFront (ALFA)",
+    "title": "TradeShips (ALFA)",
     "login_discord": "Inicia sessió amb Discord",
     "sign_in": "Iniciar sessió",
     "discord_avatar_alt": "Foto de perfil Discord",
@@ -38,7 +38,7 @@
     "wiki": "Wiki",
     "privacy_policy": "Política de Privacitat",
     "terms_of_service": "Condicions de Servei",
-    "copyright": "© OpenFront™ i Col·laboradors",
+    "copyright": "© TradeShips™ i Col·laboradors",
     "play": "Jugar",
     "news": "Notícies",
     "store": "Botiga",
@@ -65,7 +65,7 @@
     "copied_to_clipboard": "Informació copiada en el porta-retalls! Sigues lliure de compartir-la en el nostre Discord si necessites ajuda.",
     "os": "OS",
     "device_pixel_ratio": "Ràtio de píxels del dispositiu",
-    "chromium_tip": "OpenFront funciona millor en navegadors Chromium.",
+    "chromium_tip": "TradeShips funciona millor en navegadors Chromium.",
     "hardware_acceleration_tip": "Assegura't que l'acceleració de maquinari estigui habilitada a la configuració del teu navegador per a un rendiment òptim.",
     "renderer": "Rendidor",
     "max_texture_size": "Mida màxima de la textura",
@@ -85,7 +85,7 @@
   },
   "help_modal": {
     "video_tutorial": "Vídeo Tutorial",
-    "video_tutorial_title": "Tutorial de OpenFront.io",
+    "video_tutorial_title": "Tutorial de TradeShips.io",
     "hotkeys": "Tecles d'accés ràpid",
     "table_key": "Clau",
     "table_action": "Acció",
@@ -166,7 +166,7 @@
     "build_mirv": "MIRV",
     "build_mirv_desc": "La bomba més poderosa del joc. Es trenca en nombroses bombes petites que cobriran un vast terreny. Només danya al jugador que has seleccionat. Surt del Llançador de Míssils més proper i cau a on has clicat per llançar-la.",
     "player_icons": "Icones de jugador",
-    "troubleshooting_desc": "Si experimenteu problemes de rendiment, bloquejos o altres problemes mentre jugueu a OpenFront, visiteu la nostra pàgina de resolució de problemes per obtenir ajuda per diagnosticar i solucionar els problemes més comuns:",
+    "troubleshooting_desc": "Si experimenteu problemes de rendiment, bloquejos o altres problemes mentre jugueu a TradeShips, visiteu la nostra pàgina de resolució de problemes per obtenir ajuda per diagnosticar i solucionar els problemes més comuns:",
     "icon_desc": "Exemples d'algunes de les icones del joc que trobaràs i què volen dir:",
     "icon_crown": "Corona - Número 1. Aquest és el jugador número u de la classificació.",
     "icon_traitor": "Escut trencat - Traïdor. Aquest jugador ha atacat un aliat.",
@@ -177,7 +177,13 @@
     "exit_confirmation": "Estàs segur que vols sortir de la partida?",
     "bomb_direction": "Direcció de l'arc de la bomba",
     "icon_alt_player_leaderboard": "Icona del Taulell de classificació",
-    "icon_alt_team_leaderboard": "Icona de la classificació de l'equip"
+    "icon_alt_team_leaderboard": "Icona de la classificació de l'equip",
+    "maritime_contested": "Quan flotes rivals empaten com a poder naval més fort, la zona queda en disputa i el progrés es congela. Un rival més fort redueix el control del posseïdor fins al 0% abans de capturar-la.",
+    "maritime_desc": "Als mapes marítims es guanya controlant la ruta marítima central. Mantén la força naval més poderosa dins la zona marcada per augmentar el teu control: la primera flota que mantingui el 100% guanya la partida.",
+    "maritime_ffa": "Tots contra tots: l'objectiu és un corredor comercial per les aigües obertes centrals del mapa, marcat amb una bandera i un carril lluminós. Només compten els vaixells dins del corredor.",
+    "maritime_power": "Poder naval: els portaavions compten 6; els vaixells de guerra, submarins i fragates antiaèries compten 3; els transports, vaixells mercants i aeronaus compten 1.",
+    "maritime_team": "Partides per equips: l'objectiu és una zona circular en mar obert, marcada amb un anell i una bandera. La flota de tot el teu equip suma.",
+    "maritime_title": "Objectiu: la ruta marítima"
   },
   "single_modal": {
     "random_spawn": "Punt de partida aleatori",
@@ -440,7 +446,8 @@
   "game_starting_modal": {
     "title": "Iniciant la partida...",
     "credits": "Crèdits",
-    "code_license": "Codi llicenciat sota l'AGPL-3.0 (sense garantia)"
+    "code_license": "Codi llicenciat sota l'AGPL-3.0 (sense garantia)",
+    "based_on": "Basat en OpenFront"
   },
   "difficulty": {
     "difficulty": "Dificultat de les Nacions",
@@ -472,7 +479,14 @@
     "atom_bomb": "Bomba Atòmica",
     "hydrogen_bomb": "Bomba d'Hidrogen",
     "mirv": "MIRV",
-    "factory": "Fàbrica"
+    "factory": "Fàbrica",
+    "aircraft": "Aeronau",
+    "aircraft_carrier": "Portaavions",
+    "anti_air_frigate": "Fragata antiaèria",
+    "congress": "Congrés",
+    "naval_mine": "Mina naval",
+    "submarine": "Submarí",
+    "torpedo": "Torpede"
   },
   "user_setting": {
     "title": "Configuració",
@@ -575,7 +589,17 @@
     "exit_game_info": "Torna al menú principal",
     "background_music_volume": "Volum de la música de fons",
     "sound_effects_volume": "Volum d'efectes sonors",
-    "keybind_conflict_error": "La tecla {key} ja està vinculada amb una altra acció."
+    "keybind_conflict_error": "La tecla {key} ja està vinculada amb una altra acció.",
+    "build_aircraft_carrier": "Construir portaavions",
+    "build_aircraft_carrier_desc": "Construeix un portaavions sota el cursor.",
+    "build_anti_air_frigate": "Construir fragata antiaèria",
+    "build_anti_air_frigate_desc": "Construeix una fragata antiaèria sota el cursor.",
+    "build_congress": "Construir Congrés",
+    "build_congress_desc": "Construeix un Congrés sota el cursor.",
+    "build_naval_mine": "Construir mina naval",
+    "build_naval_mine_desc": "Construeix una mina naval sota el cursor.",
+    "build_submarine": "Construir submarí",
+    "build_submarine_desc": "Construeix un submarí sota el cursor."
   },
   "chat": {
     "title": "Xat ràpid",
@@ -676,12 +700,17 @@
       "port": "Envia Vaixells de Comerç per generar or",
       "defense_post": "Reforça les defenses de les fronteres properes",
       "city": "Augmenta la població màxima",
-      "factory": "Crea ferrocarrils i genera trens"
+      "factory": "Crea ferrocarrils i genera trens",
+      "aircraft_carrier": "Plataforma d'atac aeri de llarg abast",
+      "anti_air_frigate": "Escorta flotes amb antiaeris de curt abast",
+      "congress": "Desbloqueja aranzels contra el comerç enemic",
+      "naval_mine": "Explosiu naval d'un sol ús",
+      "submarine": "Assaltant torpediner furtiu"
     },
     "not_enough_money": "No tens prou diners"
   },
   "win_modal": {
-    "support_openfront": "Dona suport a OpenFront!",
+    "support_openfront": "Dona suport a TradeShips!",
     "territory_pattern": "Compra un Aspecte de Territori per eliminar els anuncis!",
     "died": "Has mort",
     "your_team": "El teu equip ha guanyat!",
@@ -711,7 +740,8 @@
     "warships": "Vaixell de Guerra",
     "cities": "Ciutats",
     "show_control": "Mostra el control",
-    "show_units": "Mostra les unitats"
+    "show_units": "Mostra les unitats",
+    "control": "Control"
   },
   "events_display": {
     "events": "Esdeveniments",
@@ -753,7 +783,10 @@
     "unit_captured_by_enemy": "{unit} ha estat capturat per {name}",
     "captured_enemy_unit": "Has capturat {unit} de {name}",
     "unit_destroyed": "{unit} ha estat destruït",
-    "no_boats_available": "No et queden vaixells, en pots enviar com a molt {max}"
+    "no_boats_available": "No et queden vaixells, en pots enviar com a molt {max}",
+    "economic_mission_started": "Auge comercial global! {count, plural, one {# nació comerciant ha rebut} other {# nacions comerciants han rebut}} una bonificació d'or",
+    "tariff_imposed": "Has imposat un aranzel al comerç de {name}",
+    "tariff_imposed_on_you": "{name} ha imposat un aranzel al teu comerç!"
   },
   "player_type": {
     "player": "Jugador",
@@ -794,7 +827,9 @@
     "kick_confirm": "Expulsa a {name}?\n\nNo podran tornar a unir-se a aquesta partida.",
     "arc_up": "Arc ascendent",
     "arc_down": "Arc descendent",
-    "flip_rocket_trajectory": "Invertir la trajectòria del míssil"
+    "flip_rocket_trajectory": "Invertir la trajectòria del míssil",
+    "tariff": "Aranzel",
+    "tariff_tooltip": "Imposa un aranzel al comerç d'aquest jugador per {cost} d'or"
   },
   "kick_reason": {
     "duplicate_session": "Desconnectat del joc (potser estaves jugant en una altra pestanya)",
@@ -879,7 +914,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Elimina l'estructura",
-    "delete_unit_description": "Clica per esborrar l'estructura més propera"
+    "delete_unit_description": "Clica per esborrar l'estructura més propera",
+    "specialize_description": "Tria l'especialització d'aquest port: centre comercial, base naval o vigilància portuària",
+    "specialize_title": "Especialitzar port"
   },
   "discord_user_header": {
     "avatar_alt": "Avatar"
@@ -957,5 +994,36 @@
     "description": "(ALFA)",
     "login_required": "Inicia sessió per jugar classificat!",
     "must_login": "Has d'iniciar sessió per jugar a partides classificades."
+  },
+  "maritime_objective": {
+    "capturing": "Capturant",
+    "contested": "En disputa",
+    "controlled": "Controlada",
+    "hint": "Controla la ruta marítima central per guanyar",
+    "neutral": "Neutral"
+  },
+  "trade_routes": {
+    "contested": "En disputa",
+    "danger": "Perill",
+    "escorts": "Escortes",
+    "risk": "Risc",
+    "routes": "Rutes",
+    "summary_title": "Rutes mercants actives, corredors en disputa i escortes navals",
+    "value": "Valor"
+  },
+  "trade_stats": {
+    "arrivals": "Arribades",
+    "captures_by_me": "Capturats per mi",
+    "gold_earned": "Or guanyat",
+    "gold_in_transit": "Or al mar",
+    "pirated_arrivals": "Arribades piratejades",
+    "port": "Port",
+    "routes_active": "Rutes actives",
+    "routes_contested": "Rutes en disputa",
+    "routes_escorted": "Rutes escortades",
+    "ships_captured": "Vaixells capturats",
+    "ships_lost": "Vaixells perduts",
+    "title": "Comerç",
+    "top_ports": "Principals ports receptors"
   }
 }

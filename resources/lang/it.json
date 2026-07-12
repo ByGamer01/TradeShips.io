@@ -6,7 +6,7 @@
     "lang_code": "it"
   },
   "main": {
-    "title": "OpenFront (ALPHA)",
+    "title": "TradeShips (ALPHA)",
     "join_discord": "Unisciti al nostro Discord!",
     "login_discord": "Accedi con Discord",
     "logged_in": "Accesso effettuato!",
@@ -101,7 +101,13 @@
     "icon_ally": "Stretta di mano - Alleato, Questo giocatore è un tuo alleato",
     "icon_embargo": "Segno del dollaro barrato - Embargo. Questo giocatore ha smesso di commerciare con te automaticamente o manualmente.",
     "icon_request": "Busta - Richiesta di alleanza. Questo giocatore ti ha inviato una richiesta di alleanza.",
-    "info_enemy_panel": "Pannello informazioni nemico"
+    "info_enemy_panel": "Pannello informazioni nemico",
+    "maritime_contested": "Quando flotte rivali sono in parità come massima potenza navale, la zona è contesa e il progresso si blocca. Un rivale più forte riduce il controllo del detentore fino allo 0% prima di catturarla.",
+    "maritime_desc": "Sulle mappe marittime si vince controllando la rotta marittima centrale. Mantieni la forza navale più potente dentro la zona segnalata per aumentare il tuo controllo: la prima flotta a mantenere il 100% vince la partita.",
+    "maritime_ffa": "Tutti contro tutti: l'obiettivo è un corridoio commerciale attraverso le acque aperte centrali della mappa, segnalato da una bandiera e da una corsia luminosa. Contano solo le navi dentro il corridoio.",
+    "maritime_power": "Potenza navale: le portaerei contano 6; navi da guerra, sottomarini e fregate antiaeree contano 3; trasporti, navi mercantili e aerei contano 1.",
+    "maritime_team": "Partite a squadre: l'obiettivo è una zona circolare in mare aperto, segnalata da un anello e da una bandiera. La flotta di tutta la tua squadra si somma.",
+    "maritime_title": "Obiettivo: la rotta marittima"
   },
   "single_modal": {
     "title": "Giocatore Singolo",
@@ -191,7 +197,8 @@
   },
   "game_starting_modal": {
     "title": "La partita sta iniziando...",
-    "desc": "Preparazione per l'avvio della lobby. Attendere prego."
+    "desc": "Preparazione per l'avvio della lobby. Attendere prego.",
+    "based_on": "Basato su OpenFront"
   },
   "difficulty": {
     "difficulty": "Difficoltà",
@@ -216,7 +223,14 @@
     "sam_launcher": "SAM Antimissile",
     "atom_bomb": "Bomba atomica",
     "hydrogen_bomb": "Bomba a idrogeno",
-    "mirv": "MIRV"
+    "mirv": "MIRV",
+    "aircraft": "Aereo",
+    "aircraft_carrier": "Portaerei",
+    "anti_air_frigate": "Fregata antiaerea",
+    "congress": "Congresso",
+    "naval_mine": "Mina navale",
+    "submarine": "Sottomarino",
+    "torpedo": "Siluro"
   },
   "user_setting": {
     "title": "Impostazioni Utente",
@@ -260,7 +274,17 @@
     "move_right": "Sposta vista a destra",
     "move_right_desc": "Sposta vista a sinistra",
     "reset": "Resetta",
-    "unbind": "Unbind (cancella assegnazione tasto)"
+    "unbind": "Unbind (cancella assegnazione tasto)",
+    "build_aircraft_carrier": "Costruisci portaerei",
+    "build_aircraft_carrier_desc": "Costruisce una portaerei sotto il cursore.",
+    "build_anti_air_frigate": "Costruisci fregata antiaerea",
+    "build_anti_air_frigate_desc": "Costruisce una fregata antiaerea sotto il cursore.",
+    "build_congress": "Costruisci Congresso",
+    "build_congress_desc": "Costruisce un Congresso sotto il cursore.",
+    "build_naval_mine": "Costruisci mina navale",
+    "build_naval_mine_desc": "Costruisce una mina navale sotto il cursore.",
+    "build_submarine": "Costruisci sottomarino",
+    "build_submarine_desc": "Costruisce un sottomarino sotto il cursore."
   },
   "chat": {
     "title": "Chat rapida",
@@ -345,7 +369,12 @@
       "warship": "Cattura navi commerciali, combatte altre navi da guerra e affonda le navi trasporto",
       "port": "Invia navi commerciali per generare oro",
       "defense_post": "Aumenta le difese dei confini vicini",
-      "city": "Aumenta la popolazione massima"
+      "city": "Aumenta la popolazione massima",
+      "aircraft_carrier": "Piattaforma d'attacco aereo a lungo raggio",
+      "anti_air_frigate": "Scorta le flotte con contraerea a corto raggio",
+      "congress": "Sblocca i dazi contro il commercio nemico",
+      "naval_mine": "Esplosivo navale monouso",
+      "submarine": "Incursore lanciasiluri furtivo"
     },
     "not_enough_money": "Denaro insufficiente"
   },
@@ -365,7 +394,8 @@
     "player": "Giocatore",
     "owned": "In possesso",
     "gold": "Oro",
-    "troops": "Truppe"
+    "troops": "Truppe",
+    "control": "Controllo"
   },
   "player_info_overlay": {
     "type": "Tipo",
@@ -408,6 +438,48 @@
     "start_trade": "Inizia a commerciare",
     "stop_trade": "Ferma il commercio",
     "yes": "Si",
-    "no": "No"
+    "no": "No",
+    "tariff": "Dazio",
+    "tariff_tooltip": "Imponi un dazio sul commercio di questo giocatore per {cost} oro"
+  },
+  "events_display": {
+    "economic_mission_started": "Boom commerciale globale! {count, plural, one {# nazione mercantile ha ricevuto} other {# nazioni mercantili hanno ricevuto}} un bonus in oro",
+    "tariff_imposed": "Hai imposto un dazio sul commercio di {name}",
+    "tariff_imposed_on_you": "{name} ha imposto un dazio sul tuo commercio!"
+  },
+  "maritime_objective": {
+    "capturing": "In cattura",
+    "contested": "Contesa",
+    "controlled": "Controllata",
+    "hint": "Controlla la rotta marittima centrale per vincere",
+    "neutral": "Neutrale"
+  },
+  "radial_menu": {
+    "specialize_description": "Scegli la specializzazione di questo porto: hub commerciale, base navale o guardia portuale",
+    "specialize_title": "Specializza porto"
+  },
+  "trade_routes": {
+    "contested": "Contesa",
+    "danger": "Pericolo",
+    "escorts": "Scorte",
+    "risk": "Rischio",
+    "routes": "Rotte",
+    "summary_title": "Rotte mercantili attive, corridoi contesi e scorte navali",
+    "value": "Valore"
+  },
+  "trade_stats": {
+    "arrivals": "Arrivi",
+    "captures_by_me": "Catturate da me",
+    "gold_earned": "Oro guadagnato",
+    "gold_in_transit": "Oro in mare",
+    "pirated_arrivals": "Arrivi piratati",
+    "port": "Porto",
+    "routes_active": "Rotte attive",
+    "routes_contested": "Rotte contese",
+    "routes_escorted": "Rotte scortate",
+    "ships_captured": "Navi catturate",
+    "ships_lost": "Navi perdute",
+    "title": "Commercio",
+    "top_ports": "Principali porti di destinazione"
   }
 }

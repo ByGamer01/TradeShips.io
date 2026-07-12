@@ -23,7 +23,7 @@
     "click_to_copy": "Klik om te kopiëren"
   },
   "main": {
-    "title": "OpenFront (ALFA)",
+    "title": "TradeShips (ALFA)",
     "join_discord": "Discord",
     "login_discord": "Login met Discord",
     "sign_in": "Aanmelden",
@@ -40,7 +40,7 @@
     "wiki": "Wiki",
     "privacy_policy": "Privacybeleid",
     "terms_of_service": "Servicevoorwaarden",
-    "copyright": "© OpenFront™ en Bijdragers",
+    "copyright": "© TradeShips™ en Bijdragers",
     "reddit": "Reddit",
     "play": "Spelen",
     "news": "Nieuws",
@@ -149,7 +149,13 @@
     "icon_request": "Envelop - Alliantieverzoek. Deze speler stuurde je een verzoek om bondgenoten te worden.",
     "info_enemy_panel": "Infopaneel vijand",
     "exit_confirmation": "Weet je zeker dat je dit spel wilt verlaten?",
-    "bomb_direction": "Atoom- / waterstofbom boogrichting"
+    "bomb_direction": "Atoom- / waterstofbom boogrichting",
+    "maritime_contested": "Wanneer rivaliserende vloten gelijk staan als sterkste zeemacht, is de zone betwist en bevriest de voortgang. Een sterkere rivaal brengt de controle van de houder terug tot 0% voordat hij de zone verovert.",
+    "maritime_desc": "Op maritieme kaarten win je door de centrale zeeroute te beheersen. Houd de sterkste zeemacht binnen de gemarkeerde zone om je controle te vergroten: de eerste vloot die 100% vasthoudt, wint het spel.",
+    "maritime_ffa": "Iedereen tegen iedereen: het doel is een handelscorridor door het centrale open water van de kaart, gemarkeerd met een vlag en een oplichtende vaarroute. Alleen schepen binnen de corridor tellen mee.",
+    "maritime_power": "Zeemacht: vliegdekschepen tellen voor 6; oorlogsschepen, onderzeeërs en luchtafweerfregatten tellen voor 3; transporten, handelsschepen en vliegtuigen tellen voor 1.",
+    "maritime_team": "Teamspellen: het doel is een cirkelvormige zone op open zee, gemarkeerd met een ring en een vlag. De vloot van je hele team telt op.",
+    "maritime_title": "Doel: de zeeroute"
   },
   "single_modal": {
     "title": "Solo",
@@ -394,7 +400,8 @@
   "game_starting_modal": {
     "title": "Spel gaat starten...",
     "credits": "Credits",
-    "code_license": "Code gelicenseerd onder AGPL-3.0 (geen garantie)"
+    "code_license": "Code gelicenseerd onder AGPL-3.0 (geen garantie)",
+    "based_on": "Gebaseerd op OpenFront"
   },
   "difficulty": {
     "difficulty": "Natie moeilijkheidsgraad",
@@ -424,7 +431,14 @@
     "atom_bomb": "Atoombom",
     "hydrogen_bomb": "Waterstofbom",
     "mirv": "MIRV",
-    "factory": "Fabriek"
+    "factory": "Fabriek",
+    "aircraft": "Vliegtuig",
+    "aircraft_carrier": "Vliegdekschip",
+    "anti_air_frigate": "Luchtafweerfregat",
+    "congress": "Congres",
+    "naval_mine": "Zeemijn",
+    "submarine": "Onderzeeër",
+    "torpedo": "Torpedo"
   },
   "user_setting": {
     "title": "Instellingen",
@@ -527,7 +541,17 @@
     "exit_game_info": "Terug naar hoofdmenu",
     "background_music_volume": "Volume achtergrondmuziek",
     "sound_effects_volume": "Volume geluidseffecten",
-    "keybind_conflict_error": "De toets {key} is al verbonden aan een andere actie."
+    "keybind_conflict_error": "De toets {key} is al verbonden aan een andere actie.",
+    "build_aircraft_carrier": "Vliegdekschip bouwen",
+    "build_aircraft_carrier_desc": "Bouwt een vliegdekschip onder je cursor.",
+    "build_anti_air_frigate": "Luchtafweerfregat bouwen",
+    "build_anti_air_frigate_desc": "Bouwt een luchtafweerfregat onder je cursor.",
+    "build_congress": "Congres bouwen",
+    "build_congress_desc": "Bouwt een Congres onder je cursor.",
+    "build_naval_mine": "Zeemijn bouwen",
+    "build_naval_mine_desc": "Bouwt een zeemijn onder je cursor.",
+    "build_submarine": "Onderzeeër bouwen",
+    "build_submarine_desc": "Bouwt een onderzeeër onder je cursor."
   },
   "chat": {
     "title": "Snelchat",
@@ -628,12 +652,17 @@
       "port": "Stuurt handelsschepen om goud te genereren",
       "defense_post": "Versterkt verdediging eromheen",
       "city": "Verhoogt maximale bevolking",
-      "factory": "Maakt spoorwegen en laat treinen rijden"
+      "factory": "Maakt spoorwegen en laat treinen rijden",
+      "aircraft_carrier": "Luchtaanvalsplatform met groot bereik",
+      "anti_air_frigate": "Escorteert vloten met luchtafweer op korte afstand",
+      "congress": "Ontgrendelt tarieven tegen vijandelijke handel",
+      "naval_mine": "Zeemijn voor eenmalig gebruik",
+      "submarine": "Heimelijke torpedojager"
     },
     "not_enough_money": "Niet genoeg goud"
   },
   "win_modal": {
-    "support_openfront": "Steun OpenFront!",
+    "support_openfront": "Steun TradeShips!",
     "territory_pattern": "Koop een skin om advertentievrij te gaan!",
     "died": "Je bent dood",
     "your_team": "Je team heeft gewonnen!",
@@ -667,7 +696,8 @@
     "warships": "Oorlogsschepen",
     "cities": "Steden",
     "show_control": "Toon bezit",
-    "show_units": "Toon gebouwen"
+    "show_units": "Toon gebouwen",
+    "control": "Controle"
   },
   "player_info_overlay": {
     "type": "Type",
@@ -729,7 +759,10 @@
     "unit_captured_by_enemy": "Jouw {unit} werd veroverd door {name}",
     "captured_enemy_unit": "{unit} veroverd van {name}",
     "unit_destroyed": "Jouw {unit} werd vernietigd",
-    "no_boats_available": "Geen boten beschikbaar, max. {max}"
+    "no_boats_available": "Geen boten beschikbaar, max. {max}",
+    "economic_mission_started": "Wereldwijde handelshausse! {count, plural, one {# handelsnatie ontving} other {# handelsnaties ontvingen}} een goudbonus",
+    "tariff_imposed": "Je hebt een tarief opgelegd aan de handel van {name}",
+    "tariff_imposed_on_you": "{name} heeft een tarief opgelegd aan jouw handel!"
   },
   "unit_info_modal": {
     "structure_info": "Gebouw Info",
@@ -784,7 +817,9 @@
     "emotes": "Emoji's",
     "arc_up": "Opwaartse boog",
     "arc_down": "Neerwaartse boog",
-    "flip_rocket_trajectory": "Rakettraject spiegelen"
+    "flip_rocket_trajectory": "Rakettraject spiegelen",
+    "tariff": "Tarief",
+    "tariff_tooltip": "Leg voor {cost} goud een tarief op aan de handel van deze speler"
   },
   "send_troops_modal": {
     "title_with_name": "Stuur Troepen naar {name}",
@@ -870,7 +905,9 @@
   },
   "radial_menu": {
     "delete_unit_title": "Verwijder gebouw",
-    "delete_unit_description": "Klik om het dichtstbijzijnde gebouw te verwijderen"
+    "delete_unit_description": "Klik om het dichtstbijzijnde gebouw te verwijderen",
+    "specialize_description": "Kies de specialisatie van deze haven: handelsknooppunt, marinebasis of havenwacht",
+    "specialize_title": "Haven specialiseren"
   },
   "discord_user_header": {
     "avatar_alt": "Avatar"
@@ -949,5 +986,36 @@
     "description": "(ALFA)",
     "login_required": "Log in om competitief te spelen!",
     "must_login": "Je moet ingelogd zijn om competitieve matchmaking te spelen."
+  },
+  "maritime_objective": {
+    "capturing": "Wordt veroverd",
+    "contested": "Betwist",
+    "controlled": "Onder controle",
+    "hint": "Beheers de centrale zeeroute om te winnen",
+    "neutral": "Neutraal"
+  },
+  "trade_routes": {
+    "contested": "Betwist",
+    "danger": "Gevaar",
+    "escorts": "Escortes",
+    "risk": "Risico",
+    "routes": "Routes",
+    "summary_title": "Actieve handelsroutes, betwiste zeeroutes en marine-escortes",
+    "value": "Waarde"
+  },
+  "trade_stats": {
+    "arrivals": "Aankomsten",
+    "captures_by_me": "Door mij buitgemaakt",
+    "gold_earned": "Verdiend goud",
+    "gold_in_transit": "Goud op zee",
+    "pirated_arrivals": "Gekaapte aankomsten",
+    "port": "Haven",
+    "routes_active": "Actieve routes",
+    "routes_contested": "Betwiste routes",
+    "routes_escorted": "Geëscorteerde routes",
+    "ships_captured": "Buitgemaakte schepen",
+    "ships_lost": "Verloren schepen",
+    "title": "Handel",
+    "top_ports": "Belangrijkste ontvangende havens"
   }
 }

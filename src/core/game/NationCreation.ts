@@ -73,19 +73,51 @@ export function createNationsForGame(
       );
     }
 
+    // Unclaimed human slots are backfilled with nations so the lobby's
+    // advertised player quota is real: a 3/20 lobby starts with 17 nations
+    // standing in for the missing humans.
+    const quota = nationQuotaTarget(gameStart, numHumans);
+
     // For compact maps, use only 25% of nations (minimum 1)
     if (isCompactMap) {
-      const targetCount = getCompactMapNationCount(
-        manifestNations.length,
-        true,
+      const targetCount = Math.max(
+        quota,
+        getCompactMapNationCount(manifestNations.length, true),
       );
-      const shuffled = random.shuffleArray(manifestNations);
-      const slicedNations = shuffled.slice(0, targetCount);
-      return slicedNations.map(toNation);
+      return createRandomNations(
+        targetCount,
+        manifestNations,
+        additionalNations,
+        toNation,
+        random,
+      );
+    }
+
+    if (quota > manifestNations.length) {
+      return createRandomNations(
+        quota,
+        manifestNations,
+        additionalNations,
+        toNation,
+        random,
+      );
     }
   }
 
   return manifestNations.map(toNation);
+}
+
+/**
+ * Nations needed to fill the lobby's advertised player count in public
+ * games; 0 when no quota applies.
+ */
+function nationQuotaTarget(
+  gameStart: GameStartInfo,
+  numHumans: number,
+): number {
+  const maxPlayers = gameStart.config.maxPlayers;
+  if (typeof maxPlayers !== "number") return 0;
+  return Math.max(0, maxPlayers - numHumans);
 }
 
 /**

@@ -42,11 +42,11 @@ export async function renderHtmlContent(htmlPath: string): Promise<string> {
       cdnBase,
     ),
     desktopLogoImageUrl: buildAssetUrl(
-      "images/OpenFront.png",
+      "images/TradeShipsSocial.png",
       assetManifest,
       cdnBase,
     ),
-    mobileLogoImageUrl: buildAssetUrl("images/OF.png", assetManifest, cdnBase),
+    mobileLogoImageUrl: buildAssetUrl("images/TradeShipsMark.svg", assetManifest, cdnBase),
   });
 }
 
