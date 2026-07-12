@@ -158,6 +158,9 @@ export class ServerEnv {
   static apiKey(): string {
     return process.env.API_KEY ?? "";
   }
+  static externalApiEnabled(): boolean {
+    return process.env.EXTERNAL_API_ENABLED === "true";
+  }
   static adminHeader(): string {
     return "x-admin-key";
   }

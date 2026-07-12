@@ -4,6 +4,7 @@ import { z } from "zod";
 import { TokenPayload, TokenPayloadSchema } from "../core/ApiSchemas";
 import { base64urlToUuid } from "../core/Base64";
 import { getApiBase, getAudience } from "./Api";
+import { ClientEnv } from "./ClientEnv";
 import { generateCryptoRandomUUID } from "./Utils";
 
 export type UserAuth = { jwt: string; claims: TokenPayload } | false;
@@ -113,6 +114,10 @@ export async function userAuth(
   shouldRefresh: boolean = true,
 ): Promise<UserAuth> {
   try {
+    if (!isExternalApiEnabled()) {
+      return false;
+    }
+
     const jwt = __jwt;
     if (!jwt) {
       if (!shouldRefresh) {
@@ -173,6 +178,16 @@ export async function userAuth(
   } catch (e) {
     console.error("isLoggedIn failed", e);
     return false;
+  }
+}
+
+function isExternalApiEnabled(): boolean {
+  try {
+    return ClientEnv.externalApiEnabled();
+  } catch {
+    // Preserve legacy behavior in tests or pages that have not hydrated the
+    // bootstrap config yet.
+    return true;
   }
 }
 

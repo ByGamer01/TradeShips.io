@@ -47,6 +47,7 @@ export function registerGamePreviewRoute(opts: {
   const fetchPublicGameInfo = async (
     gameID: string,
   ): Promise<ExternalGameInfo | null> => {
+    if (!ServerEnv.externalApiEnabled()) return null;
     if (!gameIDSchema.safeParse(gameID).success) return null;
 
     const controller = new AbortController();

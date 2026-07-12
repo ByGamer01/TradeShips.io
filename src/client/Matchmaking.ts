@@ -70,6 +70,21 @@ export class MatchmakingModal extends BaseModal {
   }
 
   private async connect() {
+    if (!ClientEnv.externalApiEnabled()) {
+      console.warn("Matchmaking unavailable: external API is disabled");
+      window.dispatchEvent(
+        new CustomEvent("show-message", {
+          detail: {
+            message: translateText("common.unavailable"),
+            duration: 3000,
+            color: "red",
+          },
+        }),
+      );
+      this.close();
+      return;
+    }
+
     this.socket = new WebSocket(
       `${ClientEnv.jwtIssuer()}/matchmaking/join?instance_id=${encodeURIComponent(ClientEnv.instanceId())}`,
     );

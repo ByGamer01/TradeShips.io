@@ -967,6 +967,10 @@ export class JoinLobbyModal extends BaseModal {
   private async checkArchivedGame(
     lobbyId: string,
   ): Promise<"success" | "not_found" | "version_mismatch" | "error"> {
+    if (!ClientEnv.externalApiEnabled()) {
+      return "not_found";
+    }
+
     const archiveResponse = await fetch(`${getApiBase()}/game/${lobbyId}`, {
       method: "GET",
       headers: {

@@ -18,7 +18,7 @@ process model), `Auth.md` (JWT flow), `API.md` (endpoints the client calls).
 
 | Variable | Required | Notes |
 | --- | --- | --- |
-| `GAME_ENV` | yes | `prod` switches lobby timer to 2min (`ServerEnv.gameCreationRate`) and forbids anonymous auth. |
+| `GAME_ENV` | yes | `prod` switches lobby timer to 2min (`ServerEnv.gameCreationRate`). |
 | `NUM_WORKERS` | yes | Worker processes; throws at startup if unset. |
 | `DOMAIN` | yes | Also the JWT audience; JWKS is fetched from `https://api.<DOMAIN>`. |
 | `SUBDOMAIN` | yes | Instance name used by the master. |
@@ -27,21 +27,31 @@ process model), `Auth.md` (JWT flow), `API.md` (endpoints the client calls).
 | `TURNSTILE_SITE_KEY` | yes | Cloudflare Turnstile (bot gate on join). |
 | `API_KEY` | yes* | Sent to the closed API for `/users/@me`; useless until TradeShips has its own API. |
 | `CDN_BASE` | no | Empty = same-origin assets. |
+| `EXTERNAL_API_ENABLED` | no | Keep `false` for the public alpha without `api.<DOMAIN>`; set `true` only after the TradeShips API exists. |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` / `OTEL_AUTH_HEADER` | no | Telemetry, disabled in dev. |
 | `ALLOWED_FLARES` | no | Restricts cosmetic flares. |
 
-## BLOCKER: authentication API
+## Alpha mode without the external API
 
-`src/server/jwt.ts` rejects the anonymous `persistentId` token whenever
-`GAME_ENV !== dev`, and verifying real JWTs requires the JWKS served by
-`https://api.<DOMAIN>/.well-known/jwks.json` — the **closed-source OpenFront
-Worker that this fork does not have**. Two ways out:
+TradeShips can run publicly without the closed OpenFront API by keeping:
 
-1. **Own minimal auth service**: implement the endpoints in `docs/Auth.md`
-   (issue EdDSA JWTs, expose JWKS, `/users/@me`). Keeps accounts working.
-2. **Allow anonymous play in prod**: change `verifyClientToken` to accept
-   `persistentId` outside dev. One-line change, no accounts/stats/cosmetics,
-   fastest path to a playable public alpha.
+```env
+EXTERNAL_API_ENABLED=false
+CDN_BASE=
+```
+
+In this mode:
+
+- anonymous `persistentId` tokens are accepted in prod;
+- Turnstile validation is bypassed server-side;
+- client auth refresh is skipped;
+- archived game lookup returns "not found" without calling `api.<DOMAIN>`;
+- matchmaking polling is skipped;
+- deploy skips R2 asset upload and serves assets from the game container.
+
+When accounts, stats, cosmetics, replays, matchmaking, JWKS, and asset upload
+are needed, implement the endpoints in `docs/Auth.md`/`docs/API.md`, create
+`api.<DOMAIN>`, then set `EXTERNAL_API_ENABLED=true`.
 
 Client-side features that also point at the closed API and degrade to console
 errors without it: login/account modal, news box, cosmetics, stats. They are

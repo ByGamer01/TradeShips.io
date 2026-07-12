@@ -16,6 +16,10 @@ export async function verifyTurnstileToken(
   ip: string,
   turnstileToken: string | null,
 ): Promise<TurnstileResponse> {
+  if (!ServerEnv.externalApiEnabled()) {
+    return { status: "approved" };
+  }
+
   if (!turnstileToken) {
     return { status: "rejected", reason: "No turnstile token provided" };
   }

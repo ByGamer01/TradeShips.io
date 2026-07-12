@@ -18,6 +18,10 @@ export async function archive(
   trustedCosmeticFlagUrls: Set<string> = new Set(),
 ) {
   try {
+    if (!ServerEnv.externalApiEnabled()) {
+      return;
+    }
+
     if (gameRecord.info.config.gameType === GameType.Singleplayer) {
       stripUntrustedFlagUrls(gameRecord, trustedCosmeticFlagUrls);
     }
@@ -56,6 +60,10 @@ export async function readGameRecord(
   gameId: GameID,
 ): Promise<GameRecord | null> {
   try {
+    if (!ServerEnv.externalApiEnabled()) {
+      return null;
+    }
+
     if (!ID.safeParse(gameId).success) {
       log.error(`invalid game ID: ${gameId}`);
       return null;
