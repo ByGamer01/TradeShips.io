@@ -6,7 +6,6 @@ import {
   UserMeResponse,
   UserMeResponseSchema,
 } from "../core/ApiSchemas";
-import { GameEnv } from "../core/configuration/Config";
 import { PersistentIdSchema } from "../core/Schemas";
 import { ServerEnv } from "./ServerEnv";
 
@@ -22,14 +21,10 @@ export async function verifyClientToken(
   token: string,
 ): Promise<TokenVerificationResult> {
   if (PersistentIdSchema.safeParse(token).success) {
-    if (ServerEnv.env() === GameEnv.Dev) {
-      return { type: "success", persistentId: token, claims: null };
-    } else {
-      return {
-        type: "error",
-        message: "persistent ID not allowed in production",
-      };
-    }
+    // TradeShips: anonymous play is allowed in every environment until the
+    // auth API exists (see docs/DeployTradeShips.md — auth blocker). Restore
+    // the dev-only gate when real JWTs are issued.
+    return { type: "success", persistentId: token, claims: null };
   }
   try {
     const issuer = ServerEnv.jwtIssuer();
