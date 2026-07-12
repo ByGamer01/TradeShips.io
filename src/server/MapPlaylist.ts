@@ -258,10 +258,11 @@ export class MapPlaylist {
         (await this.lobbyMaxPlayers(map, mode, playerTeams, isCompact)),
     );
 
+    // Nations stay enabled even with 25M starting gold: TradeShips nations
+    // play Hard+, contest the maritime objective, and backfill empty human
+    // slots so low-traffic lobbies still start as full games.
     const nations: GameConfig["nations"] =
-      (mode === GameMode.Team && playerTeams !== HumansVsNations) ||
-      // Nations don't have PVP immunity, so 25M starting gold wouldn't work well with them
-      (startingGold !== undefined && startingGold >= 25_000_000)
+      mode === GameMode.Team && playerTeams !== HumansVsNations
         ? "disabled"
         : "default";
 
