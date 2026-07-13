@@ -51,29 +51,9 @@ export interface BuildItemDisplay {
   countable?: boolean;
 }
 
+// One visual row per family: fleet, then structures, then ordnance.
 export const buildTable: BuildItemDisplay[][] = [
   [
-    {
-      unitType: UnitType.AtomBomb,
-      icon: atomBombIcon,
-      description: "build_menu.desc.atom_bomb",
-      key: "unit_type.atom_bomb",
-      countable: false,
-    },
-    {
-      unitType: UnitType.MIRV,
-      icon: mirvIcon,
-      description: "build_menu.desc.mirv",
-      key: "unit_type.mirv",
-      countable: false,
-    },
-    {
-      unitType: UnitType.HydrogenBomb,
-      icon: hydrogenBombIcon,
-      description: "build_menu.desc.hydrogen_bomb",
-      key: "unit_type.hydrogen_bomb",
-      countable: false,
-    },
     {
       unitType: UnitType.Warship,
       icon: warshipIcon,
@@ -109,32 +89,13 @@ export const buildTable: BuildItemDisplay[][] = [
       key: "unit_type.naval_mine",
       countable: true,
     },
+  ],
+  [
     {
       unitType: UnitType.Port,
       icon: portIcon,
       description: "build_menu.desc.port",
       key: "unit_type.port",
-      countable: true,
-    },
-    {
-      unitType: UnitType.MissileSilo,
-      icon: missileSiloIcon,
-      description: "build_menu.desc.missile_silo",
-      key: "unit_type.missile_silo",
-      countable: true,
-    },
-    {
-      unitType: UnitType.SAMLauncher,
-      icon: samlauncherIcon,
-      description: "build_menu.desc.sam_launcher",
-      key: "unit_type.sam_launcher",
-      countable: true,
-    },
-    {
-      unitType: UnitType.DefensePost,
-      icon: shieldIcon,
-      description: "build_menu.desc.defense_post",
-      key: "unit_type.defense_post",
       countable: true,
     },
     {
@@ -152,11 +113,55 @@ export const buildTable: BuildItemDisplay[][] = [
       countable: true,
     },
     {
+      unitType: UnitType.DefensePost,
+      icon: shieldIcon,
+      description: "build_menu.desc.defense_post",
+      key: "unit_type.defense_post",
+      countable: true,
+    },
+    {
+      unitType: UnitType.MissileSilo,
+      icon: missileSiloIcon,
+      description: "build_menu.desc.missile_silo",
+      key: "unit_type.missile_silo",
+      countable: true,
+    },
+    {
+      unitType: UnitType.SAMLauncher,
+      icon: samlauncherIcon,
+      description: "build_menu.desc.sam_launcher",
+      key: "unit_type.sam_launcher",
+      countable: true,
+    },
+    {
       unitType: UnitType.Congress,
       icon: congressIcon,
       description: "build_menu.desc.congress",
       key: "unit_type.congress",
       countable: true,
+    },
+  ],
+  [
+    {
+      unitType: UnitType.AtomBomb,
+      icon: atomBombIcon,
+      description: "build_menu.desc.atom_bomb",
+      key: "unit_type.atom_bomb",
+      countable: false,
+    },
+    {
+      unitType: UnitType.HydrogenBomb,
+      icon: hydrogenBombIcon,
+      description: "build_menu.desc.hydrogen_bomb",
+      key: "unit_type.hydrogen_bomb",
+      countable: false,
+    },
+    {
+      unitType: UnitType.MIRV,
+      icon: mirvIcon,
+      description: "build_menu.desc.mirv",
+      key: "unit_type.mirv",
+      countable: false,
     },
   ],
 ];
@@ -537,9 +542,13 @@ export class BuildMenu extends LitElement implements Controller {
   }
 
   private getBuildableUnits(): BuildItemDisplay[][] {
-    return buildTable.map((row) =>
-      row.filter((item) => !this.game?.config()?.isUnitDisabled(item.unitType)),
-    );
+    return buildTable
+      .map((row) =>
+        row.filter(
+          (item) => !this.game?.config()?.isUnitDisabled(item.unitType),
+        ),
+      )
+      .filter((row) => row.length > 0);
   }
 
   get isVisible() {
