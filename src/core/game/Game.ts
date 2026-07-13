@@ -139,6 +139,7 @@ export const isGameType = (value: unknown): value is GameType =>
 export enum GameMode {
   FFA = "Free For All",
   Team = "Team",
+  WorldCongress = "World Congress",
 }
 
 export enum RankedType {
