@@ -388,6 +388,7 @@ describe("WinCheckExecution - Economic Victory", () => {
       playerInfo("Poor", PlayerType.Human),
     ]);
     const rich = game.player("Rich");
+    expect(game.config().economicVictoryGold()).toBe(500_000_000n);
     rich.conquer(game.ref(1, 1));
     rich.addGold(game.config().economicVictoryGold());
     const setWinnerSpy = vi.fn();
@@ -399,6 +400,25 @@ describe("WinCheckExecution - Economic Victory", () => {
 
     expect(setWinnerSpy).toHaveBeenCalledWith(rich, expect.anything());
     expect(winCheck.isActive()).toBe(false);
+  });
+
+  test("does not award gold alone on a maritime map", async () => {
+    const game = await setup(
+      "half_land_half_ocean",
+      { gameMode: GameMode.FFA },
+      [playerInfo("Rich", PlayerType.Human)],
+    );
+    const rich = game.player("Rich");
+    rich.addGold(game.config().economicVictoryGold());
+    const setWinnerSpy = vi.fn();
+    game.setWinner = setWinnerSpy;
+
+    const winCheck = new WinCheckExecution();
+    winCheck.init(game, 0);
+    winCheck.tick(10);
+
+    expect(setWinnerSpy).not.toHaveBeenCalled();
+    expect(winCheck.isActive()).toBe(true);
   });
 
   test("outstanding debt disqualifies the gold mission", async () => {
