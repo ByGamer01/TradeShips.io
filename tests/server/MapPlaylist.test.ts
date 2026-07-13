@@ -77,6 +77,17 @@ describe("MapPlaylist arsenal lock defaults", () => {
 describe("MapPlaylist special mode never reintroduces the arsenal", () => {
   const SPECIAL_DRAWS = 180;
 
+  test("public Special lobby always exposes World Congress", async () => {
+    const playlist = new MapPlaylist();
+
+    for (let i = 0; i < 10; i++) {
+      const config = await playlist.gameConfig("special");
+
+      expect(config.gameMode).toBe(GameMode.WorldCongress);
+      expect(config.playerTeams).toBeUndefined();
+    }
+  });
+
   test("every special draw keeps the full arsenal (incl. DefensePost) disabled, never forces waterNukes, and never exposes the retired modifier flags", async () => {
     const playlist = new MapPlaylist();
 
@@ -103,9 +114,7 @@ describe("MapPlaylist special mode never reintroduces the arsenal", () => {
         expect(disabled.has(UnitType.Port)).toBe(true);
       }
     }
-  }, // 180 async draws (each awaiting getMapLandTiles) can exceed the default
-  // 5s timeout under full-suite CPU contention even though each draw is
-  // fast in isolation.
+  }, // fast in isolation. // 5s timeout under full-suite CPU contention even though each draw is // 180 async draws (each awaiting getMapLandTiles) can exceed the default
   20_000);
 });
 
