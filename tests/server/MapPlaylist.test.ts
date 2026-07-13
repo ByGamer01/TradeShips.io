@@ -51,6 +51,14 @@ describe("MapPlaylist arsenal lock defaults", () => {
     expectSupersetOfArsenal(config.disabledUnits);
   });
 
+  test("public Team games fill player slots with nations instead of tribes", async () => {
+    const playlist = new MapPlaylist();
+    const config = await playlist.gameConfig("team");
+
+    expect(config.nations).toBe("default");
+    expect(config.bots).toBe(0);
+  });
+
   test("public 1v1 games disable the full arsenal", () => {
     const playlist = new MapPlaylist();
     const config = playlist.get1v1Config();
@@ -159,10 +167,9 @@ describe("MapPlaylist public starting gold", () => {
 
       expect([undefined, 1_000_000, 5_000_000, 25_000_000]).toContain(gold);
       expect(config.publicGameModifiers?.startingGold).toBe(gold);
-      // Nations backfill empty lobbies: enabled in FFA (any gold), disabled
-      // only in plain team draws.
-      if (config.gameMode === GameMode.FFA) {
-        expect(config.nations).toBe("default");
+      expect(config.nations).toBe("default");
+      if (config.gameMode === GameMode.Team) {
+        expect(config.bots).toBe(0);
       }
     }
 
