@@ -86,9 +86,8 @@ describe("AntiAirFrigateExecution", () => {
 
   test("intercepts enemy carrier aircraft before they strike nearby ships", async () => {
     const type = antiAirFrigateType();
-    const { AntiAirFrigateExecution } = await import(
-      "../../../src/core/execution/AntiAirFrigateExecution"
-    );
+    const { AntiAirFrigateExecution } =
+      await import("../../../src/core/execution/AntiAirFrigateExecution");
     game.config().aircraftStepsPerTick = () => 0;
     (game.config() as any).antiAirFrigateAttackRate = () => 0;
 
@@ -122,5 +121,33 @@ describe("AntiAirFrigateExecution", () => {
 
     expect(game.units(UnitType.Aircraft)).toHaveLength(0);
     expect(Number(protectedWarship.health())).toBe(1000);
+  });
+
+  test("does not fire on enemy surface ships", async () => {
+    const type = antiAirFrigateType();
+    const { AntiAirFrigateExecution } =
+      await import("../../../src/core/execution/AntiAirFrigateExecution");
+    game.config().warshipShellAttackRate = () => -1;
+
+    const frigate = player1.buildUnit(type, game.ref(coastX + 2, 10), {
+      patrolTile: game.ref(coastX + 2, 10),
+    } as any);
+    const enemyFrigate = player2.buildUnit(type, game.ref(coastX + 3, 10), {
+      patrolTile: game.ref(coastX + 3, 10),
+    } as any);
+    const enemyWarship = player2.buildUnit(
+      UnitType.Warship,
+      game.ref(coastX + 4, 10),
+      { patrolTile: game.ref(coastX + 4, 10) },
+    );
+
+    game.addExecution(new AntiAirFrigateExecution(frigate));
+    for (let i = 0; i < 5; i++) {
+      game.executeNextTick();
+    }
+
+    expect(Number(enemyFrigate.health())).toBe(800);
+    expect(Number(enemyWarship.health())).toBe(1000);
+    expect(game.units(UnitType.Shell)).toHaveLength(0);
   });
 });
