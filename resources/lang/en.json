@@ -785,8 +785,10 @@
     "svg": "uk_us_flag"
   },
   "leaderboard": {
+    "bankrupt": "Bankrupt",
     "cities": "Cities",
     "control": "Control",
+    "debt": "Debt",
     "gold": "Gold",
     "launchers": "Launchers",
     "maxtroops": "Max troops",
@@ -1046,9 +1048,11 @@
     "alliances": "Alliances",
     "arc_down": "Downward arc",
     "arc_up": "Upward arc",
+    "bankrupt": "Bankrupt",
     "betrayals": "Betrayals",
     "break_alliance": "Break Alliance",
     "chat": "Chat",
+    "debt": "Debt",
     "emotes": "Emojis",
     "flip_rocket_trajectory": "Flip rocket trajectory",
     "gold": "Gold",
