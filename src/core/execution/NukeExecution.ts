@@ -10,6 +10,10 @@ import {
   UnitType,
 } from "../game/Game";
 import { TileRef } from "../game/GameMap";
+import {
+  isCongressResolutionActive,
+  isNuclearUnit,
+} from "../game/WorldCongress";
 import { UniversalPathFinding } from "../pathfinding/PathFinder";
 import { ParabolaUniversalPathFinder } from "../pathfinding/PathFinder.Parabola";
 import { PathStatus } from "../pathfinding/types";
@@ -38,6 +42,13 @@ export class NukeExecution implements Execution {
 
   init(mg: Game, ticks: number): void {
     this.mg = mg;
+    if (
+      isNuclearUnit(this.nukeType) &&
+      isCongressResolutionActive(mg, "nuclear_non_proliferation")
+    ) {
+      this.active = false;
+      return;
+    }
     if (this.speed === -1) {
       this.speed = this.mg.config().defaultNukeSpeed();
     }
