@@ -4,7 +4,13 @@ import WebSocket from "ws";
 import { z } from "zod";
 import { isAdminRole } from "../core/ApiSchemas";
 import { GameEnv } from "../core/configuration/Config";
-import { GameType } from "../core/game/Game";
+import { GameMode, GameType } from "../core/game/Game";
+import {
+  CONGRESS_FIRST_SESSION_TURN,
+  CONGRESS_SESSION_INTERVAL_TURNS,
+  CONGRESS_VOTE_DURATION_MS,
+  selectCongressWinner,
+} from "../core/game/WorldCongress";
 import {
   ClientID,
   ClientMessageSchema,
@@ -85,6 +91,12 @@ export class GameServer {
   private outOfSyncClients: Set<ClientID> = new Set();
 
   private isPaused = false;
+
+  private congressSession = 0;
+  private nextCongressTurn = CONGRESS_FIRST_SESSION_TURN;
+  private congressEndsAt: number | null = null;
+  private congressVotes = new Map<ClientID, number>();
+  private congressTimer: ReturnType<typeof setTimeout> | undefined;
 
   private websockets: Set<WebSocket> = new Set();
 
@@ -531,6 +543,16 @@ export class GameServer {
                 return;
               }
               case "toggle_pause": {
+                if (this.congressEndsAt !== null) {
+                  this.log.warn(
+                    "Cannot manually toggle pause during Congress",
+                    {
+                      gameID: this.id,
+                      clientID: client.clientID,
+                    },
+                  );
+                  return;
+                }
                 // Only lobby creator can pause/resume
                 if (client.clientID !== this.lobbyCreatorID) {
                   this.log.warn(`Only lobby creator can toggle pause`, {
@@ -557,6 +579,32 @@ export class GameServer {
                   clientID: client.clientID,
                   gameID: this.id,
                 });
+                break;
+              }
+              case "congress_vote": {
+                if (
+                  this.gameConfig.gameMode === GameMode.WorldCongress &&
+                  this.congressEndsAt !== null &&
+                  stampedIntent.session === this.congressSession &&
+                  Date.now() < this.congressEndsAt
+                ) {
+                  this.congressVotes.set(
+                    client.clientID,
+                    stampedIntent.proposalIndex,
+                  );
+                }
+                break;
+              }
+              case "congress_start":
+              case "congress_resolve": {
+                this.log.warn(
+                  "Rejected client-supplied Congress system intent",
+                  {
+                    gameID: this.id,
+                    clientID: client.clientID,
+                    intentType: stampedIntent.type,
+                  },
+                );
                 break;
               }
               default: {
@@ -715,6 +763,72 @@ export class GameServer {
         c.ws.send(msg);
       }
     });
+
+    this.maybeBeginCongress();
+  }
+
+  private maybeBeginCongress(): void {
+    if (
+      this.gameConfig.gameMode !== GameMode.WorldCongress ||
+      this.isPaused ||
+      this.congressEndsAt !== null ||
+      this.turns.length < this.nextCongressTurn ||
+      this._hasEnded
+    ) {
+      return;
+    }
+
+    const systemClientID =
+      this.lobbyCreatorID ?? this.activeClients[0]?.clientID;
+    if (systemClientID === undefined) return;
+
+    this.congressSession++;
+    this.congressEndsAt = Date.now() + CONGRESS_VOTE_DURATION_MS;
+    this.congressVotes.clear();
+    this.addIntent({
+      type: "congress_start",
+      session: this.congressSession,
+      endsAt: this.congressEndsAt,
+      clientID: systemClientID,
+    });
+
+    // Deliver the deterministic Congress start turn, then stop normal turns
+    // while the server continues accepting only Congress votes.
+    this.endTurn();
+    this.isPaused = true;
+    this.congressTimer = setTimeout(
+      () => this.resolveCongress(),
+      CONGRESS_VOTE_DURATION_MS,
+    );
+  }
+
+  private resolveCongress(): void {
+    if (this.congressEndsAt === null) return;
+    const systemClientID =
+      this.lobbyCreatorID ?? this.activeClients[0]?.clientID;
+    if (systemClientID === undefined) return;
+
+    const voteCounts = [0, 0, 0];
+    for (const vote of this.congressVotes.values()) voteCounts[vote]++;
+    const winner = selectCongressWinner(
+      this.congressSession,
+      voteCounts,
+      this.activeClients.length,
+    );
+
+    this.isPaused = false;
+    this.nextCongressTurn = this.turns.length + CONGRESS_SESSION_INTERVAL_TURNS;
+    this.addIntent({
+      type: "congress_resolve",
+      session: this.congressSession,
+      proposalIndex: winner,
+      voteCounts,
+      clientID: systemClientID,
+    });
+    this.endTurn();
+    this.congressEndsAt = null;
+    this.congressVotes.clear();
+    this.congressTimer = undefined;
   }
 
   private startLobbyInfoBroadcast() {
@@ -914,6 +1028,10 @@ export class GameServer {
     if (this.endTurnIntervalID) {
       clearInterval(this.endTurnIntervalID);
       this.endTurnIntervalID = undefined;
+    }
+    if (this.congressTimer) {
+      clearTimeout(this.congressTimer);
+      this.congressTimer = undefined;
     }
     this.websockets.forEach((ws) => {
       if (ws.readyState === WebSocket.OPEN) {

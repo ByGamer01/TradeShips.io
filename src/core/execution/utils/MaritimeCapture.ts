@@ -1,4 +1,12 @@
-import { Game, GameMode, Player, Team, Unit, UnitType } from "../../game/Game";
+import {
+  Game,
+  GameMode,
+  Player,
+  PlayerType,
+  Team,
+  Unit,
+  UnitType,
+} from "../../game/Game";
 import { MaritimeObjectiveStatus } from "../../game/GameUpdates";
 
 /**
@@ -11,9 +19,9 @@ import { MaritimeObjectiveStatus } from "../../game/GameUpdates";
 
 export type MaritimeController = Player | Team;
 
+// Trade ships are merchants, not combatants — they exert no route control.
 export const NAVAL_CAPTURE_POWER = new Map<UnitType, number>([
   [UnitType.TransportShip, 1],
-  [UnitType.TradeShip, 1],
   [UnitType.Warship, 3],
   [UnitType.Submarine, 3],
   [UnitType.AntiAirFrigate, 3],
@@ -22,6 +30,9 @@ export const NAVAL_CAPTURE_POWER = new Map<UnitType, number>([
 ]);
 
 export const CAPTURE_RATE_PER_POWER_PER_TICK = 0.02;
+// Effective capture power is the leader's advantage over the runner-up,
+// clamped to this cap: past it, extra hulls win battles but not the clock.
+export const CAPTURE_POWER_CAP = 12;
 export const CONTROLLED_PERCENT = 100;
 
 export interface NavalPowerEntry {
@@ -76,6 +87,24 @@ export function controllerFor(mg: Game, player: Player): MaritimeController {
   return player;
 }
 
+/** One solvent human member must hold the gold required by the global mission. */
+export function controllerCompletedEconomicGoal(
+  mg: Game,
+  controller: MaritimeController,
+): boolean {
+  const players =
+    typeof controller === "string"
+      ? mg.players().filter((player) => player.team() === controller)
+      : [controller];
+  const goal = mg.config().economicVictoryGold();
+  return players.some(
+    (player) =>
+      player.type() === PlayerType.Human &&
+      player.gold() >= goal &&
+      player.debt() === 0n,
+  );
+}
+
 /**
  * Sum naval capture power per controller over the units inside the zone,
  * sorted by power descending with a deterministic key tie-break.
@@ -123,16 +152,27 @@ export function stepCapture(
     return;
   }
 
-  if (second !== undefined && top.power === second.power) {
+  // Only each side's first CAPTURE_POWER_CAP of power counts toward the
+  // clock: extra hulls win battles, not the capture. The rate then scales
+  // with the leader's effective margin, so any rival presence slows it and
+  // a capped defender freezes any spam outright.
+  const effectiveTop = Math.min(top.power, CAPTURE_POWER_CAP);
+  const effectiveSecond = Math.min(second?.power ?? 0, CAPTURE_POWER_CAP);
+
+  if (effectiveTop === effectiveSecond) {
     state.leader = null;
     state.status = "contested";
     return;
   }
 
   state.leader = top.controller;
-  const delta = top.power * CAPTURE_RATE_PER_POWER_PER_TICK;
+  const delta =
+    (effectiveTop - effectiveSecond) * CAPTURE_RATE_PER_POWER_PER_TICK;
 
-  if (state.controller !== null && !sameController(state.controller, top.controller)) {
+  if (
+    state.controller !== null &&
+    !sameController(state.controller, top.controller)
+  ) {
     state.controlPercent = Math.max(0, state.controlPercent - delta);
     if (state.controlPercent === 0) {
       state.controller = top.controller;

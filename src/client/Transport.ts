@@ -35,6 +35,13 @@ export class PauseGameIntentEvent implements GameEvent {
   constructor(public readonly paused: boolean) {}
 }
 
+export class SendCongressVoteIntentEvent implements GameEvent {
+  constructor(
+    public readonly session: number,
+    public readonly proposalIndex: number,
+  ) {}
+}
+
 export class SendAllianceRequestIntentEvent implements GameEvent {
   constructor(
     public readonly requestor: PlayerView,
@@ -262,6 +269,9 @@ export class Transport {
     this.eventBus.on(BuildUnitIntentEvent, (e) => this.onBuildUnitIntent(e));
 
     this.eventBus.on(PauseGameIntentEvent, (e) => this.onPauseGameIntent(e));
+    this.eventBus.on(SendCongressVoteIntentEvent, (e) =>
+      this.onSendCongressVoteIntent(e),
+    );
     this.eventBus.on(SendWinnerEvent, (e) => this.onSendWinnerEvent(e));
     this.eventBus.on(SendHashEvent, (e) => this.onSendHashEvent(e));
     this.eventBus.on(CancelAttackIntentEvent, (e) =>
@@ -607,6 +617,14 @@ export class Transport {
     this.sendIntent({
       type: "toggle_pause",
       paused: event.paused,
+    });
+  }
+
+  private onSendCongressVoteIntent(event: SendCongressVoteIntentEvent) {
+    this.sendIntent({
+      type: "congress_vote",
+      session: event.session,
+      proposalIndex: event.proposalIndex,
     });
   }
 

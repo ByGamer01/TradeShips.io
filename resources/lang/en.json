@@ -351,7 +351,8 @@
     "summary_keep": "Keep",
     "summary_send": "Send",
     "target_dead": "Target eliminated",
-    "target_dead_note": "You can't send resources to an eliminated player."
+    "target_dead_note": "You can't send resources to an eliminated player.",
+    "unavailable": "Unavailable"
   },
   "control_panel": {
     "allied_afk_neighbor_info": "You can attack disconnected players even if you are allied with them.",
@@ -440,7 +441,8 @@
     "trade_ship_captured": "Your trade ship was captured by {name}",
     "unit_destroyed": "Your {unit} was destroyed",
     "unit_voluntarily_deleted": "Unit voluntarily deleted",
-    "wants_to_renew_alliance": "{name} wants to renew your alliance"
+    "wants_to_renew_alliance": "{name} wants to renew your alliance",
+    "war_economy_recovered": "War economy recovered {gold} gold after defeating {name}"
   },
   "flag_input": {
     "button_title": "Pick a flag!",
@@ -520,7 +522,8 @@
   },
   "game_mode": {
     "ffa": "Free for All",
-    "teams": "Teams"
+    "teams": "Teams",
+    "world_congress": "World Congress"
   },
   "game_starting_modal": {
     "based_on": "Based on OpenFront",
@@ -782,8 +785,10 @@
     "svg": "uk_us_flag"
   },
   "leaderboard": {
+    "bankrupt": "Bankrupt",
     "cities": "Cities",
     "control": "Control",
+    "debt": "Debt",
     "gold": "Gold",
     "launchers": "Launchers",
     "maxtroops": "Max troops",
@@ -839,8 +844,7 @@
     "terms_of_service": "Terms of Service",
     "title": "TradeShips.io (ALPHA)",
     "troubleshooting": "Troubleshooting",
-    "user_avatar_alt": "{username}'s avatar",
-    "wiki": "Wiki"
+    "user_avatar_alt": "{username}'s avatar"
   },
   "map": {
     "achiran": "Achiran",
@@ -978,6 +982,7 @@
     "contested": "Contested",
     "controlled": "Controlled",
     "hint": "Control the central sea route to win",
+    "mission": "Mission: control 100% of the sea route and hold {gold} gold without debt",
     "neutral": "Neutral"
   },
   "matchmaking_button": {
@@ -1044,9 +1049,11 @@
     "alliances": "Alliances",
     "arc_down": "Downward arc",
     "arc_up": "Upward arc",
+    "bankrupt": "Bankrupt",
     "betrayals": "Betrayals",
     "break_alliance": "Break Alliance",
     "chat": "Chat",
+    "debt": "Debt",
     "emotes": "Emojis",
     "flip_rocket_trajectory": "Flip rocket trajectory",
     "gold": "Gold",
@@ -1054,6 +1061,7 @@
     "kick_confirm": "Kick {name}?\n\nThey won't be able to rejoin this game.",
     "kicked": "Already kicked",
     "moderation": "Moderation",
+    "request_gold": "Request Gold",
     "send_alliance": "Send Alliance",
     "send_gold": "Send Gold",
     "send_troops": "Send Troops",
@@ -1067,7 +1075,8 @@
     "tariff_tooltip": "Impose a tariff on this player's trade for {cost} gold",
     "trading": "Trading",
     "traitor": "Traitor",
-    "troops": "Troops"
+    "troops": "Troops",
+    "war_exhaustion": "War exhaustion"
   },
   "player_stats_table": {
     "arrived": "Arrived",
@@ -1534,5 +1543,43 @@
     "you_won": "You Won!",
     "your_team": "Your team won!",
     "youtube_tutorial": "Need some help?"
+  },
+  "world_congress": {
+    "active_resolution": "Active resolution",
+    "cast_vote": "Cast your vote",
+    "condemn_player": {
+      "description": "Break every alliance held by {player} and apply the traitor penalty.",
+      "title": "Condemn {player}"
+    },
+    "embargo_player": {
+      "description": "Suspend all trade with {player} for three minutes.",
+      "title": "Embargo {player}"
+    },
+    "infrastructure_subsidy": {
+      "description": "Reduce the cost of every {infrastructure} by 50% for three minutes.",
+      "title": "{infrastructure} subsidy"
+    },
+    "infrastructure_tax": {
+      "description": "Increase the cost of every {infrastructure} by 50% for three minutes.",
+      "title": "{infrastructure} tax"
+    },
+    "international_development_fund": {
+      "description": "Collect 5% of active players' gold and divide it among the five smallest powers.",
+      "title": "Development fund"
+    },
+    "nuclear_non_proliferation": {
+      "description": "Prevent all players from launching nuclear weapons for three minutes.",
+      "title": "Nuclear non-proliferation"
+    },
+    "open_seas": {
+      "description": "Prevent warships from attacking or capturing trade ships for three minutes.",
+      "title": "Open seas"
+    },
+    "resolution_passed": "Resolution passed",
+    "seconds": "seconds",
+    "session": "Session {session}",
+    "title": "World Congress",
+    "vote_recorded": "Vote recorded — click to change",
+    "votes": "{votes} votes"
   }
 }

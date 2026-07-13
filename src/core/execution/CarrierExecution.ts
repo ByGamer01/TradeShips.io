@@ -10,6 +10,7 @@ import { randomPatrolTile } from "./utils/NavalPatrol";
 const CARRIER_TARGET_TYPES = [
   UnitType.TransportShip,
   UnitType.Warship,
+  UnitType.AircraftCarrier,
   UnitType.AntiAirFrigate,
   UnitType.Submarine,
 ] as const;
@@ -176,6 +177,9 @@ export class CarrierExecution implements Execution {
       case PathStatus.COMPLETE:
         this.carrier!.move(result.node);
         if (manual) {
+          // Re-anchor the patrol on the new station so the carrier holds
+          // position instead of sailing back to its spawn area.
+          this.patrolTile = destination;
           this.carrier!.setTargetTile(undefined);
         } else {
           this.patrolDestination = undefined;

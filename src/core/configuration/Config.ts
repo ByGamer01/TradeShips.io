@@ -18,6 +18,7 @@ import {
 } from "../game/Game";
 import { TileRef } from "../game/GameMap";
 import { UserSettings } from "../game/UserSettings";
+import { infrastructureCostMultiplier } from "../game/WorldCongress";
 import { GameConfig, TeamCountConfig } from "../Schemas";
 import { NukeType } from "../StatsSchemas";
 import { assertNever, sigmoid, toInt, within } from "../Util";
@@ -276,11 +277,11 @@ export class Config {
   portNavalSpecHealingSlotsBonus(): number {
     return 2;
   }
-  /** Naval base: torpedo battery engagement range in tiles. */
+  /** Naval base: coastal battery engagement range in tiles. */
   portNavalBatteryRange(): number {
     return 60;
   }
-  /** Naval base: ticks between torpedo battery attacks. */
+  /** Naval base: ticks between coastal battery attacks. */
   portNavalBatteryAttackRate(): number {
     return 25;
   }
@@ -584,7 +585,11 @@ export class Config {
           Math.min(player.unitsOwned(type), player.unitsConstructed(type)),
         0,
       );
-      return BigInt(costFn(numUnits));
+      return BigInt(
+        Math.round(
+          costFn(numUnits) * infrastructureCostMultiplier(game, types[0]),
+        ),
+      );
     };
   }
 
@@ -751,7 +756,9 @@ export class Config {
       }
 
       const defenderTroopLoss = defender.troops() / defender.numTilesOwned();
-      const traitorMod = defender.isTraitor() ? this.traitorDefenseDebuff() : 1;
+      const traitorMod =
+        (defender.isTraitor() ? this.traitorDefenseDebuff() : 1) *
+        (defender.isBankrupt() ? this.bankruptcyDefenseDebuff() : 1);
       const currentAttackerLoss =
         within(defender.troops() / attackTroops, 0.6, 2) *
         mag *
@@ -772,7 +779,8 @@ export class Config {
           speed *
           largeDefenderSpeedDebuff *
           largeAttackerSpeedBonus *
-          (defender.isTraitor() ? this.traitorSpeedDebuff() : 1),
+          (defender.isTraitor() ? this.traitorSpeedDebuff() : 1) *
+          (defender.isBankrupt() ? this.bankruptcySpeedDebuff() : 1),
       };
     } else {
       return {
@@ -933,6 +941,97 @@ export class Config {
     return BigInt(Math.floor(Number(baseRate) * multiplier));
   }
 
+  warExhaustionAttackTicks(): number {
+    return 1_800;
+  }
+
+  warExhaustionRecoveryTicks(): number {
+    return 900;
+  }
+
+  warEconomyCostMultiplier(exhaustion: number, activeAttacks: number): number {
+    if (activeAttacks <= 0) return 0;
+    return Math.sqrt(activeAttacks) * (0.25 + 1.75 * exhaustion);
+  }
+
+  warRecoveryReward(expenses: Gold): Gold {
+    const refund = expenses / 4n;
+    return refund < 2_000_000n ? refund : 2_000_000n;
+  }
+
+  /** Interest charged on outstanding debt, in basis points per accrual. */
+  debtInterestRateBps(): bigint {
+    return 100n;
+  }
+
+  /** Recurring cost of keeping a hull afloat, charged every upkeep interval. */
+  unitUpkeep(unitType: UnitType): Gold {
+    switch (unitType) {
+      case UnitType.Warship:
+      case UnitType.AntiAirFrigate:
+        return 2_000n;
+      case UnitType.Submarine:
+        return 1_500n;
+      case UnitType.AircraftCarrier:
+        return 5_000n;
+      default:
+        return 0n;
+    }
+  }
+
+  /** Ticks between fleet upkeep charges (100 ticks ≈ 10s). */
+  fleetUpkeepIntervalTicks(): number {
+    return 100;
+  }
+
+  /**
+   * Flat per-unit valuation used for GDP (base build cost, ignoring the
+   * per-player escalation). GDP = treasury + book value of live assets.
+   */
+  unitBookValue(unitType: UnitType): Gold {
+    switch (unitType) {
+      case UnitType.Warship:
+        return 250_000n;
+      case UnitType.Submarine:
+        return 200_000n;
+      case UnitType.AircraftCarrier:
+        return 400_000n;
+      case UnitType.AntiAirFrigate:
+        return 300_000n;
+      case UnitType.Port:
+      case UnitType.City:
+      case UnitType.Factory:
+        return 125_000n;
+      case UnitType.DefensePost:
+        return 50_000n;
+      case UnitType.MissileSilo:
+        return 1_000_000n;
+      case UnitType.SAMLauncher:
+        return 1_500_000n;
+      default:
+        return 0n;
+    }
+  }
+
+  /** Gold a debt-free player must bank to win the global economic mission. */
+  economicVictoryGold(): Gold {
+    return 500_000_000n;
+  }
+
+  /** Defense multiplier applied to bankrupt defenders (mirrors traitors). */
+  bankruptcyDefenseDebuff(): number {
+    return 0.5;
+  }
+
+  bankruptcySpeedDebuff(): number {
+    return 0.8;
+  }
+
+  /** Ticks between debt interest accruals (100 ticks ≈ 10s). */
+  debtInterestIntervalTicks(): number {
+    return 100;
+  }
+
   nukeMagnitudes(unitType: UnitType): NukeMagnitude {
     switch (unitType) {
       case UnitType.MIRVWarhead:
@@ -1035,10 +1134,6 @@ export class Config {
 
   warshipShellAttackRate(): number {
     return 20;
-  }
-
-  warshipTorpedoAttackRate(): number {
-    return this.warshipShellAttackRate() * 2;
   }
 
   /** Max distance at which surface warships can target a submerged submarine. */

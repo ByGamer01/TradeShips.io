@@ -18,12 +18,12 @@ import {
   UnitType,
 } from "../../core/game/Game";
 import { TeamCountConfig } from "../../core/Schemas";
-export { unitOptions } from "../UnitTypeLabels";
 import { unitOptions } from "../UnitTypeLabels";
 import { translateText } from "../Utils";
 import "./Difficulties";
 import "./FluentSlider";
 import "./map/MapPicker";
+export { unitOptions } from "../UnitTypeLabels";
 
 const ACTIVE_CARD =
   "bg-malibu-blue/20 border-malibu-blue/50 shadow-[var(--shadow-malibu-blue)]";
@@ -423,28 +423,32 @@ export class GameConfigSettings extends LitElement {
           "bg-purple-500/20",
           "host_modal.mode",
           html`
-            <div class="grid grid-cols-2 gap-4">
-              ${[GameMode.FFA, GameMode.Team].map((mode) => {
-                const isSelected = settings.gameMode.selected === mode;
-                return html`
-                  <button
-                    class="${cardClass(isSelected, "py-6 text-center")}"
-                    @click=${() => this.handleGameModeSelect(mode)}
-                  >
-                    <span
-                      class="text-sm font-bold text-white uppercase tracking-widest"
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              ${[GameMode.FFA, GameMode.Team, GameMode.WorldCongress].map(
+                (mode) => {
+                  const isSelected = settings.gameMode.selected === mode;
+                  return html`
+                    <button
+                      class="${cardClass(isSelected, "py-6 text-center")}"
+                      @click=${() => this.handleGameModeSelect(mode)}
                     >
-                      ${mode === GameMode.FFA
-                        ? translateText("game_mode.ffa")
-                        : translateText("game_mode.teams")}
-                    </span>
-                  </button>
-                `;
-              })}
+                      <span
+                        class="text-sm font-bold text-white uppercase tracking-widest"
+                      >
+                        ${mode === GameMode.FFA
+                          ? translateText("game_mode.ffa")
+                          : mode === GameMode.Team
+                            ? translateText("game_mode.teams")
+                            : translateText("game_mode.world_congress")}
+                      </span>
+                    </button>
+                  `;
+                },
+              )}
             </div>
           `,
         )}
-        ${settings.gameMode.selected === GameMode.FFA
+        ${settings.gameMode.selected !== GameMode.Team
           ? nothing
           : html`
               <section class="space-y-6">

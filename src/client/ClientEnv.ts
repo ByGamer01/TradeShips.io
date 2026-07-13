@@ -101,7 +101,7 @@ export class ClientEnv {
   }
   static gameCreationRate(): number {
     // Keep in sync with ServerEnv.gameCreationRate.
-    return 5 * 1000;
+    return 10 * 1000;
   }
   static workerIndex(gameID: GameID): number {
     return simpleHash(gameID) % ClientEnv.numWorkers();

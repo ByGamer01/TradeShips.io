@@ -260,8 +260,8 @@ describe("Warship", () => {
     expect(selectedType).toBe(UnitType.TransportShip);
   });
 
-  test("Warship fires torpedoes at reachable enemy warships", async () => {
-    game.config().warshipTorpedoAttackRate = () => -1;
+  test("Warship fires shells at reachable enemy warships", async () => {
+    game.config().warshipShellAttackRate = () => -1;
     game.config().warshipTargettingRange = () => 10;
 
     const warship = player1.buildUnit(
@@ -280,11 +280,11 @@ describe("Warship", () => {
     executeTicks(game, 5);
 
     expect(enemyWarship.health()).toBeLessThan(healthBefore);
-    expect(game.units(UnitType.Shell)).toHaveLength(0);
+    expect(game.units(UnitType.Torpedo)).toHaveLength(0);
   });
 
-  test("Warship does not fire torpedoes at warships in different water components", async () => {
-    game.config().warshipTorpedoAttackRate = () => 0;
+  test("Warship does not fire shells at warships in different water components", async () => {
+    game.config().warshipShellAttackRate = () => 0;
     game.config().warshipTargettingRange = () => 10;
 
     const warshipTile = game.ref(coastX + 1, 2);
@@ -310,7 +310,7 @@ describe("Warship", () => {
     executeTicks(game, 5);
 
     expect(warship.targetUnit()).not.toBe(enemyWarship);
-    expect(game.units(UnitType.Torpedo)).toHaveLength(0);
+    expect(game.units(UnitType.Shell)).toHaveLength(0);
   });
 
   test("Warship targets ships reachable through any adjacent water component", async () => {

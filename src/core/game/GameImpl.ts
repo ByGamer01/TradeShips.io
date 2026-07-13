@@ -195,7 +195,7 @@ export class GameImpl implements Game {
   }
 
   private addPlayers() {
-    if (this.config().gameConfig().gameMode === GameMode.FFA) {
+    if (this.config().gameConfig().gameMode !== GameMode.Team) {
       this._humans.forEach((p) => this.addPlayer(p));
       this._nations.forEach((n) => this.addPlayer(n.playerInfo));
       return;
@@ -1269,6 +1269,23 @@ export class GameImpl implements Game {
 
       // Record stats
       this.stats().goldWar(conqueror, conquered, goldCaptured);
+    }
+
+    const recoveryGold = conqueror.isOnSameTeam(conquered)
+      ? 0n
+      : conqueror.collectWarRecoveryReward();
+    if (recoveryGold > 0n) {
+      conqueror.addGold(recoveryGold);
+      this.displayMessage(
+        "events_display.war_economy_recovered",
+        MessageType.CONQUERED_PLAYER,
+        conqueror.id(),
+        recoveryGold,
+        {
+          gold: renderNumber(recoveryGold),
+          name: conquered.displayName(),
+        },
+      );
     }
 
     // OFM: per-kill log for standings (humans-only filtered in recordKill).

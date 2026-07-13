@@ -57,7 +57,7 @@ export class LobbyTeamView extends LitElement {
     // game start, so preview that real count instead of the map's base count.
     if (
       this.isPublicGame &&
-      this.gameMode === GameMode.FFA &&
+      this.gameMode !== GameMode.Team &&
       this.nationCount > 0 &&
       this.maxPlayers > 0
     ) {
@@ -213,7 +213,7 @@ export class LobbyTeamView extends LitElement {
 
   /** Dimmed tags for the nations that will fill the remaining slots. */
   private renderNationTags() {
-    if (this.gameMode !== GameMode.FFA || this.effectiveNationCount <= 0) {
+    if (this.gameMode === GameMode.Team || this.effectiveNationCount <= 0) {
       return html``;
     }
     const label = translateText("host_modal.nation_player");

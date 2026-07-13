@@ -42,7 +42,7 @@ describe("TorpedoExecution", () => {
     expect(game.config().unitInfo(UnitType.Torpedo).damage).toBe(300);
     expect(game.config().torpedoLifetime()).toBe(70);
     expect(game.config().torpedoStepsPerTick()).toBe(2);
-    expect(game.config().warshipTorpedoAttackRate()).toBe(40);
+    expect(game.config().submarineTorpedoAttackRate()).toBe(20);
 
     expect(DISABLED_ARSENAL).not.toContain(UnitType.Torpedo);
     expect(Structures.types).not.toContain(UnitType.Torpedo);

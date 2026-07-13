@@ -16,6 +16,7 @@ import {
   WarshipState,
 } from "./Game";
 import { TileRef } from "./GameMap";
+import { ActiveCongressResolution, CongressProposal } from "./WorldCongress";
 
 export interface GameUpdateViewData {
   tick: number;
@@ -99,6 +100,7 @@ export enum GameUpdateType {
   GamePaused,
   DonateEvent,
   MaritimeObjective,
+  WorldCongress,
 }
 
 export type GameUpdate =
@@ -125,7 +127,19 @@ export type GameUpdate =
   | SpawnPhaseEndUpdate
   | GamePausedUpdate
   | DonateEventUpdate
-  | MaritimeObjectiveUpdate;
+  | MaritimeObjectiveUpdate
+  | WorldCongressUpdate;
+
+export interface WorldCongressUpdate {
+  type: GameUpdateType.WorldCongress;
+  phase: "voting" | "resolved";
+  session: number;
+  proposals: CongressProposal[];
+  endsAt?: number;
+  winningProposalIndex?: number;
+  voteCounts?: number[];
+  activeResolution?: ActiveCongressResolution;
+}
 
 export interface BonusEventUpdate {
   type: GameUpdateType.BonusEvent;
@@ -238,6 +252,9 @@ export interface PlayerUpdate {
   embargoes?: Set<PlayerID>;
   isTraitor?: boolean;
   traitorRemainingTicks?: number;
+  warExhaustionPercent?: number;
+  debt?: Gold;
+  isBankrupt?: boolean;
   targets?: number[];
   outgoingEmojis?: EmojiMessage[];
   outgoingAttacks?: AttackUpdate[];

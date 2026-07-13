@@ -174,6 +174,67 @@ describe("NationMaritimeBehavior", () => {
     }
   });
 
+  it("escalates its detachment to outmatch a rival fleet inside the zone", async () => {
+    const game = await setup("half_land_half_ocean", {
+      gameMode: GameMode.FFA,
+    });
+    const inside = game.ref(12, 8);
+    registerStubZone(game, inside);
+    const nation = addNation(game);
+    game.addPlayer(new PlayerInfo("rival", PlayerType.Human, null, "rival_id"));
+    const rival = game.player("rival_id");
+    for (let i = 0; i < 2; i++) {
+      rival.buildUnit(UnitType.Warship, inside, { patrolTile: inside });
+      nation.buildUnit(UnitType.Warship, inside, { patrolTile: inside });
+    }
+    // Base detachment (2) is already patrolling, but the rival fields power 6:
+    // the nation must keep escalating instead of standing down.
+    const outside = game.ref(9, 1);
+    const spare = nation.buildUnit(UnitType.Warship, outside, {
+      patrolTile: outside,
+    });
+
+    const behavior = new NationMaritimeBehavior(
+      new PseudoRandom(1),
+      game,
+      nation,
+    );
+    behavior.contestObjective();
+
+    expect(
+      game.maritimeZone()!.contains(spare.warshipState().patrolTile!),
+    ).toBe(true);
+  });
+
+  it("caps the escalated detachment at the capture-stall threshold", async () => {
+    const game = await setup("half_land_half_ocean", {
+      gameMode: GameMode.FFA,
+    });
+    const inside = game.ref(12, 8);
+    registerStubZone(game, inside);
+    const nation = addNation(game);
+    game.addPlayer(new PlayerInfo("rival", PlayerType.Human, null, "rival_id"));
+    const rival = game.player("rival_id");
+    for (let i = 0; i < 20; i++) {
+      rival.buildUnit(UnitType.Warship, inside, { patrolTile: inside });
+    }
+    for (let i = 0; i < 4; i++) {
+      nation.buildUnit(UnitType.Warship, inside, { patrolTile: inside });
+    }
+    const addExecution = vi.spyOn(game, "addExecution");
+
+    const behavior = new NationMaritimeBehavior(
+      new PseudoRandom(1),
+      game,
+      nation,
+    );
+    behavior.contestObjective();
+
+    // Four patrolling hulls already stall any spam at the capture cap;
+    // matching the rival ship-for-ship would be wasted gold.
+    expect(addExecution).not.toHaveBeenCalled();
+  });
+
   it("does not build past the warship cap", async () => {
     const game = await setup("half_land_half_ocean", {
       gameMode: GameMode.FFA,

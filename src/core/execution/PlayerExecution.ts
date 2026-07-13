@@ -78,7 +78,25 @@ export class PlayerExecution implements Execution {
     const troopInc = this.config.troopIncreaseRate(this.player);
     this.player.addTroops(troopInc);
     const goldFromWorkers = this.config.goldAdditionRate(this.player);
-    this.player.addGold(goldFromWorkers);
+    // Outstanding debt taxes income before it reaches the treasury.
+    this.player.addGold(this.player.serviceDebt(goldFromWorkers));
+    if (ticks % this.config.debtInterestIntervalTicks() === 0) {
+      this.player.accrueDebtInterest();
+      this.player.updateBankruptcy();
+    }
+    if (ticks % this.config.fleetUpkeepIntervalTicks() === 0) {
+      this.player.chargeFleetUpkeep();
+    }
+    // Invading a bankrupt nation is debt-free: it doesn't count as a war.
+    const activeWars = this.player
+      .outgoingAttacks()
+      .filter(
+        (attack) =>
+          attack.target().isPlayer() &&
+          !(attack.target() as Player).isBankrupt() &&
+          !attack.retreating(),
+      ).length;
+    this.player.updateWarEconomy(activeWars, goldFromWorkers);
 
     // Record stats
     this.mg.stats().goldWork(this.player, goldFromWorkers);

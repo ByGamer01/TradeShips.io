@@ -19,8 +19,8 @@ import { NukeExecution } from "../NukeExecution";
 import { UpgradeStructureExecution } from "../UpgradeStructureExecution";
 import { closestTwoTiles } from "../Util";
 import { AiAttackBehavior } from "../utils/AiAttackBehavior";
-import { EMOJI_NUKE, NationEmojiBehavior } from "./NationEmojiBehavior";
 import { nationDifficulty } from "../utils/NationDifficulty";
+import { EMOJI_NUKE, NationEmojiBehavior } from "./NationEmojiBehavior";
 import { randTerritoryTileArray } from "./NationUtils";
 
 /** Cap on silo levels reachable via maybeDestroyEnemySam's upgrade fallback. */
@@ -206,7 +206,7 @@ export class NationNukeBehavior {
     // On impossible difficulty, prioritize nuking the crown if they have more than 50% of the map
     const { gameMode } = this.game.config().gameConfig();
     const difficulty = nationDifficulty(this.game);
-    if (difficulty === Difficulty.Impossible && gameMode === GameMode.FFA) {
+    if (difficulty === Difficulty.Impossible && gameMode !== GameMode.Team) {
       const numTilesWithoutFallout =
         this.game.numLandTiles() - this.game.numTilesWithFallout();
       if (numTilesWithoutFallout > 0) {
@@ -303,7 +303,7 @@ export class NationNukeBehavior {
   private findFFACrownTarget(): Player | null {
     const { gameMode } = this.game.config().gameConfig();
     const difficulty = nationDifficulty(this.game);
-    if (gameMode !== GameMode.FFA) {
+    if (gameMode === GameMode.Team) {
       return null;
     }
 

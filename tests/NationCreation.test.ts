@@ -322,6 +322,22 @@ describe("createNationsForGame: public player-quota backfill", () => {
     expect(new Set(names).size).toBe(17);
   });
 
+  test("uses an exact nation quota for team slots", () => {
+    const gameStart = makePublicGameStart(8, 3);
+    gameStart.config.gameMode = GameMode.Team;
+    gameStart.config.playerTeams = 2;
+
+    const nations = createNationsForGame(
+      gameStart,
+      makeManifestNations(20),
+      [],
+      3,
+      new PseudoRandom(7),
+    );
+
+    expect(nations).toHaveLength(5);
+  });
+
   test("keeps the manifest roster when it already covers the quota", () => {
     const manifest = makeManifestNations(10);
     const random = new PseudoRandom(7);

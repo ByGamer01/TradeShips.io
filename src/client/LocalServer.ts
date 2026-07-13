@@ -1,6 +1,12 @@
 import { ClientEnv } from "src/client/ClientEnv";
 import { z } from "zod";
 import { EventBus } from "../core/EventBus";
+import { GameMode } from "../core/game/Game";
+import {
+  CONGRESS_FIRST_SESSION_TURN,
+  CONGRESS_SESSION_INTERVAL_TURNS,
+  CONGRESS_VOTE_DURATION_MS,
+} from "../core/game/WorldCongress";
 import {
   AllPlayersStats,
   ClientID,
@@ -51,6 +57,11 @@ export class LocalServer {
   private startedAt: number;
 
   private paused = false;
+  private congressSession = 0;
+  private nextCongressTurn = CONGRESS_FIRST_SESSION_TURN;
+  private congressEndsAt: number | null = null;
+  private congressVote: number | null = null;
+  private congressTimer: ReturnType<typeof setTimeout> | undefined;
   private replaySpeedMultiplier = defaultReplaySpeedMultiplier;
 
   private clientID: ClientID | undefined;
@@ -168,7 +179,18 @@ export class LocalServer {
         ...clientMsg.intent,
         clientID: this.clientID!,
       };
+      if (stampedIntent.type === "congress_vote") {
+        if (
+          this.congressEndsAt !== null &&
+          stampedIntent.session === this.congressSession &&
+          Date.now() < this.congressEndsAt
+        ) {
+          this.congressVote = stampedIntent.proposalIndex;
+        }
+        return;
+      }
       if (stampedIntent.type === "toggle_pause") {
+        if (this.congressEndsAt !== null) return;
         if (stampedIntent.paused) {
           // Pausing: add intent and end turn before pause takes effect
           this.intents.push(stampedIntent);
@@ -260,11 +282,65 @@ export class LocalServer {
       type: "turn",
       turn: pastTurn,
     });
+    this.maybeBeginCongress();
+  }
+
+  private maybeBeginCongress(): void {
+    if (
+      this.isReplay ||
+      this.lobbyConfig.gameStartInfo?.config.gameMode !==
+        GameMode.WorldCongress ||
+      this.paused ||
+      this.congressEndsAt !== null ||
+      this.turns.length < this.nextCongressTurn ||
+      this.clientID === undefined
+    ) {
+      return;
+    }
+
+    this.congressSession++;
+    this.congressVote = null;
+    this.congressEndsAt = Date.now() + CONGRESS_VOTE_DURATION_MS;
+    this.intents.push({
+      type: "congress_start",
+      session: this.congressSession,
+      endsAt: this.congressEndsAt,
+      clientID: this.clientID,
+    });
+    this.endTurn();
+    this.paused = true;
+    this.congressTimer = setTimeout(
+      () => this.resolveCongress(),
+      CONGRESS_VOTE_DURATION_MS,
+    );
+  }
+
+  private resolveCongress(): void {
+    if (this.congressEndsAt === null || this.clientID === undefined) {
+      return;
+    }
+    const winner = this.congressVote ?? 0;
+    const voteCounts = [0, 0, 0];
+    if (this.congressVote !== null) voteCounts[this.congressVote] = 1;
+    this.paused = false;
+    this.nextCongressTurn = this.turns.length + CONGRESS_SESSION_INTERVAL_TURNS;
+    this.intents.push({
+      type: "congress_resolve",
+      session: this.congressSession,
+      proposalIndex: winner,
+      voteCounts,
+      clientID: this.clientID,
+    });
+    this.endTurn();
+    this.congressEndsAt = null;
+    this.congressVote = null;
+    this.congressTimer = undefined;
   }
 
   public endGame() {
     console.log("local server ending game");
     clearInterval(this.turnCheckInterval);
+    if (this.congressTimer) clearTimeout(this.congressTimer);
     if (this.isReplay) {
       return;
     }

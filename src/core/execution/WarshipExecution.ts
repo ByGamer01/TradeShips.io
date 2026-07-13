@@ -8,11 +8,12 @@ import {
   UnitType,
 } from "../game/Game";
 import { TileRef } from "../game/GameMap";
+import { isCongressResolutionActive } from "../game/WorldCongress";
 import { WaterPathFinder } from "../pathfinding/PathFinder";
 import { PathStatus } from "../pathfinding/types";
 import { PseudoRandom } from "../PseudoRandom";
 import { findMinimumBy } from "../Util";
-import { TorpedoExecution } from "./TorpedoExecution";
+import { ShellExecution } from "./ShellExecution";
 
 const SURFACE_WARSHIP_TYPES = [
   UnitType.Warship,
@@ -41,6 +42,7 @@ export class WarshipExecution implements Execution {
 
   constructor(
     private input: (UnitParams<UnitType.Warship> & OwnerComp) | Unit,
+    private surfaceCombatEnabled = true,
   ) {}
 
   init(mg: Game, ticks: number): void {
@@ -109,6 +111,12 @@ export class WarshipExecution implements Execution {
       }
     }
 
+    if (!this.surfaceCombatEnabled) {
+      this.warship.setTargetUnit(undefined);
+      this.patrol();
+      return;
+    }
+
     this.warship.setTargetUnit(this.findTargetUnit());
 
     // Priority 1: Shoot transport ship if in range
@@ -134,6 +142,11 @@ export class WarshipExecution implements Execution {
 
     // Priority 3: Hunt trade ship only if not healing and no enemy warship
     if (this.warship.targetUnit()?.type() === UnitType.TradeShip) {
+      if (isCongressResolutionActive(this.mg, "open_seas")) {
+        this.warship.setTargetUnit(undefined);
+        this.patrol();
+        return;
+      }
       this.huntDownTradeShip();
       return;
     }
@@ -212,9 +225,7 @@ export class WarshipExecution implements Execution {
   }
 
   private repairHubs(): Unit[] {
-    return this.warship
-      .owner()
-      .units(UnitType.Port, UnitType.AircraftCarrier);
+    return this.warship.owner().units(UnitType.Port, UnitType.AircraftCarrier);
   }
 
   private findNearestRepairHubTile(): TileRef | undefined {
@@ -341,6 +352,7 @@ export class WarshipExecution implements Execution {
       }
 
       if (includeTradeShips && type === UnitType.TradeShip) {
+        if (isCongressResolutionActive(mg, "open_seas")) continue;
         if (hasPort === undefined) {
           hasPort = owner.unitCount(UnitType.Port) > 0;
           patrolTile = this.warship.warshipState().patrolTile;
@@ -487,7 +499,9 @@ export class WarshipExecution implements Execution {
       return false;
     }
 
-    const retreatAggroTarget = this.findRetreatAggroTarget();
+    const retreatAggroTarget = this.surfaceCombatEnabled
+      ? this.findRetreatAggroTarget()
+      : undefined;
     if (retreatAggroTarget) {
       this.warship.setTargetUnit(retreatAggroTarget);
       this.shootTarget();
@@ -743,14 +757,14 @@ export class WarshipExecution implements Execution {
 
   private shootTarget() {
     this.warship.updateWarshipState({ isInCombat: true });
-    const torpedoAttackRate = this.mg.config().warshipTorpedoAttackRate();
-    if (this.mg.ticks() - this.lastShellAttack > torpedoAttackRate) {
+    const shellAttackRate = this.mg.config().warshipShellAttackRate();
+    if (this.mg.ticks() - this.lastShellAttack > shellAttackRate) {
       if (this.warship.targetUnit()?.type() !== UnitType.TransportShip) {
         // Warships don't need to reload when attacking transport ships.
         this.lastShellAttack = this.mg.ticks();
       }
       this.mg.addExecution(
-        new TorpedoExecution(
+        new ShellExecution(
           this.warship.tile(),
           this.warship.owner(),
           this.warship,

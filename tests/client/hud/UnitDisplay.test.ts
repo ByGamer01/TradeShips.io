@@ -60,6 +60,8 @@ describe("UnitDisplay naval quickbar", () => {
     expect(rendered).toContain("/images/AntiAirFrigateIconWhite.svg");
     expect(rendered).toContain("/images/NavalMineIconWhite.svg");
     expect(rendered).toContain("/images/CongressIconWhite.svg");
+    expect(rendered).toContain('data-unit-group="structures"');
+    expect(rendered).toContain('data-unit-group="vehicles"');
     expect(rendered).not.toContain("atom_bomb");
     expect(rendered).not.toContain("missile_silo");
   });
@@ -121,6 +123,7 @@ describe("UnitDisplay naval quickbar", () => {
     const el = new UnitDisplay();
     const config = {
       isUnitDisabled: (unit: UnitType) => DISABLED_ARSENAL.includes(unit),
+      economicVictoryGold: () => 500_000_000n,
     };
     const player = {
       gold: () => 1_000_000n,
@@ -154,7 +157,9 @@ describe("UnitDisplay naval quickbar", () => {
 
     const rendered = collectRenderableText(el.render());
 
-    expect(rendered).toContain("Control the central sea route to win");
+    expect(rendered).toContain(
+      "Mission: control 100% of the sea route and hold 500M gold without debt",
+    );
     expect(rendered).toContain("Silk Route");
     expect(rendered).toContain("Blue Fleet");
     expect(rendered).toContain("67%");

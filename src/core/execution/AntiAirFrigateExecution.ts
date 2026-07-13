@@ -45,7 +45,9 @@ export class AntiAirFrigateExecution implements Execution {
       );
     }
 
-    this.warshipExecution = new WarshipExecution(this.frigate);
+    // Reuse naval movement, escort, and repair behavior without surface guns:
+    // anti-air frigates are dedicated aircraft interceptors.
+    this.warshipExecution = new WarshipExecution(this.frigate, false);
     this.warshipExecution.init(mg, ticks);
   }
 

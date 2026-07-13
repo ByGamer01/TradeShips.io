@@ -58,6 +58,12 @@ export function diffPlayerUpdate(
     "traitorRemainingTicks",
     prev.traitorRemainingTicks === next.traitorRemainingTicks,
   );
+  setIfDifferent(
+    "warExhaustionPercent",
+    prev.warExhaustionPercent === next.warExhaustionPercent,
+  );
+  setIfDifferent("debt", prev.debt === next.debt);
+  setIfDifferent("isBankrupt", prev.isBankrupt === next.isBankrupt);
   setIfDifferent("hasSpawned", prev.hasSpawned === next.hasSpawned);
   setIfDifferent("spawnTile", prev.spawnTile === next.spawnTile);
   setIfDifferent("betrayals", prev.betrayals === next.betrayals);
@@ -119,6 +125,14 @@ export function applyStateUpdate(target: PlayerState, pu: PlayerUpdate): void {
   if (pu.traitorRemainingTicks !== undefined) {
     target.traitorRemainingTicks = Math.max(0, pu.traitorRemainingTicks);
   }
+  if (pu.warExhaustionPercent !== undefined) {
+    target.warExhaustionPercent = Math.max(
+      0,
+      Math.min(100, pu.warExhaustionPercent),
+    );
+  }
+  if (pu.debt !== undefined) target.debt = Number(pu.debt);
+  if (pu.isBankrupt !== undefined) target.isBankrupt = pu.isBankrupt;
   if (pu.betrayals !== undefined) target.betrayals = pu.betrayals;
   if (pu.hasSpawned !== undefined) target.hasSpawned = pu.hasSpawned;
   if (pu.spawnTile !== undefined) target.spawnTile = pu.spawnTile;

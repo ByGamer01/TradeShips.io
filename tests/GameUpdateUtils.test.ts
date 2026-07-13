@@ -23,6 +23,9 @@ function makePlayerState(overrides: Partial<PlayerState> = {}): PlayerState {
     troops: 100,
     isTraitor: false,
     traitorRemainingTicks: 0,
+    warExhaustionPercent: 0,
+    debt: 0,
+    isBankrupt: false,
     betrayals: 0,
     hasSpawned: true,
     lastDeleteUnitTick: 0,
@@ -54,6 +57,29 @@ describe("diffPlayerUpdate", () => {
       type: GameUpdateType.Player,
       id: "player-a",
       betrayals: 1,
+    });
+  });
+
+  it("diffs war exhaustion changes", () => {
+    const prev = makePlayerUpdate({ warExhaustionPercent: 10 });
+    const next = makePlayerUpdate({ warExhaustionPercent: 35 });
+
+    expect(diffPlayerUpdate(prev, next)).toEqual({
+      type: GameUpdateType.Player,
+      id: "player-a",
+      warExhaustionPercent: 35,
+    });
+  });
+
+  it("diffs debt and bankruptcy changes", () => {
+    const prev = makePlayerUpdate({ debt: 0n, isBankrupt: false });
+    const next = makePlayerUpdate({ debt: 25_000n, isBankrupt: true });
+
+    expect(diffPlayerUpdate(prev, next)).toEqual({
+      type: GameUpdateType.Player,
+      id: "player-a",
+      debt: 25_000n,
+      isBankrupt: true,
     });
   });
 
@@ -251,6 +277,9 @@ describe("applyStateUpdate", () => {
       isAlive: false,
       isTraitor: true,
       traitorRemainingTicks: 3,
+      warExhaustionPercent: 67,
+      debt: 25_000n,
+      isBankrupt: true,
       betrayals: 2,
       hasSpawned: true,
       lastDeleteUnitTick: 50,
@@ -265,6 +294,9 @@ describe("applyStateUpdate", () => {
     expect(target.isAlive).toBe(false);
     expect(target.isTraitor).toBe(true);
     expect(target.traitorRemainingTicks).toBe(3);
+    expect(target.warExhaustionPercent).toBe(67);
+    expect(target.debt).toBe(25_000);
+    expect(target.isBankrupt).toBe(true);
     expect(target.betrayals).toBe(2);
     expect(target.lastDeleteUnitTick).toBe(50);
   });

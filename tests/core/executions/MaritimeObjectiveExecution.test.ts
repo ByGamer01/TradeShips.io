@@ -32,11 +32,36 @@ describe("MaritimeObjectiveExecution", () => {
 
     exec.init(game, 0);
     player.buildUnit(UnitType.AircraftCarrier, exec.snapshot().center, {});
+    player.addGold(game.config().economicVictoryGold());
 
     runTicks(exec, 900);
 
     expect(setWinnerSpy).toHaveBeenCalledWith(player, expect.anything());
     expect(exec.snapshot().status).toBe("controlled");
+    expect(exec.isActive()).toBe(false);
+  });
+
+  it("does not win with full control until the controller also holds 500M debt-free gold", async () => {
+    const game = await setup("half_land_half_ocean", {
+      gameMode: GameMode.FFA,
+    });
+    const player = game.addPlayer(playerInfo("player", PlayerType.Human));
+    const exec = new MaritimeObjectiveExecution();
+    const setWinnerSpy = vi.fn();
+    game.setWinner = setWinnerSpy;
+
+    exec.init(game, 0);
+    player.buildUnit(UnitType.AircraftCarrier, exec.snapshot().center, {});
+    runTicks(exec, 900);
+
+    expect(exec.snapshot().status).toBe("controlled");
+    expect(setWinnerSpy).not.toHaveBeenCalled();
+    expect(exec.isActive()).toBe(true);
+
+    player.addGold(game.config().economicVictoryGold());
+    exec.tick(901);
+
+    expect(setWinnerSpy).toHaveBeenCalledWith(player, expect.anything());
     expect(exec.isActive()).toBe(false);
   });
 
@@ -70,6 +95,29 @@ describe("MaritimeObjectiveExecution", () => {
     expect(snapshot.status).toBe("capturing");
     expect(snapshot.leader).toBe(ColoredTeams.Red);
     expect(snapshot.navalPower[0].power).toBe(6);
+  });
+
+  it("ignores trade ships when weighing route control", async () => {
+    const game = await setup("half_land_half_ocean", {
+      gameMode: GameMode.FFA,
+    });
+    const trader = game.addPlayer(playerInfo("trader", PlayerType.Human));
+    const navy = game.addPlayer(playerInfo("navy", PlayerType.Human));
+    const exec = new MaritimeObjectiveExecution();
+
+    exec.init(game, 0);
+    const center = exec.snapshot().center;
+    const warship = navy.buildUnit(UnitType.Warship, center, {
+      patrolTile: center,
+    });
+    trader.buildUnit(UnitType.TradeShip, center, { targetUnit: warship });
+    exec.tick(1);
+
+    const snapshot = exec.snapshot();
+    expect(snapshot.leader).toBe(navy);
+    expect(
+      snapshot.navalPower.find((entry) => entry.controller === trader),
+    ).toBeUndefined();
   });
 
   it("pauses progress while equally strong rival fleets contest the route", async () => {

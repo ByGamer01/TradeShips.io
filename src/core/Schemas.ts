@@ -53,6 +53,9 @@ export type Intent =
   | DeleteUnitIntent
   | KickPlayerIntent
   | TogglePauseIntent
+  | CongressVoteIntent
+  | CongressStartIntent
+  | CongressResolveIntent
   | UpdateGameConfigIntent
   | ToggleGameStartTimer;
 
@@ -88,6 +91,9 @@ export type AllianceExtensionIntent = z.infer<
 export type DeleteUnitIntent = z.infer<typeof DeleteUnitIntentSchema>;
 export type KickPlayerIntent = z.infer<typeof KickPlayerIntentSchema>;
 export type TogglePauseIntent = z.infer<typeof TogglePauseIntentSchema>;
+export type CongressVoteIntent = z.infer<typeof CongressVoteIntentSchema>;
+export type CongressStartIntent = z.infer<typeof CongressStartIntentSchema>;
+export type CongressResolveIntent = z.infer<typeof CongressResolveIntentSchema>;
 export type UpdateGameConfigIntent = z.infer<
   typeof UpdateGameConfigIntentSchema
 >;
@@ -502,6 +508,25 @@ export const TogglePauseIntentSchema = z.object({
   paused: z.boolean().default(false),
 });
 
+export const CongressVoteIntentSchema = z.object({
+  type: z.literal("congress_vote"),
+  session: z.number().int().positive(),
+  proposalIndex: z.number().int().min(0).max(2),
+});
+
+export const CongressStartIntentSchema = z.object({
+  type: z.literal("congress_start"),
+  session: z.number().int().positive(),
+  endsAt: z.number().int().positive(),
+});
+
+export const CongressResolveIntentSchema = z.object({
+  type: z.literal("congress_resolve"),
+  session: z.number().int().positive(),
+  proposalIndex: z.number().int().min(0).max(2),
+  voteCounts: z.array(z.number().int().nonnegative()).length(3),
+});
+
 export const UpdateGameConfigIntentSchema = z.object({
   type: z.literal("update_game_config"),
   config: GameConfigSchema.partial(),
@@ -538,6 +563,9 @@ const IntentSchema = z.discriminatedUnion("type", [
   DeleteUnitIntentSchema,
   KickPlayerIntentSchema,
   TogglePauseIntentSchema,
+  CongressVoteIntentSchema,
+  CongressStartIntentSchema,
+  CongressResolveIntentSchema,
   UpdateGameConfigIntentSchema,
   ToggleGameStartTimerIntentSchema,
 ]);

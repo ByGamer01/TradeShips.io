@@ -16,7 +16,9 @@ import { PseudoRandom } from "../PseudoRandom";
 import { GameID } from "../Schemas";
 import { assertNever, simpleHash } from "../Util";
 import { NationAllianceBehavior } from "./nation/NationAllianceBehavior";
+import { NationEconomicBehavior } from "./nation/NationEconomicBehavior";
 import { NationEmojiBehavior } from "./nation/NationEmojiBehavior";
+import { NationFleetBehavior } from "./nation/NationFleetBehavior";
 import { NationMaritimeBehavior } from "./nation/NationMaritimeBehavior";
 import { NationMIRVBehavior } from "./nation/NationMIRVBehavior";
 import { NationNukeBehavior } from "./nation/NationNukeBehavior";
@@ -37,6 +39,8 @@ export class NationExecution implements Execution {
   private allianceBehavior!: NationAllianceBehavior;
   private warshipBehavior!: NationWarshipBehavior;
   private maritimeBehavior!: NationMaritimeBehavior;
+  private fleetBehavior!: NationFleetBehavior;
+  private economicBehavior!: NationEconomicBehavior;
   private nukeBehavior!: NationNukeBehavior;
   private structureBehavior!: NationStructureBehavior;
   private mg: Game;
@@ -236,6 +240,8 @@ export class NationExecution implements Execution {
     this.structureBehavior.handleStructures();
     this.warshipBehavior.maybeSpawnWarship();
     this.maritimeBehavior.contestObjective();
+    this.fleetBehavior.buildStrategicFleet();
+    this.economicBehavior.manageEconomy();
     this.handleEmbargoesToHostileNations();
     this.attackBehavior.maybeAttack();
     this.warshipBehavior.counterWarshipInfestation();
@@ -269,6 +275,16 @@ export class NationExecution implements Execution {
       this.emojiBehavior,
     );
     this.maritimeBehavior = new NationMaritimeBehavior(
+      this.random,
+      this.mg,
+      this.player,
+    );
+    this.fleetBehavior = new NationFleetBehavior(
+      this.random,
+      this.mg,
+      this.player,
+    );
+    this.economicBehavior = new NationEconomicBehavior(
       this.random,
       this.mg,
       this.player,

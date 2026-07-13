@@ -58,6 +58,7 @@ import {
   canBuildTransportShip,
 } from "./TransportShipUtils";
 import { UnitImpl } from "./UnitImpl";
+import { isCongressResolutionActive, isNuclearUnit } from "./WorldCongress";
 
 interface Target {
   tick: Tick;
@@ -96,6 +97,10 @@ export class PlayerImpl implements Player {
 
   private _gold: bigint;
   private _troops: bigint;
+  private _warExhaustion = 0;
+  private _warExpenses = 0n;
+  private _debt = 0n;
+  private _bankrupt = false;
 
   markedTraitorTick = -1;
   private _betrayalCount: number = 0;
@@ -318,6 +323,9 @@ export class PlayerImpl implements Player {
       embargoes: embargoes,
       isTraitor: this.isTraitor(),
       traitorRemainingTicks: this.getTraitorRemainingTicks(),
+      warExhaustionPercent: Math.round(this._warExhaustion * 100),
+      debt: this._debt,
+      isBankrupt: this._bankrupt,
       targets: targets,
       outgoingEmojis: outgoingEmojis,
       outgoingAttacks: outgoingAttacks,
@@ -1151,6 +1159,100 @@ export class PlayerImpl implements Player {
     return actualRemoved;
   }
 
+  warExhaustion(): number {
+    return this._warExhaustion;
+  }
+
+  updateWarEconomy(activeAttacks: number, normalIncome: Gold): Gold {
+    if (activeAttacks <= 0) {
+      this._warExhaustion = Math.max(
+        0,
+        this._warExhaustion - 1 / this.mg.config().warExhaustionRecoveryTicks(),
+      );
+      return 0n;
+    }
+
+    this._warExhaustion = Math.min(
+      1,
+      this._warExhaustion + 1 / this.mg.config().warExhaustionAttackTicks(),
+    );
+    const multiplier = this.mg
+      .config()
+      .warEconomyCostMultiplier(this._warExhaustion, activeAttacks);
+    const requested = BigInt(
+      Math.floor(Number(normalIncome) * multiplier + 1e-9),
+    );
+    const spent = this.removeGold(requested);
+    this._warExpenses += spent;
+    // The unpaid share of the war bill is not forgiven — it becomes debt.
+    this.addDebt(requested - spent);
+    return spent;
+  }
+
+  collectWarRecoveryReward(): Gold {
+    const reward = this.mg.config().warRecoveryReward(this._warExpenses);
+    this._warExpenses = 0n;
+    this._warExhaustion /= 2;
+    return reward;
+  }
+
+  debt(): Gold {
+    return this._debt;
+  }
+
+  addDebt(toAdd: Gold): void {
+    if (toAdd <= 0n) return;
+    this._debt += toAdd;
+  }
+
+  serviceDebt(income: Gold): Gold {
+    if (this._debt === 0n || income <= 0n) return income;
+    // Solvent debtors pay half their income; bankrupt ones forfeit all of it.
+    const due = this._bankrupt ? income : income / 2n;
+    const repayment = due < this._debt ? due : this._debt;
+    this._debt -= repayment;
+    return income - repayment;
+  }
+
+  gdp(): Gold {
+    let assets = 0n;
+    for (const unit of this._units) {
+      if (!unit.isActive()) continue;
+      assets += this.mg.config().unitBookValue(unit.type());
+    }
+    return this._gold + assets;
+  }
+
+  isBankrupt(): boolean {
+    return this._bankrupt;
+  }
+
+  updateBankruptcy(): void {
+    if (this._bankrupt) {
+      if (this._debt === 0n) this._bankrupt = false;
+      return;
+    }
+    this._bankrupt = this._debt > this.gdp();
+  }
+
+  accrueDebtInterest(): void {
+    if (this._debt === 0n) return;
+    this._debt += (this._debt * this.mg.config().debtInterestRateBps()) / 10_000n;
+  }
+
+  chargeFleetUpkeep(): Gold {
+    let total = 0n;
+    for (const unit of this._units) {
+      if (!unit.isActive()) continue;
+      total += this.mg.config().unitUpkeep(unit.type());
+    }
+    if (total === 0n) return 0n;
+    const paid = this.removeGold(total);
+    // Whatever the treasury cannot cover is financed as debt.
+    this.addDebt(total - paid);
+    return total;
+  }
+
   troops(): number {
     return Number(this._troops);
   }
@@ -1239,6 +1341,12 @@ export class PlayerImpl implements Player {
     knownCost: Gold | null = null,
   ): boolean {
     if (this.mg.config().isUnitDisabled(unitType)) {
+      return false;
+    }
+    if (
+      isNuclearUnit(unitType) &&
+      isCongressResolutionActive(this.mg, "nuclear_non_proliferation")
+    ) {
       return false;
     }
     const cost = knownCost ?? this.mg.unitInfo(unitType).cost(this.mg, this);

@@ -48,7 +48,7 @@ export type TransportShipState = {
 /**
  * Port identity, chosen once per port (irreversible):
  * - "trade": trade hub — attracts commerce and pays bonus gold on arrivals.
- * - "naval": naval base — torpedo battery vs raiders + extra repair capacity.
+ * - "naval": naval base — coastal battery vs raiders + extra repair capacity.
  * - "watch": harbor watch — trade ships near the port are safe from pirates.
  */
 export type PortSpecialization = "trade" | "naval" | "watch";
@@ -139,6 +139,7 @@ export const isGameType = (value: unknown): value is GameType =>
 export enum GameMode {
   FFA = "Free For All",
   Team = "Team",
+  WorldCongress = "World Congress",
 }
 
 export enum RankedType {
@@ -630,6 +631,17 @@ export interface Player {
   gold(): Gold;
   addGold(toAdd: Gold, tile?: TileRef): void;
   removeGold(toRemove: Gold): Gold;
+  warExhaustion(): number;
+  updateWarEconomy(activeAttacks: number, normalIncome: Gold): Gold;
+  collectWarRecoveryReward(): Gold;
+  debt(): Gold;
+  addDebt(toAdd: Gold): void;
+  serviceDebt(income: Gold): Gold;
+  accrueDebtInterest(): void;
+  chargeFleetUpkeep(): Gold;
+  gdp(): Gold;
+  isBankrupt(): boolean;
+  updateBankruptcy(): void;
   troops(): number;
   setTroops(troops: number): void;
   addTroops(troops: number): void;
@@ -946,6 +958,7 @@ export interface PlayerInteraction {
   canBreakAlliance: boolean;
   canTarget: boolean;
   canDonateGold: boolean;
+  canRequestGold: boolean;
   canDonateTroops: boolean;
   canEmbargo: boolean;
   canTariff: boolean;

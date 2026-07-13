@@ -453,6 +453,10 @@ export class GameModeSelector extends LitElement {
       return translateText("game_mode.ffa");
     }
 
+    if (config.gameMode === GameMode.WorldCongress) {
+      return translateText("game_mode.world_congress");
+    }
+
     if (config?.gameMode === GameMode.Team) {
       const totalPlayers = config.maxPlayers ?? lobby.numClients ?? undefined;
       const formatTeamsOf = (

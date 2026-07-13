@@ -147,13 +147,11 @@ export class MapPlaylist {
       maxTimerValue: undefined,
       instantBuild: false,
       randomSpawn: false,
-      nations:
-        mode === GameMode.Team && playerTeams !== HumansVsNations
-          ? "disabled"
-          : "default",
+      nations: "default",
       gameMode: mode,
       playerTeams,
-      bots: isCompact ? 100 : 400,
+      // Team slots are filled by full nation AI instead of neutral tribes.
+      bots: mode === GameMode.Team ? 0 : isCompact ? 100 : 400,
       spawnImmunityDuration: this.getSpawnImmunityDuration(playerTeams),
       disabledUnits: [...DISABLED_ARSENAL],
       disableClanTags: mode === GameMode.FFA ? true : undefined,
@@ -161,44 +159,12 @@ export class MapPlaylist {
   }
 
   private async getSpecialConfig(): Promise<GameConfig> {
-    const mode = Math.random() < 0.5 ? GameMode.FFA : GameMode.Team;
+    // Keep the public Special lobby as the guaranteed entry point for the
+    // World Congress mode instead of leaving Congress private-only.
+    const mode = GameMode.WorldCongress;
     const map = this.getNextMap("special");
-    const playerTeams =
-      mode === GameMode.Team ? this.getTeamCount(map) : undefined;
 
     const excludedModifiers: ModifierKey[] = [];
-
-    // Check if compact map would leave every team with at least 2 players
-    const supportsCompact =
-      mode !== GameMode.Team ||
-      (await this.supportsCompactMapForTeams(map, playerTeams!));
-    if (!supportsCompact) {
-      excludedModifiers.push("isCompact");
-    }
-
-    // Duos, Trios, and Quads should not get random spawn (as it defeats the purpose)
-    if (
-      playerTeams === Duos ||
-      playerTeams === Trios ||
-      playerTeams === Quads
-    ) {
-      excludedModifiers.push("isRandomSpawn");
-    }
-
-    // No gold multi on FourIslands team games - Too high chance of 3h long stalemates
-    if (map === GameMapType.FourIslands && mode === GameMode.Team) {
-      excludedModifiers.push("goldMultiplier");
-    }
-
-    // Hard nations modifier only applies when nations are present (not HvN, which is always hard)
-    if (mode === GameMode.Team) {
-      excludedModifiers.push("isHardNations");
-    }
-
-    if (playerTeams === HumansVsNations) {
-      excludedModifiers.push("startingGold25M"); // Nations are disabled if that modifier is active (Because of PVP immunity)
-      excludedModifiers.push("isPeaceTime"); // Nations don't have PVP immunity
-    }
     const poolResult = this.getRandomSpecialGameModifiers(excludedModifiers);
     let {
       isCrowded,
@@ -217,9 +183,7 @@ export class MapPlaylist {
     let crowdedMaxPlayers: number | undefined;
     if (isCrowded) {
       crowdedMaxPlayers = await this.getCrowdedMaxPlayers(map, !!isCompact);
-      if (crowdedMaxPlayers !== undefined) {
-        crowdedMaxPlayers = this.adjustForTeams(crowdedMaxPlayers, playerTeams);
-      } else {
+      if (crowdedMaxPlayers === undefined) {
         // Map doesn't support crowded. Drop it and pick one replacement only
         // if it was the sole modifier, so the lobby always has at least one.
         isCrowded = undefined;
@@ -255,16 +219,12 @@ export class MapPlaylist {
     const maxPlayers = Math.max(
       2,
       crowdedMaxPlayers ??
-        (await this.lobbyMaxPlayers(map, mode, playerTeams, isCompact)),
+        (await this.lobbyMaxPlayers(map, mode, undefined, isCompact)),
     );
 
-    // Nations stay enabled even with 25M starting gold: TradeShips nations
-    // play Hard+, contest the maritime objective, and backfill empty human
-    // slots so low-traffic lobbies still start as full games.
-    const nations: GameConfig["nations"] =
-      mode === GameMode.Team && playerTeams !== HumansVsNations
-        ? "disabled"
-        : "default";
+    // Nations backfill empty human slots in team games and are replaced as
+    // real players join before the countdown ends.
+    const nations: GameConfig["nations"] = "default";
 
     // Seed disabledUnits from the arsenal lock (always on), then layer the
     // "ports disabled" modifier on top.
@@ -277,8 +237,8 @@ export class MapPlaylist {
     const peaceTimeDuration = isPeaceTime ? 240 * 10 : undefined;
 
     return {
-      donateGold: mode === GameMode.Team,
-      donateTroops: mode === GameMode.Team,
+      donateGold: false,
+      donateTroops: false,
       gameMap: map,
       maxPlayers,
       gameType: GameType.Public,
@@ -297,10 +257,7 @@ export class MapPlaylist {
       startingGold,
       goldMultiplier,
       disableAlliances: isAlliancesDisabled ? true : undefined,
-      difficulty:
-        isHardNations || playerTeams === HumansVsNations
-          ? Difficulty.Hard
-          : Difficulty.Medium,
+      difficulty: isHardNations ? Difficulty.Hard : Difficulty.Medium,
       infiniteGold: false,
       infiniteTroops: false,
       maxTimerValue: undefined,
@@ -308,13 +265,13 @@ export class MapPlaylist {
       randomSpawn: isRandomSpawn ? true : false,
       nations,
       gameMode: mode,
-      playerTeams,
+      playerTeams: undefined,
       bots: isCompact ? 100 : 400,
       spawnImmunityDuration:
         peaceTimeDuration ??
-        this.getSpawnImmunityDuration(playerTeams, startingGold),
+        this.getSpawnImmunityDuration(undefined, startingGold),
       disabledUnits,
-      disableClanTags: mode === GameMode.FFA ? true : undefined,
+      disableClanTags: true,
     } satisfies GameConfig;
   }
 

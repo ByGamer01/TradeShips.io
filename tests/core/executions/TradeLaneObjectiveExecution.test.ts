@@ -32,6 +32,7 @@ describe("TradeLaneObjectiveExecution", () => {
     exec.init(game, 0);
     expect(exec.snapshot().usedFallback).toBe(false);
     player.buildUnit(UnitType.AircraftCarrier, laneCenter(exec), {});
+    player.addGold(game.config().economicVictoryGold());
 
     runTicks(exec, 900);
 

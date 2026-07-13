@@ -51,6 +51,14 @@ describe("MapPlaylist arsenal lock defaults", () => {
     expectSupersetOfArsenal(config.disabledUnits);
   });
 
+  test("public Team games fill player slots with nations instead of tribes", async () => {
+    const playlist = new MapPlaylist();
+    const config = await playlist.gameConfig("team");
+
+    expect(config.nations).toBe("default");
+    expect(config.bots).toBe(0);
+  });
+
   test("public 1v1 games disable the full arsenal", () => {
     const playlist = new MapPlaylist();
     const config = playlist.get1v1Config();
@@ -68,6 +76,17 @@ describe("MapPlaylist arsenal lock defaults", () => {
 
 describe("MapPlaylist special mode never reintroduces the arsenal", () => {
   const SPECIAL_DRAWS = 180;
+
+  test("public Special lobby always exposes World Congress", async () => {
+    const playlist = new MapPlaylist();
+
+    for (let i = 0; i < 10; i++) {
+      const config = await playlist.gameConfig("special");
+
+      expect(config.gameMode).toBe(GameMode.WorldCongress);
+      expect(config.playerTeams).toBeUndefined();
+    }
+  });
 
   test("every special draw keeps the full arsenal (incl. DefensePost) disabled, never forces waterNukes, and never exposes the retired modifier flags", async () => {
     const playlist = new MapPlaylist();
@@ -95,9 +114,7 @@ describe("MapPlaylist special mode never reintroduces the arsenal", () => {
         expect(disabled.has(UnitType.Port)).toBe(true);
       }
     }
-  }, // 180 async draws (each awaiting getMapLandTiles) can exceed the default
-  // 5s timeout under full-suite CPU contention even though each draw is
-  // fast in isolation.
+  }, // fast in isolation. // 5s timeout under full-suite CPU contention even though each draw is // 180 async draws (each awaiting getMapLandTiles) can exceed the default
   20_000);
 });
 
@@ -159,10 +176,9 @@ describe("MapPlaylist public starting gold", () => {
 
       expect([undefined, 1_000_000, 5_000_000, 25_000_000]).toContain(gold);
       expect(config.publicGameModifiers?.startingGold).toBe(gold);
-      // Nations backfill empty lobbies: enabled in FFA (any gold), disabled
-      // only in plain team draws.
-      if (config.gameMode === GameMode.FFA) {
-        expect(config.nations).toBe("default");
+      expect(config.nations).toBe("default");
+      if (config.gameMode === GameMode.Team) {
+        expect(config.bots).toBe(0);
       }
     }
 

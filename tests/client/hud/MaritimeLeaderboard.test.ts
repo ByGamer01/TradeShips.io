@@ -11,6 +11,8 @@ function player(overrides: Record<string, unknown> = {}) {
     team: null,
     tiles: 100,
     gold: 0n,
+    debt: 0n,
+    bankrupt: false,
     alive: true,
     ...overrides,
   };
@@ -21,6 +23,8 @@ function player(overrides: Record<string, unknown> = {}) {
     team: () => data.team,
     numTilesOwned: () => data.tiles,
     gold: () => data.gold,
+    debt: () => data.debt,
+    isBankrupt: () => data.bankrupt,
     isAlive: () => data.alive,
     isOnSameTeam: (other: { team: () => string | null }) =>
       data.team !== null && data.team === other.team(),
@@ -66,6 +70,31 @@ describe("maritime leaderboard scoring", () => {
     expect(el.players[0].player).toBe(seaLeader);
     expect(el.players[0].score).toBe("67.0%");
     expect(el.players[1].score).toBe("0.0%");
+  });
+
+  it("exposes debt and bankruptcy for diplomatic decisions", () => {
+    const solvent = player({ id: "p1", debt: 0n });
+    const bankrupt = player({
+      id: "p2",
+      smallID: 2,
+      debt: 2_500_000n,
+      bankrupt: true,
+    });
+    const el = new Leaderboard();
+    el.game = {
+      myPlayer: () => solvent,
+      playerViews: () => [solvent, bankrupt],
+      numLandTiles: () => 1000,
+      numTilesWithFallout: () => 0,
+      config: () => ({ maxTroops: () => 1000 }),
+      frameData: () => ({ maritimeObjective: null }),
+    } as any;
+
+    (el as any).updateLeaderboard();
+
+    const entry = el.players.find((candidate) => candidate.player.id() === "p2");
+    expect(entry?.debt).toBe("2.50M");
+    expect(entry?.isBankrupt).toBe(true);
   });
 
   it("ranks teams by central sea control instead of territorial ownership", () => {

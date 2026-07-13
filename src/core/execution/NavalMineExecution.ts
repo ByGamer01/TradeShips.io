@@ -7,6 +7,7 @@ const MINE_TARGET_TYPES = [
   UnitType.TransportShip,
   UnitType.Submarine,
   UnitType.AircraftCarrier,
+  UnitType.TradeShip,
 ] as const;
 
 export class NavalMineExecution implements Execution {

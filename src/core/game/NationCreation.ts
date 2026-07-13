@@ -78,6 +78,18 @@ export function createNationsForGame(
     // standing in for the missing humans.
     const quota = nationQuotaTarget(gameStart, numHumans);
 
+    // Team games use nations as exact placeholder players. Humans are known
+    // before game creation, so every arrival reduces this roster one-for-one.
+    if (gameStart.config.gameMode === GameMode.Team) {
+      return createRandomNations(
+        quota,
+        manifestNations,
+        additionalNations,
+        toNation,
+        random,
+      );
+    }
+
     // For compact maps, use only 25% of nations (minimum 1)
     if (isCompactMap) {
       const targetCount = Math.max(

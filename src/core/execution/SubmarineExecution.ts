@@ -183,6 +183,9 @@ export class SubmarineExecution implements Execution {
       case PathStatus.COMPLETE:
         this.sub!.move(result.node);
         if (manual) {
+          // Re-anchor the patrol on the new station so the sub holds
+          // position instead of sailing back to its spawn area.
+          this.patrolTile = destination;
           this.sub!.setTargetTile(undefined);
         } else {
           this.patrolDestination = undefined;

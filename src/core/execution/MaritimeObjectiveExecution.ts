@@ -1,15 +1,16 @@
 import { Execution, Game, Player, Team, Unit } from "../game/Game";
 import { TileRef } from "../game/GameMap";
-import { PseudoRandom } from "../PseudoRandom";
 import {
   GameUpdateType,
   MaritimeObjectiveStatus,
   MaritimeObjectiveUpdate,
 } from "../game/GameUpdates";
 import { findOpenWaterAnchor } from "../game/TradeLaneFinder";
+import { PseudoRandom } from "../PseudoRandom";
 import {
   aggregateNavalPower,
   CaptureState,
+  controllerCompletedEconomicGoal,
   NavalPowerEntry,
   newCaptureState,
   stepCapture,
@@ -98,7 +99,11 @@ export class MaritimeObjectiveExecution implements Execution {
 
     this.emitUpdate();
 
-    if (this.state.status === "controlled" && this.state.controller !== null) {
+    if (
+      this.state.status === "controlled" &&
+      this.state.controller !== null &&
+      controllerCompletedEconomicGoal(this.mg, this.state.controller)
+    ) {
       this.mg.setWinner(this.state.controller, this.mg.stats().stats());
       this.active = false;
     }

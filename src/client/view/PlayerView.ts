@@ -81,6 +81,12 @@ function stateFromUpdate(pu: PlayerUpdate): PlayerState {
     troops: pu.troops!,
     isTraitor: pu.isTraitor!,
     traitorRemainingTicks: Math.max(0, pu.traitorRemainingTicks ?? 0),
+    warExhaustionPercent: Math.max(
+      0,
+      Math.min(100, pu.warExhaustionPercent ?? 0),
+    ),
+    debt: Math.max(0, Number(pu.debt ?? 0n)),
+    isBankrupt: pu.isBankrupt ?? false,
     betrayals: pu.betrayals!,
     hasSpawned: pu.hasSpawned!,
     spawnTile: pu.spawnTile,
@@ -470,6 +476,18 @@ export class PlayerView {
     // Engine Gold is bigint; renderer state stores number. Convert back at the
     // accessor for game-code that still expects bigint semantics.
     return BigInt(this.state.gold);
+  }
+
+  warExhaustionPercent(): number {
+    return this.state.warExhaustionPercent;
+  }
+
+  debt(): Gold {
+    return BigInt(this.state.debt);
+  }
+
+  isBankrupt(): boolean {
+    return this.state.isBankrupt;
   }
 
   troops(): number {
