@@ -48,7 +48,7 @@ export type TransportShipState = {
 /**
  * Port identity, chosen once per port (irreversible):
  * - "trade": trade hub — attracts commerce and pays bonus gold on arrivals.
- * - "naval": naval base — torpedo battery vs raiders + extra repair capacity.
+ * - "naval": naval base — coastal battery vs raiders + extra repair capacity.
  * - "watch": harbor watch — trade ships near the port are safe from pirates.
  */
 export type PortSpecialization = "trade" | "naval" | "watch";
