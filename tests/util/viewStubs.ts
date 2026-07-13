@@ -131,6 +131,8 @@ export function makePlayerUpdate(
     isTraitor: false,
     traitorRemainingTicks: 0,
     warExhaustionPercent: 0,
+    debt: 0n,
+    isBankrupt: false,
     targets: [],
     outgoingEmojis: [],
     outgoingAttacks: [],
