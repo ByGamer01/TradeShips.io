@@ -324,6 +324,8 @@ export class PlayerImpl implements Player {
       isTraitor: this.isTraitor(),
       traitorRemainingTicks: this.getTraitorRemainingTicks(),
       warExhaustionPercent: Math.round(this._warExhaustion * 100),
+      debt: this._debt,
+      isBankrupt: this._bankrupt,
       targets: targets,
       outgoingEmojis: outgoingEmojis,
       outgoingAttacks: outgoingAttacks,
