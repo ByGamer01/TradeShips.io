@@ -8,25 +8,27 @@ import { AllianceRequestExecution } from "./alliance/AllianceRequestExecution";
 import { BreakAllianceExecution } from "./alliance/BreakAllianceExecution";
 import { AttackExecution } from "./AttackExecution";
 import { BoatRetreatExecution } from "./BoatRetreatExecution";
+import { CongressResolveExecution } from "./CongressResolveExecution";
+import { CongressStartExecution } from "./CongressStartExecution";
 import { ConstructionExecution } from "./ConstructionExecution";
 import { DeleteUnitExecution } from "./DeleteUnitExecution";
 import { DonateGoldExecution } from "./DonateGoldExecution";
 import { DonateTroopsExecution } from "./DonateTroopExecution";
 import { EmbargoAllExecution } from "./EmbargoAllExecution";
 import { EmbargoExecution } from "./EmbargoExecution";
-import { TariffExecution } from "./TariffExecution";
 import { EmojiExecution } from "./EmojiExecution";
-import { MarkDisconnectedExecution } from "./MarkDisconnectedExecution";
 import { EscortTradeExecution } from "./EscortTradeExecution";
+import { MarkDisconnectedExecution } from "./MarkDisconnectedExecution";
 import { MoveWarshipExecution } from "./MoveWarshipExecution";
-import { SpecializePortExecution } from "./SpecializePortExecution";
 import { NationExecution } from "./NationExecution";
 import { NoOpExecution } from "./NoOpExecution";
 import { PauseExecution } from "./PauseExecution";
 import { QuickChatExecution } from "./QuickChatExecution";
 import { RetreatExecution } from "./RetreatExecution";
 import { SpawnExecution } from "./SpawnExecution";
+import { SpecializePortExecution } from "./SpecializePortExecution";
 import { TargetPlayerExecution } from "./TargetPlayerExecution";
+import { TariffExecution } from "./TariffExecution";
 import { TransportShipExecution } from "./TransportShipExecution";
 import { TribeSpawner } from "./TribeSpawner";
 import { UpgradeStructureExecution } from "./UpgradeStructureExecution";
@@ -50,6 +52,20 @@ export class Executor {
   }
 
   createExec(intent: StampedIntent): Execution {
+    if (intent.type === "congress_start") {
+      return new CongressStartExecution(intent.session, intent.endsAt);
+    }
+    if (intent.type === "congress_resolve") {
+      return new CongressResolveExecution(
+        intent.session,
+        intent.proposalIndex,
+        intent.voteCounts,
+      );
+    }
+    if (intent.type === "congress_vote") {
+      return new NoOpExecution();
+    }
+
     const player = this.mg.playerByClientID(intent.clientID);
     if (!player) {
       console.warn(`player with clientID ${intent.clientID} not found`);
