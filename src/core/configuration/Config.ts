@@ -938,6 +938,24 @@ export class Config {
     return BigInt(Math.floor(Number(baseRate) * multiplier));
   }
 
+  warExhaustionAttackTicks(): number {
+    return 1_800;
+  }
+
+  warExhaustionRecoveryTicks(): number {
+    return 900;
+  }
+
+  warEconomyCostMultiplier(exhaustion: number, activeAttacks: number): number {
+    if (activeAttacks <= 0) return 0;
+    return Math.sqrt(activeAttacks) * (0.25 + 1.75 * exhaustion);
+  }
+
+  warRecoveryReward(expenses: Gold): Gold {
+    const refund = expenses / 4n;
+    return refund < 2_000_000n ? refund : 2_000_000n;
+  }
+
   nukeMagnitudes(unitType: UnitType): NukeMagnitude {
     switch (unitType) {
       case UnitType.MIRVWarhead:
