@@ -431,6 +431,7 @@
   },
   "player_panel": {
     "gold": "Oro",
+    "request_gold": "Pedir oro",
     "troops": "Tropas",
     "traitor": "Traidor",
     "alliance_time_remaining": "Tiempo Restante",
@@ -441,12 +442,14 @@
     "yes": "Sí",
     "no": "No",
     "tariff": "Arancel",
-    "tariff_tooltip": "Impón un arancel al comercio de este jugador por {cost} de oro"
+    "tariff_tooltip": "Impón un arancel al comercio de este jugador por {cost} de oro",
+    "war_exhaustion": "Desgaste bélico"
   },
   "events_display": {
     "economic_mission_started": "¡Auge comercial global! {count, plural, one {# nación comerciante recibió} other {# naciones comerciantes recibieron}} una bonificación de oro",
     "tariff_imposed": "Impusiste un arancel al comercio de {name}",
-    "tariff_imposed_on_you": "¡{name} impuso un arancel a tu comercio!"
+    "tariff_imposed_on_you": "¡{name} impuso un arancel a tu comercio!",
+    "war_economy_recovered": "La economía de guerra recuperó {gold} de oro tras derrotar a {name}"
   },
   "maritime_objective": {
     "capturing": "Capturando",
