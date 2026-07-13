@@ -112,6 +112,7 @@ export function unitAtlasColumnForType(unitType: string): number {
 /** Atlas column of the hydrogen bomb — drives the GPU glow halo. */
 const HYDROGEN_BOMB_COL = UNIT_ORDER.indexOf(UT_HYDROGEN_BOMB);
 const TORPEDO_COL = UNIT_ORDER.indexOf(UT_TORPEDO);
+const SHELL_COL = UNIT_ORDER.indexOf(UT_SHELL);
 const NAVAL_MINE_COL = UNIT_ORDER.indexOf(UT_NAVAL_MINE);
 const SUBMARINE_COL = UNIT_ORDER.indexOf(UT_SUBMARINE);
 const CARRIER_COL = UNIT_ORDER.indexOf(UT_CARRIER);
@@ -372,6 +373,7 @@ export class UnitPass {
         ATLAS_COLS,
         HYDROGEN_BOMB_COL,
         TORPEDO_COL,
+        SHELL_COL,
         NAVAL_MINE_COL,
         SUBMARINE_COL,
         CARRIER_COL,

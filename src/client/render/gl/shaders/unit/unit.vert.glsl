@@ -40,16 +40,22 @@ void main() {
   float isHBomb = step(abs(atlasCol - float(HYDROGEN_BOMB_COL)), 0.5);
   float isNewNaval = max(
     max(
-      max(step(abs(atlasCol - float(TORPEDO_COL)), 0.5),
-          step(abs(atlasCol - float(NAVAL_MINE_COL)), 0.5)),
+      step(abs(atlasCol - float(NAVAL_MINE_COL)), 0.5),
       max(step(abs(atlasCol - float(SUBMARINE_COL)), 0.5),
           step(abs(atlasCol - float(CARRIER_COL)), 0.5))
     ),
     max(step(abs(atlasCol - float(AIRCRAFT_COL)), 0.5),
         step(abs(atlasCol - float(ANTI_AIR_FRIGATE_COL)), 0.5))
   );
+  // Shells and torpedoes are munitions, not hulls: render them well below
+  // ship size so gunfire reads as tracer fire instead of flying boats.
+  float isProjectile = max(
+    step(abs(atlasCol - float(SHELL_COL)), 0.5),
+    step(abs(atlasCol - float(TORPEDO_COL)), 0.5)
+  );
   vGlow = isHBomb;
   float quadScale = mix(1.0, 1.22, isNewNaval);
+  quadScale = mix(quadScale, 0.65, isProjectile);
   quadScale = mix(quadScale, uHBombGlowScale, isHBomb);
 
   // UNIT_SIZE is in world-space tiles — no zoom division needed.
