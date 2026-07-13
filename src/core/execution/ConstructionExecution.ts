@@ -1,5 +1,9 @@
 import { Execution, Game, Player, Tick, Unit, UnitType } from "../game/Game";
 import { TileRef } from "../game/GameMap";
+import {
+  isCongressResolutionActive,
+  isNuclearUnit,
+} from "../game/WorldCongress";
 import { AntiAirFrigateExecution } from "./AntiAirFrigateExecution";
 import { CarrierExecution } from "./CarrierExecution";
 import { CityExecution } from "./CityExecution";
@@ -35,6 +39,15 @@ export class ConstructionExecution implements Execution {
       console.warn(
         `cannot build construction ${this.constructionType} because it is disabled`,
       );
+      this.active = false;
+      return;
+    }
+
+    if (
+      isNuclearUnit(this.constructionType) &&
+      isCongressResolutionActive(this.mg, "nuclear_non_proliferation")
+    ) {
+      console.warn("cannot launch nuclear weapon during non-proliferation");
       this.active = false;
       return;
     }
