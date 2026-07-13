@@ -58,6 +58,7 @@ import {
   canBuildTransportShip,
 } from "./TransportShipUtils";
 import { UnitImpl } from "./UnitImpl";
+import { isCongressResolutionActive, isNuclearUnit } from "./WorldCongress";
 
 interface Target {
   tick: Tick;
@@ -1239,6 +1240,12 @@ export class PlayerImpl implements Player {
     knownCost: Gold | null = null,
   ): boolean {
     if (this.mg.config().isUnitDisabled(unitType)) {
+      return false;
+    }
+    if (
+      isNuclearUnit(unitType) &&
+      isCongressResolutionActive(this.mg, "nuclear_non_proliferation")
+    ) {
       return false;
     }
     const cost = knownCost ?? this.mg.unitInfo(unitType).cost(this.mg, this);
