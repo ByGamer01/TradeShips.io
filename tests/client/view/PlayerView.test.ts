@@ -34,6 +34,7 @@ describe("PlayerView accessors", () => {
         tilesOwned: 42,
         gold: 999n,
         troops: 250,
+        warExhaustionPercent: 42,
       },
     });
 
@@ -49,6 +50,7 @@ describe("PlayerView accessors", () => {
     expect(p.numTilesOwned()).toBe(42);
     expect(p.gold()).toBe(999n);
     expect(p.troops()).toBe(250);
+    expect(p.warExhaustionPercent()).toBe(42);
   });
 
   it("isPlayer() is always true", () => {
