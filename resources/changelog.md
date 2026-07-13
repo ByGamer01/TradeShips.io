@@ -1,3 +1,40 @@
+📦 **TradeShips v0.2.0 — Congress and war economy**
+
+🏆 **Combined global mission**
+
+- Maritime victories now require both 100% control of the central sea route and 500M gold without debt
+- The full objective is always visible below the fleet and building bar
+- Trade ships no longer contribute control power
+
+🏛️ **World Congress**
+
+- New optional World Congress game mode with timed voting sessions
+- Players vote on temporary sanctions, nuclear restrictions, infrastructure modifiers, and open-seas rules
+- Dedicated voting panel with synchronized multiplayer results
+
+💰 **War economy**
+
+- Attacking progressively drains gold; peace lets the economy recover
+- Conquests provide a limited recovery reward, and players can request gold from allies
+- Fleet upkeep can create debt and bankruptcy when expenses exceed GDP
+- Debt and bankruptcy are visible in the leaderboard and player panel
+
+⚓ **Fleet and combat**
+
+- Aircraft carriers launch visible aircraft against enemy fleets, including other carriers
+- Warships fire thin shell tracers; submarines exclusively launch torpedoes
+- Naval mines destroy hostile ships, while anti-air frigates only engage aircraft
+- Unit death effects now match the destroyed naval class
+
+🤖 **AI, teams, and interface**
+
+- Nations use mixed fleets, naval buildings, Congress, and economic strategy
+- Team games fill empty player slots with nations until humans join
+- Public lobbies now allow 10 seconds to join
+- Buildings and vehicles are separated in the HUD with reorganized hotkeys
+
+---
+
 📦 **TradeShips v0.1.0 — First alpha**
 
 ⚓ **Maritime objective**
