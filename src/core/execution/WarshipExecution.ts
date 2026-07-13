@@ -13,7 +13,7 @@ import { WaterPathFinder } from "../pathfinding/PathFinder";
 import { PathStatus } from "../pathfinding/types";
 import { PseudoRandom } from "../PseudoRandom";
 import { findMinimumBy } from "../Util";
-import { TorpedoExecution } from "./TorpedoExecution";
+import { ShellExecution } from "./ShellExecution";
 
 const SURFACE_WARSHIP_TYPES = [
   UnitType.Warship,
@@ -42,6 +42,7 @@ export class WarshipExecution implements Execution {
 
   constructor(
     private input: (UnitParams<UnitType.Warship> & OwnerComp) | Unit,
+    private surfaceCombatEnabled = true,
   ) {}
 
   init(mg: Game, ticks: number): void {
@@ -108,6 +109,12 @@ export class WarshipExecution implements Execution {
       if (this.handleRepairRetreat()) {
         return;
       }
+    }
+
+    if (!this.surfaceCombatEnabled) {
+      this.warship.setTargetUnit(undefined);
+      this.patrol();
+      return;
     }
 
     this.warship.setTargetUnit(this.findTargetUnit());
@@ -492,7 +499,9 @@ export class WarshipExecution implements Execution {
       return false;
     }
 
-    const retreatAggroTarget = this.findRetreatAggroTarget();
+    const retreatAggroTarget = this.surfaceCombatEnabled
+      ? this.findRetreatAggroTarget()
+      : undefined;
     if (retreatAggroTarget) {
       this.warship.setTargetUnit(retreatAggroTarget);
       this.shootTarget();
@@ -748,14 +757,14 @@ export class WarshipExecution implements Execution {
 
   private shootTarget() {
     this.warship.updateWarshipState({ isInCombat: true });
-    const torpedoAttackRate = this.mg.config().warshipTorpedoAttackRate();
-    if (this.mg.ticks() - this.lastShellAttack > torpedoAttackRate) {
+    const shellAttackRate = this.mg.config().warshipShellAttackRate();
+    if (this.mg.ticks() - this.lastShellAttack > shellAttackRate) {
       if (this.warship.targetUnit()?.type() !== UnitType.TransportShip) {
         // Warships don't need to reload when attacking transport ships.
         this.lastShellAttack = this.mg.ticks();
       }
       this.mg.addExecution(
-        new TorpedoExecution(
+        new ShellExecution(
           this.warship.tile(),
           this.warship.owner(),
           this.warship,
