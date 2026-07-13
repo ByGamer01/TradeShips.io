@@ -34,6 +34,10 @@ export function getMapName(mapName: string | undefined): string | null {
 export function getGameModeLabel(gameConfig: GameConfig): string {
   const { gameMode, playerTeams, maxPlayers } = gameConfig;
 
+  if (gameMode === GameMode.WorldCongress) {
+    return translateText("game_mode.world_congress");
+  }
+
   if (gameMode !== GameMode.Team) {
     return translateText("game_mode.ffa");
   }
