@@ -1271,6 +1271,23 @@ export class GameImpl implements Game {
       this.stats().goldWar(conqueror, conquered, goldCaptured);
     }
 
+    const recoveryGold = conqueror.isOnSameTeam(conquered)
+      ? 0n
+      : conqueror.collectWarRecoveryReward();
+    if (recoveryGold > 0n) {
+      conqueror.addGold(recoveryGold);
+      this.displayMessage(
+        "events_display.war_economy_recovered",
+        MessageType.CONQUERED_PLAYER,
+        conqueror.id(),
+        recoveryGold,
+        {
+          gold: renderNumber(recoveryGold),
+          name: conquered.displayName(),
+        },
+      );
+    }
+
     // OFM: per-kill log for standings (humans-only filtered in recordKill).
     this.stats().recordKill(conqueror, conquered, this.ticks());
 
