@@ -62,6 +62,7 @@ export interface PlayerState {
   troops: number;
   isTraitor: boolean;
   traitorRemainingTicks: number;
+  warExhaustionPercent: number;
   betrayals: number;
   hasSpawned: boolean;
   /** TileRef the player picked as their spawn (undefined if not yet spawned). */
