@@ -520,7 +520,8 @@
   },
   "game_mode": {
     "ffa": "Free for All",
-    "teams": "Teams"
+    "teams": "Teams",
+    "world_congress": "World Congress"
   },
   "game_starting_modal": {
     "based_on": "Based on OpenFront",
@@ -1534,5 +1535,43 @@
     "you_won": "You Won!",
     "your_team": "Your team won!",
     "youtube_tutorial": "Need some help?"
+  },
+  "world_congress": {
+    "active_resolution": "Active resolution",
+    "cast_vote": "Cast your vote",
+    "condemn_player": {
+      "description": "Break every alliance held by {player} and apply the traitor penalty.",
+      "title": "Condemn {player}"
+    },
+    "embargo_player": {
+      "description": "Suspend all trade with {player} for three minutes.",
+      "title": "Embargo {player}"
+    },
+    "infrastructure_subsidy": {
+      "description": "Reduce the cost of every {infrastructure} by 50% for three minutes.",
+      "title": "{infrastructure} subsidy"
+    },
+    "infrastructure_tax": {
+      "description": "Increase the cost of every {infrastructure} by 50% for three minutes.",
+      "title": "{infrastructure} tax"
+    },
+    "international_development_fund": {
+      "description": "Collect 5% of active players' gold and divide it among the five smallest powers.",
+      "title": "Development fund"
+    },
+    "nuclear_non_proliferation": {
+      "description": "Prevent all players from launching nuclear weapons for three minutes.",
+      "title": "Nuclear non-proliferation"
+    },
+    "open_seas": {
+      "description": "Prevent warships from attacking or capturing trade ships for three minutes.",
+      "title": "Open seas"
+    },
+    "resolution_passed": "Resolution passed",
+    "seconds": "seconds",
+    "session": "Session {session}",
+    "title": "World Congress",
+    "vote_recorded": "Vote recorded — click to change",
+    "votes": "{votes} votes"
   }
 }
