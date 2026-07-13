@@ -100,6 +100,7 @@ export class PlayerImpl implements Player {
   private _warExhaustion = 0;
   private _warExpenses = 0n;
   private _debt = 0n;
+  private _bankrupt = false;
 
   markedTraitorTick = -1;
   private _betrayalCount: number = 0;
@@ -1204,10 +1205,32 @@ export class PlayerImpl implements Player {
 
   serviceDebt(income: Gold): Gold {
     if (this._debt === 0n || income <= 0n) return income;
-    const half = income / 2n;
-    const repayment = half < this._debt ? half : this._debt;
+    // Solvent debtors pay half their income; bankrupt ones forfeit all of it.
+    const due = this._bankrupt ? income : income / 2n;
+    const repayment = due < this._debt ? due : this._debt;
     this._debt -= repayment;
     return income - repayment;
+  }
+
+  gdp(): Gold {
+    let assets = 0n;
+    for (const unit of this._units) {
+      if (!unit.isActive()) continue;
+      assets += this.mg.config().unitBookValue(unit.type());
+    }
+    return this._gold + assets;
+  }
+
+  isBankrupt(): boolean {
+    return this._bankrupt;
+  }
+
+  updateBankruptcy(): void {
+    if (this._bankrupt) {
+      if (this._debt === 0n) this._bankrupt = false;
+      return;
+    }
+    this._bankrupt = this._debt > this.gdp();
   }
 
   accrueDebtInterest(): void {

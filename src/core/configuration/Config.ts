@@ -756,7 +756,9 @@ export class Config {
       }
 
       const defenderTroopLoss = defender.troops() / defender.numTilesOwned();
-      const traitorMod = defender.isTraitor() ? this.traitorDefenseDebuff() : 1;
+      const traitorMod =
+        (defender.isTraitor() ? this.traitorDefenseDebuff() : 1) *
+        (defender.isBankrupt() ? this.bankruptcyDefenseDebuff() : 1);
       const currentAttackerLoss =
         within(defender.troops() / attackTroops, 0.6, 2) *
         mag *
@@ -777,7 +779,8 @@ export class Config {
           speed *
           largeDefenderSpeedDebuff *
           largeAttackerSpeedBonus *
-          (defender.isTraitor() ? this.traitorSpeedDebuff() : 1),
+          (defender.isTraitor() ? this.traitorSpeedDebuff() : 1) *
+          (defender.isBankrupt() ? this.bankruptcySpeedDebuff() : 1),
       };
     } else {
       return {
@@ -979,6 +982,44 @@ export class Config {
   /** Ticks between fleet upkeep charges (100 ticks ≈ 10s). */
   fleetUpkeepIntervalTicks(): number {
     return 100;
+  }
+
+  /**
+   * Flat per-unit valuation used for GDP (base build cost, ignoring the
+   * per-player escalation). GDP = treasury + book value of live assets.
+   */
+  unitBookValue(unitType: UnitType): Gold {
+    switch (unitType) {
+      case UnitType.Warship:
+        return 250_000n;
+      case UnitType.Submarine:
+        return 200_000n;
+      case UnitType.AircraftCarrier:
+        return 400_000n;
+      case UnitType.AntiAirFrigate:
+        return 300_000n;
+      case UnitType.Port:
+      case UnitType.City:
+      case UnitType.Factory:
+        return 125_000n;
+      case UnitType.DefensePost:
+        return 50_000n;
+      case UnitType.MissileSilo:
+        return 1_000_000n;
+      case UnitType.SAMLauncher:
+        return 1_500_000n;
+      default:
+        return 0n;
+    }
+  }
+
+  /** Defense multiplier applied to bankrupt defenders (mirrors traitors). */
+  bankruptcyDefenseDebuff(): number {
+    return 0.5;
+  }
+
+  bankruptcySpeedDebuff(): number {
+    return 0.8;
   }
 
   /** Ticks between debt interest accruals (100 ticks ≈ 10s). */

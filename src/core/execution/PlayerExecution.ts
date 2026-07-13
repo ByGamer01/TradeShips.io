@@ -82,14 +82,19 @@ export class PlayerExecution implements Execution {
     this.player.addGold(this.player.serviceDebt(goldFromWorkers));
     if (ticks % this.config.debtInterestIntervalTicks() === 0) {
       this.player.accrueDebtInterest();
+      this.player.updateBankruptcy();
     }
     if (ticks % this.config.fleetUpkeepIntervalTicks() === 0) {
       this.player.chargeFleetUpkeep();
     }
+    // Invading a bankrupt nation is debt-free: it doesn't count as a war.
     const activeWars = this.player
       .outgoingAttacks()
       .filter(
-        (attack) => attack.target().isPlayer() && !attack.retreating(),
+        (attack) =>
+          attack.target().isPlayer() &&
+          !(attack.target() as Player).isBankrupt() &&
+          !attack.retreating(),
       ).length;
     this.player.updateWarEconomy(activeWars, goldFromWorkers);
 

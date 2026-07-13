@@ -6,6 +6,7 @@ import {
   UnitType,
 } from "../../src/core/game/Game";
 import { setup } from "../util/Setup";
+import { UseRealAttackLogic } from "../util/TestConfig";
 
 describe("debt economy", () => {
   let game: Game;
@@ -104,6 +105,93 @@ describe("debt economy", () => {
 
       expect(player.chargeFleetUpkeep()).toBe(0n);
       expect(player.gold()).toBe(1_000n);
+    });
+  });
+
+  describe("bankruptcy", () => {
+    test("computes GDP as the treasury plus asset book value", () => {
+      const tile = game.ref(12, 8);
+      player.buildUnit(UnitType.Warship, tile, { patrolTile: tile });
+      player.addGold(1_000n);
+
+      expect(player.gdp()).toBe(
+        1_000n + game.config().unitBookValue(UnitType.Warship),
+      );
+    });
+
+    test("declares bankruptcy when debt exceeds GDP", () => {
+      player.addGold(1_000n);
+      expect(player.isBankrupt()).toBe(false);
+
+      player.addDebt(player.gdp() + 1n);
+      player.updateBankruptcy();
+
+      expect(player.isBankrupt()).toBe(true);
+    });
+
+    test("stays solvent while debt is covered by GDP", () => {
+      player.addGold(1_000n);
+      player.addDebt(500n);
+
+      player.updateBankruptcy();
+
+      expect(player.isBankrupt()).toBe(false);
+    });
+
+    test("seizes all income while bankrupt", () => {
+      player.addDebt(1_000n);
+      player.updateBankruptcy();
+      expect(player.isBankrupt()).toBe(true);
+
+      const net = player.serviceDebt(100n);
+
+      expect(net).toBe(0n);
+      expect(player.debt()).toBe(900n);
+    });
+
+    test("recovers solvency once the debt is fully repaid", () => {
+      player.addDebt(100n);
+      player.updateBankruptcy();
+      expect(player.isBankrupt()).toBe(true);
+
+      player.serviceDebt(200n);
+      player.updateBankruptcy();
+
+      expect(player.isBankrupt()).toBe(false);
+    });
+
+    test("bankrupt defenders are cheaper and faster to invade", async () => {
+      const invaded = await setup(
+        "half_land_half_ocean",
+        {},
+        [
+          new PlayerInfo("attacker", PlayerType.Human, null, "attacker_id"),
+          new PlayerInfo("defender", PlayerType.Human, null, "defender_id"),
+        ],
+        undefined,
+        UseRealAttackLogic, // don't use TestConfig's mock attackLogic
+      );
+      const attacker = invaded.player("attacker_id");
+      const defender = invaded.player("defender_id");
+      const tile = invaded.ref(3, 8);
+      defender.conquer(tile);
+      defender.addTroops(10_000);
+      attacker.addTroops(10_000);
+
+      const solvent = invaded
+        .config()
+        .attackLogic(invaded, 1_000, attacker, defender, tile);
+      defender.addDebt(defender.gdp() + 1n);
+      defender.updateBankruptcy();
+      const bankrupt = invaded
+        .config()
+        .attackLogic(invaded, 1_000, attacker, defender, tile);
+
+      expect(bankrupt.attackerTroopLoss).toBeLessThan(
+        solvent.attackerTroopLoss,
+      );
+      // Lower per-tile budget cost means the invasion advances faster.
+      expect(bankrupt.tilesPerTickUsed).toBeLessThan(solvent.tilesPerTickUsed);
     });
   });
 

@@ -639,6 +639,9 @@ export interface Player {
   serviceDebt(income: Gold): Gold;
   accrueDebtInterest(): void;
   chargeFleetUpkeep(): Gold;
+  gdp(): Gold;
+  isBankrupt(): boolean;
+  updateBankruptcy(): void;
   troops(): number;
   setTroops(troops: number): void;
   addTroops(troops: number): void;
