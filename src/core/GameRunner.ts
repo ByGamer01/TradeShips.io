@@ -4,8 +4,8 @@ import { EconomicMissionExecution } from "./execution/EconomicMissionExecution";
 import { Executor } from "./execution/ExecutionManager";
 import { MaritimeObjectiveExecution } from "./execution/MaritimeObjectiveExecution";
 import { RecomputeRailClusterExecution } from "./execution/RecomputeRailClusterExecution";
-import { TradeLaneObjectiveExecution } from "./execution/TradeLaneObjectiveExecution";
 import { SpawnTimerExecution } from "./execution/SpawnTimerExecution";
+import { TradeLaneObjectiveExecution } from "./execution/TradeLaneObjectiveExecution";
 import { WinCheckExecution } from "./execution/WinCheckExecution";
 import {
   AllPlayers,
@@ -263,6 +263,8 @@ export class GameRunner {
         canSendAllianceRequest: player.canSendAllianceRequest(other),
         canBreakAlliance: player.isAlliedWith(other),
         canDonateGold: player.canDonateGold(other),
+        canRequestGold:
+          other.canDonateGold(player) && player.canSendQuickChat(other),
         canDonateTroops: player.canDonateTroops(other),
         canEmbargo: !player.hasEmbargoAgainst(other),
         canTariff:
