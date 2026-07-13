@@ -72,6 +72,27 @@ describe("MaritimeObjectiveExecution", () => {
     expect(snapshot.navalPower[0].power).toBe(6);
   });
 
+  it("ignores trade ships when weighing route control", async () => {
+    const game = await setup("half_land_half_ocean", {
+      gameMode: GameMode.FFA,
+    });
+    const trader = game.addPlayer(playerInfo("trader", PlayerType.Human));
+    const navy = game.addPlayer(playerInfo("navy", PlayerType.Human));
+    const exec = new MaritimeObjectiveExecution();
+
+    exec.init(game, 0);
+    const center = exec.snapshot().center;
+    trader.buildUnit(UnitType.TradeShip, center, {});
+    navy.buildUnit(UnitType.Warship, center, { patrolTile: center });
+    exec.tick(1);
+
+    const snapshot = exec.snapshot();
+    expect(snapshot.leader).toBe(navy);
+    expect(
+      snapshot.navalPower.find((entry) => entry.controller === trader),
+    ).toBeUndefined();
+  });
+
   it("pauses progress while equally strong rival fleets contest the route", async () => {
     const game = await setup("half_land_half_ocean", {
       gameMode: GameMode.FFA,

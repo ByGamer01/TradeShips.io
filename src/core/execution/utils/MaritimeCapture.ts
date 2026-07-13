@@ -11,9 +11,9 @@ import { MaritimeObjectiveStatus } from "../../game/GameUpdates";
 
 export type MaritimeController = Player | Team;
 
+// Trade ships are merchants, not combatants — they exert no route control.
 export const NAVAL_CAPTURE_POWER = new Map<UnitType, number>([
   [UnitType.TransportShip, 1],
-  [UnitType.TradeShip, 1],
   [UnitType.Warship, 3],
   [UnitType.Submarine, 3],
   [UnitType.AntiAirFrigate, 3],
