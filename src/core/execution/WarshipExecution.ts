@@ -8,6 +8,7 @@ import {
   UnitType,
 } from "../game/Game";
 import { TileRef } from "../game/GameMap";
+import { isCongressResolutionActive } from "../game/WorldCongress";
 import { WaterPathFinder } from "../pathfinding/PathFinder";
 import { PathStatus } from "../pathfinding/types";
 import { PseudoRandom } from "../PseudoRandom";
@@ -134,6 +135,11 @@ export class WarshipExecution implements Execution {
 
     // Priority 3: Hunt trade ship only if not healing and no enemy warship
     if (this.warship.targetUnit()?.type() === UnitType.TradeShip) {
+      if (isCongressResolutionActive(this.mg, "open_seas")) {
+        this.warship.setTargetUnit(undefined);
+        this.patrol();
+        return;
+      }
       this.huntDownTradeShip();
       return;
     }
@@ -212,9 +218,7 @@ export class WarshipExecution implements Execution {
   }
 
   private repairHubs(): Unit[] {
-    return this.warship
-      .owner()
-      .units(UnitType.Port, UnitType.AircraftCarrier);
+    return this.warship.owner().units(UnitType.Port, UnitType.AircraftCarrier);
   }
 
   private findNearestRepairHubTile(): TileRef | undefined {
@@ -341,6 +345,7 @@ export class WarshipExecution implements Execution {
       }
 
       if (includeTradeShips && type === UnitType.TradeShip) {
+        if (isCongressResolutionActive(mg, "open_seas")) continue;
         if (hasPort === undefined) {
           hasPort = owner.unitCount(UnitType.Port) > 0;
           patrolTile = this.warship.warshipState().patrolTile;
