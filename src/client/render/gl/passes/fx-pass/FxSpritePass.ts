@@ -14,9 +14,9 @@ import {
   UT_ATOM_BOMB,
   UT_CARRIER,
   UT_HYDROGEN_BOMB,
-  UT_SUBMARINE,
   UT_MIRV_WARHEAD,
   UT_SHELL,
+  UT_SUBMARINE,
   UT_TORPEDO,
   UT_TRAIN,
   UT_WARSHIP,
@@ -371,13 +371,14 @@ export class FxSpritePass {
       return;
     }
 
-    if (
-      typeName === UT_WARSHIP ||
-      typeName === UT_SUBMARINE ||
-      typeName === UT_CARRIER
-    ) {
+    if (typeName === UT_WARSHIP) {
       this.pushFx(x, y, FX_UNIT_EXPLOSION, now);
       this.pushFx(x, y, FX_SINKING_SHIP, now);
+      return;
+    }
+
+    if (typeName === UT_SUBMARINE || typeName === UT_CARRIER) {
+      this.pushFx(x, y, FX_UNIT_EXPLOSION, now);
       return;
     }
 
