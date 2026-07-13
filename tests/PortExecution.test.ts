@@ -94,4 +94,23 @@ describe("PortExecution", () => {
 
     expect(ports.length).toBe(1);
   });
+
+  test("naval batteries use shells while torpedoes remain submarine-only", () => {
+    game.config().portNavalBatteryAttackRate = () => 0;
+    player.conquer(game.ref(7, 10));
+    const port = player.buildUnit(UnitType.Port, game.ref(7, 10), {});
+    port.setPortSpecialization("naval");
+    const enemyWarship = other.buildUnit(UnitType.Warship, game.ref(9, 10), {
+      patrolTile: game.ref(9, 10),
+    });
+    const healthBefore = enemyWarship.health();
+
+    game.addExecution(new PortExecution(port));
+    for (let i = 0; i < 10; i++) {
+      game.executeNextTick();
+    }
+
+    expect(enemyWarship.health()).toBeLessThan(healthBefore);
+    expect(game.units(UnitType.Torpedo)).toHaveLength(0);
+  });
 });
