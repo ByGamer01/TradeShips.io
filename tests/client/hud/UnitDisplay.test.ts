@@ -60,6 +60,8 @@ describe("UnitDisplay naval quickbar", () => {
     expect(rendered).toContain("/images/AntiAirFrigateIconWhite.svg");
     expect(rendered).toContain("/images/NavalMineIconWhite.svg");
     expect(rendered).toContain("/images/CongressIconWhite.svg");
+    expect(rendered).toContain('data-unit-group="structures"');
+    expect(rendered).toContain('data-unit-group="vehicles"');
     expect(rendered).not.toContain("atom_bomb");
     expect(rendered).not.toContain("missile_silo");
   });
