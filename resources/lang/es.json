@@ -460,6 +460,7 @@
     "contested": "En disputa",
     "controlled": "Controlada",
     "hint": "Controla la ruta marítima central para ganar",
+    "mission": "Misión: controla el 100% de la ruta marítima y conserva {gold} de oro sin deuda",
     "neutral": "Neutral"
   },
   "radial_menu": {
