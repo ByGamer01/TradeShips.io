@@ -32,9 +32,17 @@ const antiAirFrigateIcon = assetUrl("images/AntiAirFrigateIconWhite.svg");
 const navalMineIcon = assetUrl("images/NavalMineIconWhite.svg");
 const congressIcon = assetUrl("images/CongressIconWhite.svg");
 
-function translateWithFallback(key: string, fallback: string): string {
-  const translated = translateText(key);
-  return translated === key ? fallback : translated;
+function translateWithFallback(
+  key: string,
+  fallback: string,
+  args?: Record<string, string | number>,
+): string {
+  const translated = translateText(key, args);
+  if (translated !== key) return translated;
+  return Object.entries(args ?? {}).reduce(
+    (text, [name, value]) => text.split(`{${name}}`).join(String(value)),
+    fallback,
+  );
 }
 
 @customElement("unit-display")
@@ -292,6 +300,7 @@ export class UnitDisplay extends LitElement implements Controller {
             ? "text-cyan-200"
             : "text-slate-400";
     const progressText = `${Math.round(objective.controlPercent)}%`;
+    const goal = renderNumber(this.game.config().economicVictoryGold(), 0);
     const fleetLabel = objective.leaderTeam ?? objective.controllerTeam;
     const fleetText =
       fleetLabel !== null && fleetLabel !== undefined
@@ -302,14 +311,16 @@ export class UnitDisplay extends LitElement implements Controller {
       <div
         class="mt-0.5 text-[10px] text-cyan-100 text-center leading-none"
         title=${translateWithFallback(
-          "maritime_objective.hint",
-          "Control the central sea route to win",
+          "maritime_objective.mission",
+          "Mission: control 100% of the sea route and hold {gold} gold without debt",
+          { gold: goal },
         )}
       >
         <span class="text-slate-300">
           ${translateWithFallback(
-            "maritime_objective.hint",
-            "Control the central sea route to win",
+            "maritime_objective.mission",
+            "Mission: control 100% of the sea route and hold {gold} gold without debt",
+            { gold: goal },
           )}
         </span>
         <span class="text-white"> · ${objective.name}</span>
