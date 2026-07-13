@@ -36,12 +36,13 @@ import { PerformanceOverlay } from "./layers/PerformanceOverlay";
 import { PlayerInfoOverlay } from "./layers/PlayerInfoOverlay";
 import { PlayerPanel } from "./layers/PlayerPanel";
 import { ReplayPanel } from "./layers/ReplayPanel";
-import { TradeStatsPanel } from "./layers/TradeStatsPanel";
 import { SettingsModal } from "./layers/SettingsModal";
 import { SpawnTimer } from "./layers/SpawnTimer";
 import { TeamStats } from "./layers/TeamStats";
+import { TradeStatsPanel } from "./layers/TradeStatsPanel";
 import { UnitDisplay } from "./layers/UnitDisplay";
 import { WinModal } from "./layers/WinModal";
+import { WorldCongressPanel } from "./layers/WorldCongressPanel";
 import { loadAllSprites } from "./SpriteLoader";
 
 export function createRenderer(
@@ -254,6 +255,15 @@ export function createRenderer(
   }
   headsUpMessage.game = game;
 
+  const worldCongressPanel = document.querySelector(
+    "world-congress-panel",
+  ) as WorldCongressPanel;
+  if (!(worldCongressPanel instanceof WorldCongressPanel)) {
+    console.error("world congress panel not found");
+  }
+  worldCongressPanel.game = game;
+  worldCongressPanel.eventBus = eventBus;
+
   const performanceOverlay = document.querySelector(
     "performance-overlay",
   ) as PerformanceOverlay;
@@ -337,6 +347,7 @@ export function createRenderer(
     teamStats,
     playerPanel,
     headsUpMessage,
+    worldCongressPanel,
     multiTabModal,
     inGamePromo,
     alertFrame,
