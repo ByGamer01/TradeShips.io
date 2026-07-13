@@ -38,6 +38,7 @@ describe("WinCheckExecution", () => {
         gameMode: GameMode.Team,
       })),
       percentageTilesOwnedToWin: vi.fn(() => 50),
+      economicVictoryGold: vi.fn(() => 1_000_000_000n),
     }));
     winCheck.init(mg, 0);
     const spy = vi.spyOn(winCheck as any, "checkWinnerTeam");
@@ -377,6 +378,87 @@ describe("WinCheckExecution - Nation Winners", () => {
 
     expect(setWinnerSpy).not.toHaveBeenCalled();
     expect(winCheck.isActive()).toBe(true);
+  });
+});
+
+describe("WinCheckExecution - Economic Victory", () => {
+  test("crowns the first solvent player to complete the gold mission", async () => {
+    const game = await setup("big_plains", { gameMode: GameMode.FFA }, [
+      playerInfo("Rich", PlayerType.Human),
+      playerInfo("Poor", PlayerType.Human),
+    ]);
+    const rich = game.player("Rich");
+    rich.conquer(game.ref(1, 1));
+    rich.addGold(game.config().economicVictoryGold());
+    const setWinnerSpy = vi.fn();
+    game.setWinner = setWinnerSpy;
+
+    const winCheck = new WinCheckExecution();
+    winCheck.init(game, 0);
+    winCheck.tick(10);
+
+    expect(setWinnerSpy).toHaveBeenCalledWith(rich, expect.anything());
+    expect(winCheck.isActive()).toBe(false);
+  });
+
+  test("outstanding debt disqualifies the gold mission", async () => {
+    const game = await setup("big_plains", { gameMode: GameMode.FFA }, [
+      playerInfo("Leveraged", PlayerType.Human),
+    ]);
+    const player = game.player("Leveraged");
+    player.conquer(game.ref(1, 1));
+    player.addGold(game.config().economicVictoryGold());
+    player.addDebt(1n);
+    const setWinnerSpy = vi.fn();
+    game.setWinner = setWinnerSpy;
+
+    const winCheck = new WinCheckExecution();
+    winCheck.init(game, 0);
+    winCheck.tick(10);
+
+    expect(setWinnerSpy).not.toHaveBeenCalled();
+    expect(winCheck.isActive()).toBe(true);
+  });
+
+  test("bots cannot complete the gold mission", async () => {
+    const game = await setup("big_plains", { gameMode: GameMode.FFA }, [
+      playerInfo("Bot", PlayerType.Bot),
+    ]);
+    const bot = game.player("Bot");
+    bot.conquer(game.ref(1, 1));
+    bot.addGold(game.config().economicVictoryGold() * 2n);
+    const setWinnerSpy = vi.fn();
+    game.setWinner = setWinnerSpy;
+
+    const winCheck = new WinCheckExecution();
+    winCheck.init(game, 0);
+    winCheck.tick(10);
+
+    expect(setWinnerSpy).not.toHaveBeenCalled();
+  });
+
+  test("awards the whole team in team mode", async () => {
+    const game = await setup("big_plains", {
+      gameMode: GameMode.Team,
+      playerTeams: 2,
+    });
+    const red = (game as any).addPlayer(
+      playerInfo("red", PlayerType.Human),
+      ColoredTeams.Red,
+    );
+    red.conquer(game.ref(1, 1));
+    red.addGold(game.config().economicVictoryGold());
+    const setWinnerSpy = vi.fn();
+    game.setWinner = setWinnerSpy;
+
+    const winCheck = new WinCheckExecution();
+    winCheck.init(game, 0);
+    winCheck.tick(10);
+
+    expect(setWinnerSpy).toHaveBeenCalledWith(
+      ColoredTeams.Red,
+      expect.anything(),
+    );
   });
 });
 

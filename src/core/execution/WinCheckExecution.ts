@@ -36,11 +36,52 @@ export class WinCheckExecution implements Execution {
     }
     if (this.mg === null) throw new Error("Not initialized");
 
+    if (this.checkEconomicVictory()) {
+      return;
+    }
     if (this.mg.config().gameConfig().gameMode === GameMode.Team) {
       this.checkWinnerTeam();
     } else {
       this.checkWinnerFFA();
     }
+  }
+
+  /**
+   * Global gold mission: the first debt-free player to bank the configured
+   * fortune wins outright (their whole team in team games).
+   */
+  checkEconomicVictory(): boolean {
+    if (this.mg === null) throw new Error("Not initialized");
+    const goal = this.mg.config().economicVictoryGold();
+    const candidates = this.mg
+      .players()
+      .filter(
+        (p) =>
+          p.type() !== PlayerType.Bot && p.gold() >= goal && p.debt() === 0n,
+      )
+      .sort(
+        (a, b) =>
+          (b.gold() > a.gold() ? 1 : b.gold() < a.gold() ? -1 : 0) ||
+          a.smallID() - b.smallID(),
+      );
+    const winner = candidates[0];
+    if (winner === undefined) {
+      return false;
+    }
+
+    if (this.mg.config().gameConfig().gameMode === GameMode.Team) {
+      const team = winner.team();
+      if (team === null || team === ColoredTeams.Bot) {
+        return false;
+      }
+      this.mg.setWinner(team, this.mg.stats().stats());
+      console.log(`${team} has won the game by economic victory`);
+    } else {
+      this.mg.setWinner(winner, this.mg.stats().stats());
+      console.log(`${winner.name()} has won the game by economic victory`);
+    }
+    this.active = false;
+    return true;
   }
 
   checkWinnerFFA(): void {
