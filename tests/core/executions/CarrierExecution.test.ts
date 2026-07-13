@@ -146,6 +146,27 @@ describe("CarrierExecution", () => {
     expect(Number(enemyWarship.health())).toBeLessThan(1000);
   });
 
+  test("launches aircraft against enemy carriers as part of a fleet", () => {
+    game.config().carrierAircraftAttackRate = () => 1;
+
+    const enemyCarrier = player2.buildUnit(
+      UnitType.AircraftCarrier,
+      game.ref(coastX + 6, 10),
+      {},
+    );
+
+    game.addExecution(new CarrierExecution(player1, game.ref(coastX + 2, 10)));
+
+    let sawAircraft = false;
+    for (let i = 0; i < 25; i++) {
+      game.executeNextTick();
+      sawAircraft ||= game.units(UnitType.Aircraft).length > 0;
+    }
+
+    expect(sawAircraft).toBe(true);
+    expect(Number(enemyCarrier.health())).toBeLessThan(1500);
+  });
+
   test("limits each carrier to three active strike aircraft", () => {
     game.config().carrierAircraftAttackRate = () => 0;
     game.config().aircraftStepsPerTick = () => 0;
