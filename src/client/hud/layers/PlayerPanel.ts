@@ -26,6 +26,7 @@ import {
   SendEmbargoAllIntentEvent,
   SendEmbargoIntentEvent,
   SendEmojiIntentEvent,
+  SendQuickChatEvent,
   SendTargetPlayerIntentEvent,
   SendTariffIntentEvent,
 } from "../../Transport";
@@ -238,6 +239,12 @@ export class PlayerPanel extends LitElement implements Controller {
   ) {
     e.stopPropagation();
     this.openSendGold(other);
+  }
+
+  private handleRequestGoldClick(e: Event, other: PlayerView) {
+    e.stopPropagation();
+    this.eventBus.emit(new SendQuickChatEvent(other, "help.gold"));
+    this.hide();
   }
 
   private closeSend = () => {
@@ -551,6 +558,7 @@ export class PlayerPanel extends LitElement implements Controller {
   }
 
   private renderResources(other: PlayerView) {
+    const warExhaustion = other.warExhaustionPercent();
     return html`
       <div class="mb-1 flex justify-between gap-2">
         <div
@@ -579,6 +587,25 @@ export class PlayerPanel extends LitElement implements Controller {
           >
         </div>
       </div>
+      ${warExhaustion > 0
+        ? html`
+            <div
+              class="mb-1 rounded-lg bg-white/4 px-3 py-2"
+              title=${translateText("player_panel.war_exhaustion")}
+            >
+              <div class="mb-1 flex justify-between text-xs text-zinc-200">
+                <span>${translateText("player_panel.war_exhaustion")}</span>
+                <span class="tabular-nums">${warExhaustion}%</span>
+              </div>
+              <div class="h-1.5 overflow-hidden rounded-full bg-zinc-700">
+                <div
+                  class="h-full rounded-full bg-amber-500 transition-[width]"
+                  style=${`width: ${warExhaustion}%`}
+                ></div>
+              </div>
+            </div>
+          `
+        : ""}
     `;
   }
 
@@ -723,6 +750,7 @@ export class PlayerPanel extends LitElement implements Controller {
   private renderActions(my: PlayerView, other: PlayerView) {
     const myPlayer = this.g.myPlayer();
     const canDonateGold = this.actions?.interaction?.canDonateGold;
+    const canRequestGold = this.actions?.interaction?.canRequestGold;
     const canDonateTroops = this.actions?.interaction?.canDonateTroops;
     const canSendAllianceRequest =
       this.actions?.interaction?.canSendAllianceRequest;
@@ -795,6 +823,17 @@ export class PlayerPanel extends LitElement implements Controller {
           ? html``
           : html`
               <div class="grid auto-cols-fr grid-flow-col gap-1">
+                ${canRequestGold
+                  ? actionButton({
+                      onClick: (e: MouseEvent) =>
+                        this.handleRequestGoldClick(e, other),
+                      icon: donateGoldIcon,
+                      iconAlt: "Request Gold",
+                      title: translateText("player_panel.request_gold"),
+                      label: translateText("player_panel.request_gold"),
+                      type: "normal",
+                    })
+                  : ""}
                 ${canEmbargo
                   ? actionButton({
                       onClick: (e: MouseEvent) =>
