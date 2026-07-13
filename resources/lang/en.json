@@ -351,7 +351,8 @@
     "summary_keep": "Keep",
     "summary_send": "Send",
     "target_dead": "Target eliminated",
-    "target_dead_note": "You can't send resources to an eliminated player."
+    "target_dead_note": "You can't send resources to an eliminated player.",
+    "unavailable": "Unavailable"
   },
   "control_panel": {
     "allied_afk_neighbor_info": "You can attack disconnected players even if you are allied with them.",
