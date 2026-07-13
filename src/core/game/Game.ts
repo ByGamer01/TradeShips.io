@@ -631,6 +631,9 @@ export interface Player {
   gold(): Gold;
   addGold(toAdd: Gold, tile?: TileRef): void;
   removeGold(toRemove: Gold): Gold;
+  warExhaustion(): number;
+  updateWarEconomy(activeAttacks: number, normalIncome: Gold): Gold;
+  collectWarRecoveryReward(): Gold;
   troops(): number;
   setTroops(troops: number): void;
   addTroops(troops: number): void;
@@ -947,6 +950,7 @@ export interface PlayerInteraction {
   canBreakAlliance: boolean;
   canTarget: boolean;
   canDonateGold: boolean;
+  canRequestGold: boolean;
   canDonateTroops: boolean;
   canEmbargo: boolean;
   canTariff: boolean;
