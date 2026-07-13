@@ -252,6 +252,7 @@ export interface PlayerUpdate {
   embargoes?: Set<PlayerID>;
   isTraitor?: boolean;
   traitorRemainingTicks?: number;
+  warExhaustionPercent?: number;
   targets?: number[];
   outgoingEmojis?: EmojiMessage[];
   outgoingAttacks?: AttackUpdate[];
