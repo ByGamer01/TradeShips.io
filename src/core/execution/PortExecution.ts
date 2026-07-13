@@ -1,6 +1,6 @@
 import { Execution, Game, Unit, UnitType } from "../game/Game";
 import { PseudoRandom } from "../PseudoRandom";
-import { TorpedoExecution } from "./TorpedoExecution";
+import { ShellExecution } from "./ShellExecution";
 import { TradeShipExecution } from "./TradeShipExecution";
 import { TrainStationExecution } from "./TrainStationExecution";
 
@@ -103,7 +103,7 @@ export class PortExecution implements Execution {
   }
 
   /**
-   * Naval base battery: torpedo the closest enemy combat ship in range.
+   * Naval base battery: shell the closest enemy combat ship in range.
    * Submarines are only engageable at their close-range engagement distance,
    * matching warship targeting rules.
    */
@@ -144,7 +144,7 @@ export class PortExecution implements Execution {
     if (best === undefined) return;
     this.lastBatteryAttack = this.mg.ticks();
     this.mg.addExecution(
-      new TorpedoExecution(this.port.tile(), owner, this.port, best),
+      new ShellExecution(this.port.tile(), owner, this.port, best),
     );
   }
 
