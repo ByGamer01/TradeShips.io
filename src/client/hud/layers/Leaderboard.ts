@@ -14,6 +14,8 @@ interface Entry {
   position: number;
   score: string;
   gold: string;
+  debt: string;
+  isBankrupt: boolean;
   maxTroops: string;
   isMyPlayer: boolean;
   isOnSameTeam: boolean;
@@ -62,7 +64,7 @@ export class Leaderboard extends LitElement implements Controller {
   private showTopFive = true;
 
   @state()
-  private _sortKey: "tiles" | "gold" | "maxtroops" = "tiles";
+  private _sortKey: "tiles" | "gold" | "debt" | "maxtroops" = "tiles";
 
   @state()
   private _sortOrder: "asc" | "desc" = "desc";
@@ -89,7 +91,7 @@ export class Leaderboard extends LitElement implements Controller {
     this.updateLeaderboard();
   }
 
-  private setSort(key: "tiles" | "gold" | "maxtroops") {
+  private setSort(key: "tiles" | "gold" | "debt" | "maxtroops") {
     if (this._sortKey === key) {
       this._sortOrder = this._sortOrder === "asc" ? "desc" : "asc";
     } else {
@@ -132,6 +134,11 @@ export class Leaderboard extends LitElement implements Controller {
       case "maxtroops":
         sorted = sorted.sort((a, b) => compare(maxTroops(a), maxTroops(b)));
         break;
+      case "debt":
+        sorted = sorted.sort((a, b) =>
+          compare(Number(a.debt()), Number(b.debt())),
+        );
+        break;
       default:
         sorted = sorted.sort((a, b) => compare(scoreSort(a), scoreSort(b)));
     }
@@ -151,6 +158,8 @@ export class Leaderboard extends LitElement implements Controller {
         position: index + 1,
         score: scoreText(player),
         gold: renderNumber(player.gold()),
+        debt: renderNumber(player.debt()),
+        isBankrupt: player.isBankrupt(),
         maxTroops: renderTroops(maxTroops),
         isMyPlayer: player === myPlayer,
         isOnSameTeam:
@@ -180,6 +189,8 @@ export class Leaderboard extends LitElement implements Controller {
           position: place,
           score: scoreText(myPlayer),
           gold: renderNumber(myPlayer.gold()),
+          debt: renderNumber(myPlayer.debt()),
+          isBankrupt: myPlayer.isBankrupt(),
           maxTroops: renderTroops(myPlayerMaxTroops),
           isMyPlayer: true,
           isOnSameTeam: true,
@@ -202,15 +213,15 @@ export class Leaderboard extends LitElement implements Controller {
     }
     return html`
       <div
-        class="max-h-[35vh] overflow-y-auto text-white text-xs md:text-xs lg:text-sm md:max-h-[50vh] mt-2 ${this
+        class="max-h-[35vh] overflow-auto text-white text-xs md:text-xs lg:text-sm md:max-h-[50vh] mt-2 ${this
           .visible
           ? ""
           : "hidden"}"
         @contextmenu=${(e: Event) => e.preventDefault()}
       >
         <div
-          class="grid bg-gray-800/85 w-full text-xs md:text-xs lg:text-sm rounded-lg overflow-hidden"
-          style="grid-template-columns: minmax(24px, 30px) minmax(60px, 100px) minmax(45px, 70px) minmax(40px, 55px) minmax(55px, 105px);"
+          class="grid bg-gray-800/85 w-full min-w-[420px] text-xs md:text-xs lg:text-sm rounded-lg overflow-hidden"
+          style="grid-template-columns: minmax(24px, 30px) minmax(60px, 100px) minmax(45px, 70px) minmax(40px, 65px) minmax(55px, 105px) minmax(45px, 75px);"
         >
           <div class="contents font-bold bg-gray-700/60">
             <div class="py-1 md:py-2 text-center border-b border-slate-500">
@@ -253,6 +264,17 @@ export class Leaderboard extends LitElement implements Controller {
             >
               ${translateText("leaderboard.maxtroops")}
               ${this._sortKey === "maxtroops"
+                ? this._sortOrder === "asc"
+                  ? "⬆️"
+                  : "⬇️"
+                : ""}
+            </div>
+            <div
+              class="py-1 md:py-2 text-center border-b border-slate-500 cursor-pointer whitespace-nowrap truncate"
+              @click=${() => this.setSort("debt")}
+            >
+              ${translateText("leaderboard.debt")}
+              ${this._sortKey === "debt"
                 ? this._sortOrder === "asc"
                   ? "⬆️"
                   : "⬇️"
@@ -309,6 +331,18 @@ export class Leaderboard extends LitElement implements Controller {
                     : ""}"
                 >
                   ${player.maxTroops}
+                </div>
+                <div
+                  class="py-1 md:py-2 text-center ${player.isBankrupt
+                    ? "font-bold text-red-300"
+                    : "text-amber-200"} ${index < this.players.length - 1
+                    ? "border-b border-slate-500"
+                    : ""}"
+                  title=${player.isBankrupt
+                    ? translateText("leaderboard.bankrupt")
+                    : translateText("leaderboard.debt")}
+                >
+                  ${player.isBankrupt ? "⚠ " : ""}${player.debt}
                 </div>
               </div>
             `,
