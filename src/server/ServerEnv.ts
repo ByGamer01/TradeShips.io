@@ -113,7 +113,7 @@ export class ServerEnv {
   static gameCreationRate(): number {
     // Short join window while the player base is small: nations backfill the
     // lobby anyway, so waiting longer only delays the game.
-    return 5 * 1000;
+    return 10 * 1000;
   }
   static workerIndex(gameID: GameID): number {
     return simpleHash(gameID) % ServerEnv.numWorkers();
