@@ -956,6 +956,16 @@ export class Config {
     return refund < 2_000_000n ? refund : 2_000_000n;
   }
 
+  /** Interest charged on outstanding debt, in basis points per accrual. */
+  debtInterestRateBps(): bigint {
+    return 100n;
+  }
+
+  /** Ticks between debt interest accruals (100 ticks ≈ 10s). */
+  debtInterestIntervalTicks(): number {
+    return 100;
+  }
+
   nukeMagnitudes(unitType: UnitType): NukeMagnitude {
     switch (unitType) {
       case UnitType.MIRVWarhead:

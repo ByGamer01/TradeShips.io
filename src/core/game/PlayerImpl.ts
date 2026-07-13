@@ -99,6 +99,7 @@ export class PlayerImpl implements Player {
   private _troops: bigint;
   private _warExhaustion = 0;
   private _warExpenses = 0n;
+  private _debt = 0n;
 
   markedTraitorTick = -1;
   private _betrayalCount: number = 0;
@@ -1180,6 +1181,8 @@ export class PlayerImpl implements Player {
     );
     const spent = this.removeGold(requested);
     this._warExpenses += spent;
+    // The unpaid share of the war bill is not forgiven — it becomes debt.
+    this.addDebt(requested - spent);
     return spent;
   }
 
@@ -1188,6 +1191,28 @@ export class PlayerImpl implements Player {
     this._warExpenses = 0n;
     this._warExhaustion /= 2;
     return reward;
+  }
+
+  debt(): Gold {
+    return this._debt;
+  }
+
+  addDebt(toAdd: Gold): void {
+    if (toAdd <= 0n) return;
+    this._debt += toAdd;
+  }
+
+  serviceDebt(income: Gold): Gold {
+    if (this._debt === 0n || income <= 0n) return income;
+    const half = income / 2n;
+    const repayment = half < this._debt ? half : this._debt;
+    this._debt -= repayment;
+    return income - repayment;
+  }
+
+  accrueDebtInterest(): void {
+    if (this._debt === 0n) return;
+    this._debt += (this._debt * this.mg.config().debtInterestRateBps()) / 10_000n;
   }
 
   troops(): number {

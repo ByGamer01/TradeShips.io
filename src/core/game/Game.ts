@@ -634,6 +634,10 @@ export interface Player {
   warExhaustion(): number;
   updateWarEconomy(activeAttacks: number, normalIncome: Gold): Gold;
   collectWarRecoveryReward(): Gold;
+  debt(): Gold;
+  addDebt(toAdd: Gold): void;
+  serviceDebt(income: Gold): Gold;
+  accrueDebtInterest(): void;
   troops(): number;
   setTroops(troops: number): void;
   addTroops(troops: number): void;
