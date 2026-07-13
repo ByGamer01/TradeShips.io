@@ -36,7 +36,10 @@ export class WinCheckExecution implements Execution {
     }
     if (this.mg === null) throw new Error("Not initialized");
 
-    if (this.checkEconomicVictory()) {
+    const maritimeConquest = isMaritimeMap(
+      this.mg.config().gameConfig().gameMap,
+    );
+    if (!maritimeConquest && this.checkEconomicVictory()) {
       return;
     }
     if (this.mg.config().gameConfig().gameMode === GameMode.Team) {
@@ -47,8 +50,8 @@ export class WinCheckExecution implements Execution {
   }
 
   /**
-   * Global gold mission: the first debt-free player to bank the configured
-   * fortune wins outright (their whole team in team games).
+   * On non-maritime maps, the first debt-free player to bank the configured
+   * fortune wins outright. Maritime maps combine this goal with route control.
    */
   checkEconomicVictory(): boolean {
     if (this.mg === null) throw new Error("Not initialized");
