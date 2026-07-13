@@ -22,6 +22,9 @@ export const NAVAL_CAPTURE_POWER = new Map<UnitType, number>([
 ]);
 
 export const CAPTURE_RATE_PER_POWER_PER_TICK = 0.02;
+// Effective capture power is the leader's advantage over the runner-up,
+// clamped to this cap: past it, extra hulls win battles but not the clock.
+export const CAPTURE_POWER_CAP = 12;
 export const CONTROLLED_PERCENT = 100;
 
 export interface NavalPowerEntry {
@@ -130,7 +133,13 @@ export function stepCapture(
   }
 
   state.leader = top.controller;
-  const delta = top.power * CAPTURE_RATE_PER_POWER_PER_TICK;
+  // Rate scales with the margin over the runner-up, not absolute power:
+  // any rival presence slows the leader, and the cap kills spam-to-win.
+  const advantage = Math.min(
+    top.power - (second?.power ?? 0),
+    CAPTURE_POWER_CAP,
+  );
+  const delta = advantage * CAPTURE_RATE_PER_POWER_PER_TICK;
 
   if (state.controller !== null && !sameController(state.controller, top.controller)) {
     state.controlPercent = Math.max(0, state.controlPercent - delta);
