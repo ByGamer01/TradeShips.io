@@ -1,4 +1,12 @@
-import { Game, GameMode, Player, Team, Unit, UnitType } from "../../game/Game";
+import {
+  Game,
+  GameMode,
+  Player,
+  PlayerType,
+  Team,
+  Unit,
+  UnitType,
+} from "../../game/Game";
 import { MaritimeObjectiveStatus } from "../../game/GameUpdates";
 
 /**
@@ -79,6 +87,24 @@ export function controllerFor(mg: Game, player: Player): MaritimeController {
   return player;
 }
 
+/** One solvent human member must hold the gold required by the global mission. */
+export function controllerCompletedEconomicGoal(
+  mg: Game,
+  controller: MaritimeController,
+): boolean {
+  const players =
+    typeof controller === "string"
+      ? mg.players().filter((player) => player.team() === controller)
+      : [controller];
+  const goal = mg.config().economicVictoryGold();
+  return players.some(
+    (player) =>
+      player.type() === PlayerType.Human &&
+      player.gold() >= goal &&
+      player.debt() === 0n,
+  );
+}
+
 /**
  * Sum naval capture power per controller over the units inside the zone,
  * sorted by power descending with a deterministic key tie-break.
@@ -143,7 +169,10 @@ export function stepCapture(
   const delta =
     (effectiveTop - effectiveSecond) * CAPTURE_RATE_PER_POWER_PER_TICK;
 
-  if (state.controller !== null && !sameController(state.controller, top.controller)) {
+  if (
+    state.controller !== null &&
+    !sameController(state.controller, top.controller)
+  ) {
     state.controlPercent = Math.max(0, state.controlPercent - delta);
     if (state.controlPercent === 0) {
       state.controller = top.controller;
