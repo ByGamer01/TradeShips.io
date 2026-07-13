@@ -3,6 +3,7 @@ import {
   Player,
   PlayerInfo,
   PlayerType,
+  UnitType,
 } from "../../src/core/game/Game";
 import { setup } from "../util/Setup";
 
@@ -65,6 +66,44 @@ describe("debt economy", () => {
 
     test("passes income through untouched when debt-free", () => {
       expect(player.serviceDebt(100n)).toBe(100n);
+    });
+  });
+
+  describe("fleet upkeep", () => {
+    const sea = { x: 12, y: 8 };
+
+    test("charges the treasury for every hull it can afford", () => {
+      const upkeep = game.config().unitUpkeep(UnitType.Warship);
+      expect(upkeep).toBeGreaterThan(0n);
+      const tile = game.ref(sea.x, sea.y);
+      player.buildUnit(UnitType.Warship, tile, { patrolTile: tile });
+      player.buildUnit(UnitType.Warship, tile, { patrolTile: tile });
+      // Fund the treasury after paying build costs so only upkeep drains it.
+      player.addGold(upkeep * 10n);
+
+      const charged = player.chargeFleetUpkeep();
+
+      expect(charged).toBe(upkeep * 2n);
+      expect(player.gold()).toBe(upkeep * 8n);
+      expect(player.debt()).toBe(0n);
+    });
+
+    test("turns unaffordable upkeep into debt", () => {
+      const tile = game.ref(sea.x, sea.y);
+      player.buildUnit(UnitType.Submarine, tile, {});
+
+      const charged = player.chargeFleetUpkeep();
+
+      expect(charged).toBe(game.config().unitUpkeep(UnitType.Submarine));
+      expect(player.gold()).toBe(0n);
+      expect(player.debt()).toBe(charged);
+    });
+
+    test("charges nothing without a fleet", () => {
+      player.addGold(1_000n);
+
+      expect(player.chargeFleetUpkeep()).toBe(0n);
+      expect(player.gold()).toBe(1_000n);
     });
   });
 

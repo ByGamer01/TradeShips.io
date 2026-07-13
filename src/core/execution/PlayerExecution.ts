@@ -83,6 +83,9 @@ export class PlayerExecution implements Execution {
     if (ticks % this.config.debtInterestIntervalTicks() === 0) {
       this.player.accrueDebtInterest();
     }
+    if (ticks % this.config.fleetUpkeepIntervalTicks() === 0) {
+      this.player.chargeFleetUpkeep();
+    }
     const activeWars = this.player
       .outgoingAttacks()
       .filter(

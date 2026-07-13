@@ -1215,6 +1215,19 @@ export class PlayerImpl implements Player {
     this._debt += (this._debt * this.mg.config().debtInterestRateBps()) / 10_000n;
   }
 
+  chargeFleetUpkeep(): Gold {
+    let total = 0n;
+    for (const unit of this._units) {
+      if (!unit.isActive()) continue;
+      total += this.mg.config().unitUpkeep(unit.type());
+    }
+    if (total === 0n) return 0n;
+    const paid = this.removeGold(total);
+    // Whatever the treasury cannot cover is financed as debt.
+    this.addDebt(total - paid);
+    return total;
+  }
+
   troops(): number {
     return Number(this._troops);
   }

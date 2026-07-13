@@ -961,6 +961,26 @@ export class Config {
     return 100n;
   }
 
+  /** Recurring cost of keeping a hull afloat, charged every upkeep interval. */
+  unitUpkeep(unitType: UnitType): Gold {
+    switch (unitType) {
+      case UnitType.Warship:
+      case UnitType.AntiAirFrigate:
+        return 2_000n;
+      case UnitType.Submarine:
+        return 1_500n;
+      case UnitType.AircraftCarrier:
+        return 5_000n;
+      default:
+        return 0n;
+    }
+  }
+
+  /** Ticks between fleet upkeep charges (100 ticks ≈ 10s). */
+  fleetUpkeepIntervalTicks(): number {
+    return 100;
+  }
+
   /** Ticks between debt interest accruals (100 ticks ≈ 10s). */
   debtInterestIntervalTicks(): number {
     return 100;
