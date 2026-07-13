@@ -177,7 +177,7 @@ describe("NavalMineExecution", () => {
     expect(execution.isActive()).toBe(true);
   });
 
-  test("does not trigger on enemy trade ships in v1", () => {
+  test("detonates against enemy trade ships", () => {
     const mineTile = game.ref(coastX + 2, 10);
     const enemyPort = player2.buildUnit(
       UnitType.Port,
@@ -194,8 +194,8 @@ describe("NavalMineExecution", () => {
     execution.init(game, game.ticks());
     execution.tick(game.ticks());
 
-    expect(tradeShip.isActive()).toBe(true);
-    expect(game.units(UnitType.NavalMine)).toHaveLength(1);
-    expect(execution.isActive()).toBe(true);
+    expect(tradeShip.isActive()).toBe(false);
+    expect(game.units(UnitType.NavalMine)).toHaveLength(0);
+    expect(execution.isActive()).toBe(false);
   });
 });
