@@ -277,11 +277,11 @@ export class Config {
   portNavalSpecHealingSlotsBonus(): number {
     return 2;
   }
-  /** Naval base: torpedo battery engagement range in tiles. */
+  /** Naval base: coastal battery engagement range in tiles. */
   portNavalBatteryRange(): number {
     return 60;
   }
-  /** Naval base: ticks between torpedo battery attacks. */
+  /** Naval base: ticks between coastal battery attacks. */
   portNavalBatteryAttackRate(): number {
     return 25;
   }
@@ -1134,10 +1134,6 @@ export class Config {
 
   warshipShellAttackRate(): number {
     return 20;
-  }
-
-  warshipTorpedoAttackRate(): number {
-    return this.warshipShellAttackRate() * 2;
   }
 
   /** Max distance at which surface warships can target a submerged submarine. */
