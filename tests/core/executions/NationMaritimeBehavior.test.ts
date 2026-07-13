@@ -201,9 +201,9 @@ describe("NationMaritimeBehavior", () => {
     );
     behavior.contestObjective();
 
-    expect(game.maritimeZone()!.contains(spare.warshipState().patrolTile!)).toBe(
-      true,
-    );
+    expect(
+      game.maritimeZone()!.contains(spare.warshipState().patrolTile!),
+    ).toBe(true);
   });
 
   it("caps the escalated detachment at the capture-stall threshold", async () => {
@@ -218,7 +218,7 @@ describe("NationMaritimeBehavior", () => {
     for (let i = 0; i < 20; i++) {
       rival.buildUnit(UnitType.Warship, inside, { patrolTile: inside });
     }
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       nation.buildUnit(UnitType.Warship, inside, { patrolTile: inside });
     }
     const addExecution = vi.spyOn(game, "addExecution");
@@ -230,7 +230,7 @@ describe("NationMaritimeBehavior", () => {
     );
     behavior.contestObjective();
 
-    // Five patrolling hulls already stall any spam at the capture cap;
+    // Four patrolling hulls already stall any spam at the capture cap;
     // matching the rival ship-for-ship would be wasted gold.
     expect(addExecution).not.toHaveBeenCalled();
   });
