@@ -63,6 +63,8 @@ export interface PlayerState {
   isTraitor: boolean;
   traitorRemainingTicks: number;
   warExhaustionPercent: number;
+  debt: number;
+  isBankrupt: boolean;
   betrayals: number;
   hasSpawned: boolean;
   /** TileRef the player picked as their spawn (undefined if not yet spawned). */
