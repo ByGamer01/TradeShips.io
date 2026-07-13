@@ -85,6 +85,8 @@ function stateFromUpdate(pu: PlayerUpdate): PlayerState {
       0,
       Math.min(100, pu.warExhaustionPercent ?? 0),
     ),
+    debt: Math.max(0, Number(pu.debt ?? 0n)),
+    isBankrupt: pu.isBankrupt ?? false,
     betrayals: pu.betrayals!,
     hasSpawned: pu.hasSpawned!,
     spawnTile: pu.spawnTile,
@@ -478,6 +480,14 @@ export class PlayerView {
 
   warExhaustionPercent(): number {
     return this.state.warExhaustionPercent;
+  }
+
+  debt(): Gold {
+    return BigInt(this.state.debt);
+  }
+
+  isBankrupt(): boolean {
+    return this.state.isBankrupt;
   }
 
   troops(): number {
