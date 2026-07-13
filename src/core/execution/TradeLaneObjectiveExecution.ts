@@ -10,6 +10,7 @@ import { MaritimeObjectiveExecution } from "./MaritimeObjectiveExecution";
 import {
   aggregateNavalPower,
   CaptureState,
+  controllerCompletedEconomicGoal,
   NavalPowerEntry,
   newCaptureState,
   stepCapture,
@@ -87,7 +88,11 @@ export class TradeLaneObjectiveExecution implements Execution {
 
     this.emitUpdate();
 
-    if (this.state.status === "controlled" && this.state.controller !== null) {
+    if (
+      this.state.status === "controlled" &&
+      this.state.controller !== null &&
+      controllerCompletedEconomicGoal(this.mg, this.state.controller)
+    ) {
       this.mg.setWinner(this.state.controller, this.mg.stats().stats());
       this.active = false;
     }
