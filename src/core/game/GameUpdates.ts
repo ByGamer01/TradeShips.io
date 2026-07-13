@@ -253,6 +253,8 @@ export interface PlayerUpdate {
   isTraitor?: boolean;
   traitorRemainingTicks?: number;
   warExhaustionPercent?: number;
+  debt?: Gold;
+  isBankrupt?: boolean;
   targets?: number[];
   outgoingEmojis?: EmojiMessage[];
   outgoingAttacks?: AttackUpdate[];
