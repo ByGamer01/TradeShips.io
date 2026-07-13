@@ -15,6 +15,9 @@ describe("assignTeams", () => {
     );
   };
 
+  const createNation = (id: string): PlayerInfo =>
+    new PlayerInfo(`Nation ${id}`, PlayerType.Nation, null, id);
+
   // Friend grouping is keyed on clientID. By default we pass clientID = id
   // for brevity, but tests can override clientID to verify the lookup uses
   // clientID rather than PlayerInfo.id.
@@ -50,6 +53,28 @@ describe("assignTeams", () => {
     expect(result.get(players[1])).toEqual(ColoredTeams.Blue);
     expect(result.get(players[2])).toEqual(ColoredTeams.Red);
     expect(result.get(players[3])).toEqual(ColoredTeams.Blue);
+  });
+
+  it("places humans first and uses nations to fill the remaining team slots", () => {
+    const humans = [createPlayer("human-1"), createPlayer("human-2")];
+    const nations = [
+      createNation("nation-1"),
+      createNation("nation-2"),
+      createNation("nation-3"),
+      createNation("nation-4"),
+    ];
+
+    const result = assignTeams([...humans, ...nations], teams);
+    const assigned = [...result.values()];
+
+    expect(result.get(humans[0])).not.toBe(result.get(humans[1]));
+    expect(assigned.filter((team) => team === ColoredTeams.Red)).toHaveLength(
+      3,
+    );
+    expect(assigned.filter((team) => team === ColoredTeams.Blue)).toHaveLength(
+      3,
+    );
+    expect(assigned).not.toContain("kicked");
   });
 
   it("should keep clan members together on the same team", () => {
