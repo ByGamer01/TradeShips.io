@@ -129,6 +129,8 @@ export function makePlayerUpdate(
     allies: [],
     embargoes: new Set(),
     isTraitor: false,
+    traitorRemainingTicks: 0,
+    warExhaustionPercent: 0,
     targets: [],
     outgoingEmojis: [],
     outgoingAttacks: [],
