@@ -82,8 +82,10 @@ describe("MaritimeObjectiveExecution", () => {
 
     exec.init(game, 0);
     const center = exec.snapshot().center;
-    trader.buildUnit(UnitType.TradeShip, center, {});
-    navy.buildUnit(UnitType.Warship, center, { patrolTile: center });
+    const warship = navy.buildUnit(UnitType.Warship, center, {
+      patrolTile: center,
+    });
+    trader.buildUnit(UnitType.TradeShip, center, { targetUnit: warship });
     exec.tick(1);
 
     const snapshot = exec.snapshot();
