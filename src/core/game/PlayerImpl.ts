@@ -97,6 +97,8 @@ export class PlayerImpl implements Player {
 
   private _gold: bigint;
   private _troops: bigint;
+  private _warExhaustion = 0;
+  private _warExpenses = 0n;
 
   markedTraitorTick = -1;
   private _betrayalCount: number = 0;
@@ -319,6 +321,7 @@ export class PlayerImpl implements Player {
       embargoes: embargoes,
       isTraitor: this.isTraitor(),
       traitorRemainingTicks: this.getTraitorRemainingTicks(),
+      warExhaustionPercent: Math.round(this._warExhaustion * 100),
       targets: targets,
       outgoingEmojis: outgoingEmojis,
       outgoingAttacks: outgoingAttacks,
@@ -1150,6 +1153,41 @@ export class PlayerImpl implements Player {
     const actualRemoved = minInt(this._gold, toRemove);
     this._gold -= actualRemoved;
     return actualRemoved;
+  }
+
+  warExhaustion(): number {
+    return this._warExhaustion;
+  }
+
+  updateWarEconomy(activeAttacks: number, normalIncome: Gold): Gold {
+    if (activeAttacks <= 0) {
+      this._warExhaustion = Math.max(
+        0,
+        this._warExhaustion - 1 / this.mg.config().warExhaustionRecoveryTicks(),
+      );
+      return 0n;
+    }
+
+    this._warExhaustion = Math.min(
+      1,
+      this._warExhaustion + 1 / this.mg.config().warExhaustionAttackTicks(),
+    );
+    const multiplier = this.mg
+      .config()
+      .warEconomyCostMultiplier(this._warExhaustion, activeAttacks);
+    const requested = BigInt(
+      Math.floor(Number(normalIncome) * multiplier + 1e-9),
+    );
+    const spent = this.removeGold(requested);
+    this._warExpenses += spent;
+    return spent;
+  }
+
+  collectWarRecoveryReward(): Gold {
+    const reward = this.mg.config().warRecoveryReward(this._warExpenses);
+    this._warExpenses = 0n;
+    this._warExhaustion /= 2;
+    return reward;
   }
 
   troops(): number {
