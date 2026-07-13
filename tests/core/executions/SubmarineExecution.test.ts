@@ -210,6 +210,30 @@ describe("SubmarineExecution", () => {
     expect(Number(nearSub.health())).toBeLessThan(500);
   });
 
+  test("resumes patrol around the destination after a manual move order", () => {
+    game.config().warshipPatrolRange = () => 2;
+
+    game.addExecution(
+      new SubmarineExecution(player1, game.ref(coastX + 2, 10)),
+    );
+    game.executeNextTick();
+    const sub = game.units(UnitType.Submarine)[0]!;
+
+    // Mimic MoveWarshipExecution's relocation order for submarines.
+    const destination = game.ref(14, 3);
+    sub.setTargetTile(destination);
+
+    for (let i = 0; i < 60; i++) {
+      game.executeNextTick();
+    }
+
+    // The sub must patrol around its new station, not sail back home.
+    expect(sub.targetTile()).toBeUndefined();
+    expect(game.euclideanDistSquared(sub.tile(), destination)).toBeLessThanOrEqual(
+      25,
+    );
+  });
+
   test("naval mines detonate against enemy submarines", () => {
     const mineTile = game.ref(coastX + 2, 10);
     const enemySub = player2.buildUnit(

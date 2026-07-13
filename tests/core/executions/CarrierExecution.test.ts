@@ -62,6 +62,28 @@ describe("CarrierExecution", () => {
     expect(PlayerBuildable.types).not.toContain(UnitType.Aircraft);
   });
 
+  test("resumes patrol around the destination after a manual move order", () => {
+    game.config().warshipPatrolRange = () => 2;
+
+    game.addExecution(new CarrierExecution(player1, game.ref(coastX + 2, 10)));
+    game.executeNextTick();
+    const carrier = game.units(UnitType.AircraftCarrier)[0]!;
+
+    // Mimic MoveWarshipExecution's relocation order for carriers.
+    const destination = game.ref(14, 3);
+    carrier.setTargetTile(destination);
+
+    for (let i = 0; i < 60; i++) {
+      game.executeNextTick();
+    }
+
+    // The carrier must patrol around its new station, not sail back home.
+    expect(carrier.targetTile()).toBeUndefined();
+    expect(
+      game.euclideanDistSquared(carrier.tile(), destination),
+    ).toBeLessThanOrEqual(25);
+  });
+
   test("prices carriers above warships with escalating cost", async () => {
     const normalGame = await setup(
       "half_land_half_ocean",
