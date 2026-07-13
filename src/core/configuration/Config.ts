@@ -18,6 +18,7 @@ import {
 } from "../game/Game";
 import { TileRef } from "../game/GameMap";
 import { UserSettings } from "../game/UserSettings";
+import { infrastructureCostMultiplier } from "../game/WorldCongress";
 import { GameConfig, TeamCountConfig } from "../Schemas";
 import { NukeType } from "../StatsSchemas";
 import { assertNever, sigmoid, toInt, within } from "../Util";
@@ -584,7 +585,11 @@ export class Config {
           Math.min(player.unitsOwned(type), player.unitsConstructed(type)),
         0,
       );
-      return BigInt(costFn(numUnits));
+      return BigInt(
+        Math.round(
+          costFn(numUnits) * infrastructureCostMultiplier(game, types[0]),
+        ),
+      );
     };
   }
 
