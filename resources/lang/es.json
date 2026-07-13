@@ -209,7 +209,8 @@
   },
   "game_mode": {
     "ffa": "Todos contra todos",
-    "teams": "Equipos"
+    "teams": "Equipos",
+    "world_congress": "Congreso Mundial"
   },
   "select_lang": {
     "title": "Selecciona idioma"
@@ -481,5 +482,43 @@
     "ships_lost": "Barcos perdidos",
     "title": "Comercio",
     "top_ports": "Principales puertos receptores"
+  },
+  "world_congress": {
+    "active_resolution": "ResoluciÃ³n activa",
+    "cast_vote": "Emitir voto",
+    "condemn_player": {
+      "description": "Rompe todas las alianzas de {player} y aplica la penalizaciÃ³n de traidor.",
+      "title": "Condenar a {player}"
+    },
+    "embargo_player": {
+      "description": "Suspende todo el comercio con {player} durante tres minutos.",
+      "title": "Embargar a {player}"
+    },
+    "infrastructure_subsidy": {
+      "description": "Reduce un 50 % el coste de cada {infrastructure} durante tres minutos.",
+      "title": "Subsidio para {infrastructure}"
+    },
+    "infrastructure_tax": {
+      "description": "Aumenta un 50 % el coste de cada {infrastructure} durante tres minutos.",
+      "title": "Impuesto sobre {infrastructure}"
+    },
+    "international_development_fund": {
+      "description": "Recauda el 5 % del oro de los jugadores activos y lo reparte entre las cinco potencias mÃ¡s pequeÃ±as.",
+      "title": "Fondo de desarrollo"
+    },
+    "nuclear_non_proliferation": {
+      "description": "Impide lanzar armas nucleares durante tres minutos.",
+      "title": "No proliferaciÃ³n nuclear"
+    },
+    "open_seas": {
+      "description": "Impide que los buques de guerra ataquen o capturen barcos mercantes durante tres minutos.",
+      "title": "Mares abiertos"
+    },
+    "resolution_passed": "ResoluciÃ³n aprobada",
+    "seconds": "segundos",
+    "session": "SesiÃ³n {session}",
+    "title": "Congreso Mundial",
+    "vote_recorded": "Voto registrado; pulsa para cambiarlo",
+    "votes": "{votes} votos"
   }
 }
