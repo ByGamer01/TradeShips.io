@@ -147,13 +147,11 @@ export class MapPlaylist {
       maxTimerValue: undefined,
       instantBuild: false,
       randomSpawn: false,
-      nations:
-        mode === GameMode.Team && playerTeams !== HumansVsNations
-          ? "disabled"
-          : "default",
+      nations: "default",
       gameMode: mode,
       playerTeams,
-      bots: isCompact ? 100 : 400,
+      // Team slots are filled by full nation AI instead of neutral tribes.
+      bots: mode === GameMode.Team ? 0 : isCompact ? 100 : 400,
       spawnImmunityDuration: this.getSpawnImmunityDuration(playerTeams),
       disabledUnits: [...DISABLED_ARSENAL],
       disableClanTags: mode === GameMode.FFA ? true : undefined,
@@ -258,13 +256,9 @@ export class MapPlaylist {
         (await this.lobbyMaxPlayers(map, mode, playerTeams, isCompact)),
     );
 
-    // Nations stay enabled even with 25M starting gold: TradeShips nations
-    // play Hard+, contest the maritime objective, and backfill empty human
-    // slots so low-traffic lobbies still start as full games.
-    const nations: GameConfig["nations"] =
-      mode === GameMode.Team && playerTeams !== HumansVsNations
-        ? "disabled"
-        : "default";
+    // Nations backfill empty human slots in team games and are replaced as
+    // real players join before the countdown ends.
+    const nations: GameConfig["nations"] = "default";
 
     // Seed disabledUnits from the arsenal lock (always on), then layer the
     // "ports disabled" modifier on top.
@@ -309,7 +303,7 @@ export class MapPlaylist {
       nations,
       gameMode: mode,
       playerTeams,
-      bots: isCompact ? 100 : 400,
+      bots: mode === GameMode.Team ? 0 : isCompact ? 100 : 400,
       spawnImmunityDuration:
         peaceTimeDuration ??
         this.getSpawnImmunityDuration(playerTeams, startingGold),
