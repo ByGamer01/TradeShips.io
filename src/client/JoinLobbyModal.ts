@@ -407,7 +407,10 @@ export class JoinLobbyModal extends BaseModal {
 
     let modeSubtitle: string;
     if (!isTeam) {
-      modeSubtitle = translateText("game_mode.ffa");
+      modeSubtitle =
+        c.gameMode === GameMode.WorldCongress
+          ? translateText("game_mode.world_congress")
+          : translateText("game_mode.ffa");
     } else if (c.playerTeams === HumansVsNations) {
       modeSubtitle = translateText("host_modal.teams_Humans Vs Nations");
     } else if (typeof c.playerTeams === "string") {
