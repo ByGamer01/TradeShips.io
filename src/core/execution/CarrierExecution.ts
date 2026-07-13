@@ -10,6 +10,7 @@ import { randomPatrolTile } from "./utils/NavalPatrol";
 const CARRIER_TARGET_TYPES = [
   UnitType.TransportShip,
   UnitType.Warship,
+  UnitType.AircraftCarrier,
   UnitType.AntiAirFrigate,
   UnitType.Submarine,
 ] as const;
