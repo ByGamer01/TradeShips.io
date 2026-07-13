@@ -17,7 +17,7 @@ const BUILD_GOLD_MULTIPLE = 2n;
 // Enough hulls to reach CAPTURE_POWER_CAP and stall any rival capture;
 // past this, extra patrol ships buy nothing on the objective clock.
 const WARSHIP_POWER = NAVAL_CAPTURE_POWER.get(UnitType.Warship) ?? 1;
-const MAX_DETACHMENT = Math.ceil(CAPTURE_POWER_CAP / WARSHIP_POWER) + 1;
+const MAX_DETACHMENT = Math.ceil(CAPTURE_POWER_CAP / WARSHIP_POWER);
 
 /**
  * Makes nations contest the maritime objective (the win condition) instead of
