@@ -176,7 +176,7 @@ describe("SubmarineExecution", () => {
 
   test("warships only engage submarines inside the engagement range", () => {
     game.config().submarineEngagementRange = () => 2;
-    game.config().warshipTorpedoAttackRate = () => 1;
+    game.config().warshipShellAttackRate = () => 1;
     game.config().warshipPatrolRange = () => 2;
 
     const farSub = player1.buildUnit(
