@@ -678,7 +678,7 @@ export class AiAttackBehavior {
   // enemies - they can rely on teammates to donate. In FFA, going after
   // someone significantly stronger is usually a losing proposition.
   private isFFA(): boolean {
-    return this.game.config().gameConfig().gameMode === GameMode.FFA;
+    return this.game.config().gameConfig().gameMode !== GameMode.Team;
   }
 
   private getPlayerCenter(player: Player) {
