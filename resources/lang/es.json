@@ -389,12 +389,14 @@
     "keep": "Seguir jugando"
   },
   "leaderboard": {
+    "bankrupt": "En bancarrota",
     "title": "Clasificación",
     "hide": "Ocultar",
     "rank": "Rango",
     "player": "Jugador",
     "owned": "En propiedad",
     "gold": "Oro",
+    "debt": "Deuda",
     "troops": "Tropas",
     "control": "Control"
   },
@@ -430,6 +432,8 @@
     "attack_ratio": "Ratio de ataque"
   },
   "player_panel": {
+    "bankrupt": "En bancarrota",
+    "debt": "Deuda",
     "gold": "Oro",
     "request_gold": "Pedir oro",
     "troops": "Tropas",
