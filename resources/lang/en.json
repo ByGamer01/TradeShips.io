@@ -440,7 +440,8 @@
     "trade_ship_captured": "Your trade ship was captured by {name}",
     "unit_destroyed": "Your {unit} was destroyed",
     "unit_voluntarily_deleted": "Unit voluntarily deleted",
-    "wants_to_renew_alliance": "{name} wants to renew your alliance"
+    "wants_to_renew_alliance": "{name} wants to renew your alliance",
+    "war_economy_recovered": "War economy recovered {gold} gold after defeating {name}"
   },
   "flag_input": {
     "button_title": "Pick a flag!",
@@ -1055,6 +1056,7 @@
     "kick_confirm": "Kick {name}?\n\nThey won't be able to rejoin this game.",
     "kicked": "Already kicked",
     "moderation": "Moderation",
+    "request_gold": "Request Gold",
     "send_alliance": "Send Alliance",
     "send_gold": "Send Gold",
     "send_troops": "Send Troops",
@@ -1068,7 +1070,8 @@
     "tariff_tooltip": "Impose a tariff on this player's trade for {cost} gold",
     "trading": "Trading",
     "traitor": "Traitor",
-    "troops": "Troops"
+    "troops": "Troops",
+    "war_exhaustion": "War exhaustion"
   },
   "player_stats_table": {
     "arrived": "Arrived",
