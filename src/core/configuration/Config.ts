@@ -1015,7 +1015,7 @@ export class Config {
 
   /** Gold a debt-free player must bank to win the global economic mission. */
   economicVictoryGold(): Gold {
-    return 1_000_000_000n;
+    return 500_000_000n;
   }
 
   /** Defense multiplier applied to bankrupt defenders (mirrors traitors). */
