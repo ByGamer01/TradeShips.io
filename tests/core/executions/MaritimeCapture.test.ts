@@ -52,6 +52,21 @@ describe("stepCapture", () => {
     );
   });
 
+  it("stalls a spammer completely once the defender also reaches the cap", () => {
+    const state = newCaptureState();
+    step(
+      state,
+      entry("red", CAPTURE_POWER_CAP * 10),
+      entry("blue", CAPTURE_POWER_CAP),
+    );
+
+    // Only each side's first CAPTURE_POWER_CAP of power counts toward the
+    // clock, so a capped defender freezes any spam: combat must decide.
+    expect(state.controlPercent).toBe(0);
+    expect(state.status).toBe("contested");
+    expect(state.leader).toBeNull();
+  });
+
   it("drains an existing holder by the rival's advantage before flipping control", () => {
     const state = newCaptureState();
     step(state, entry("red", CAPTURE_POWER_CAP));

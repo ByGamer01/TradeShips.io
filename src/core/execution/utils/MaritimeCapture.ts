@@ -126,20 +126,22 @@ export function stepCapture(
     return;
   }
 
-  if (second !== undefined && top.power === second.power) {
+  // Only each side's first CAPTURE_POWER_CAP of power counts toward the
+  // clock: extra hulls win battles, not the capture. The rate then scales
+  // with the leader's effective margin, so any rival presence slows it and
+  // a capped defender freezes any spam outright.
+  const effectiveTop = Math.min(top.power, CAPTURE_POWER_CAP);
+  const effectiveSecond = Math.min(second?.power ?? 0, CAPTURE_POWER_CAP);
+
+  if (effectiveTop === effectiveSecond) {
     state.leader = null;
     state.status = "contested";
     return;
   }
 
   state.leader = top.controller;
-  // Rate scales with the margin over the runner-up, not absolute power:
-  // any rival presence slows the leader, and the cap kills spam-to-win.
-  const advantage = Math.min(
-    top.power - (second?.power ?? 0),
-    CAPTURE_POWER_CAP,
-  );
-  const delta = advantage * CAPTURE_RATE_PER_POWER_PER_TICK;
+  const delta =
+    (effectiveTop - effectiveSecond) * CAPTURE_RATE_PER_POWER_PER_TICK;
 
   if (state.controller !== null && !sameController(state.controller, top.controller)) {
     state.controlPercent = Math.max(0, state.controlPercent - delta);
