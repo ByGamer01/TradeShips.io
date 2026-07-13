@@ -553,6 +553,15 @@ export class PlayerPanel extends LitElement implements Controller {
           : html``}
       </div>
       ${this.renderTraitorBadge(other)}
+      ${other.isBankrupt()
+        ? html`<div
+            class="mt-2 inline-flex items-center gap-1.5 rounded-full border border-red-400/50 bg-red-500/15 px-2.5 py-1 text-xs font-bold text-red-200"
+            role="status"
+          >
+            <span aria-hidden="true">⚠️</span>
+            ${translateText("player_panel.bankrupt")}
+          </div>`
+        : html``}
       ${this.renderRelationPillIfNation(other, my)}
     `;
   }
@@ -586,6 +595,21 @@ export class PlayerPanel extends LitElement implements Controller {
             ${translateText("player_panel.troops")}</span
           >
         </div>
+      </div>
+      <div
+        class="mb-1 flex items-center justify-between rounded-lg bg-white/4 px-3 py-1.5 text-white"
+      >
+        <span class="text-zinc-200">${translateText("player_panel.debt")}</span>
+        <span
+          translate="no"
+          class="tabular-nums font-semibold ${other.isBankrupt()
+            ? "text-red-300"
+            : other.debt() > 0n
+              ? "text-amber-300"
+              : "text-zinc-300"}"
+        >
+          ${renderNumber(other.debt())}
+        </span>
       </div>
       ${warExhaustion > 0
         ? html`
