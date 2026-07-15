@@ -16,8 +16,9 @@
     "allowUnusedLabels": false,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "strictNullChecks": true,
+    "strict": true,
     "useDefineForClassFields": false,
+    // Lit decorators assign reactive properties outside the constructor
     "strictPropertyInitialization": false,
     "skipLibCheck": true,
     "types": ["vitest/globals", "node"]

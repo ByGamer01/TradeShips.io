@@ -610,11 +610,11 @@ describe("InputHandler AutoUpgrade", () => {
       expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.City);
     });
 
-    test("Numpad4 sets ghost structure to Warship by default", () => {
+    test("Numpad4 sets ghost structure to Congress by default", () => {
       window.dispatchEvent(
         new KeyboardEvent("keyup", { code: "Numpad4", key: "4" }),
       );
-      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.Warship);
+      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.Congress);
     });
 
     test("Numpad5 sets ghost structure to Submarine by default", () => {
@@ -633,30 +633,30 @@ describe("InputHandler AutoUpgrade", () => {
       );
     });
 
-    test("Numpad7 sets ghost structure to AntiAirFrigate by default", () => {
+    test("Numpad7 sets ghost structure to Warship by default", () => {
       window.dispatchEvent(
         new KeyboardEvent("keyup", {
           code: "Numpad7",
           key: "7",
         }),
       );
-      expect(inputHandler["uiState"].ghostStructure).toBe(
-        (UnitType as any).AntiAirFrigate,
-      );
+      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.Warship);
     });
 
-    test("Numpad8 sets ghost structure to NavalMine by default", () => {
+    test("Numpad8 sets ghost structure to AntiAirFrigate by default", () => {
       window.dispatchEvent(
         new KeyboardEvent("keyup", { code: "Numpad8", key: "8" }),
       );
-      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.NavalMine);
+      expect(inputHandler["uiState"].ghostStructure).toBe(
+        UnitType.AntiAirFrigate,
+      );
     });
 
-    test("Numpad9 sets ghost structure to Congress by default", () => {
+    test("Numpad9 sets ghost structure to NavalMine by default", () => {
       window.dispatchEvent(
         new KeyboardEvent("keyup", { code: "Numpad9", key: "9" }),
       );
-      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.Congress);
+      expect(inputHandler["uiState"].ghostStructure).toBe(UnitType.NavalMine);
     });
 
     test("does not set ghost structure when the player is dead", () => {
