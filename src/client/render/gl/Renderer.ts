@@ -766,7 +766,12 @@ export class GPURenderer {
     this.lastUnits = units;
     this.frameTick++;
     this.unitPass.updateUnits(units, this.frameTick);
-    this.barPass.updateBars(units, this.lastStructures, gameTick);
+    this.barPass.updateBars(
+      units,
+      this.lastStructures,
+      gameTick,
+      this.unitPass.hiddenSubmarineIds(),
+    );
     this.pointLightPass.updateLights(units);
     this.heatManager.decayHeat();
   }

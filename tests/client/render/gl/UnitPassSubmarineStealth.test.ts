@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { shouldRenderSubmarineForLocalPlayer } from "../../../../src/client/render/gl/passes/UnitPass";
+import {
+  collectHiddenSubmarineIds,
+  shouldRenderSubmarineForLocalPlayer,
+} from "../../../../src/client/render/gl/passes/UnitPass";
 import type { UnitState } from "../../../../src/client/render/types";
 import {
   UT_PORT,
@@ -112,5 +115,74 @@ describe("shouldRenderSubmarineForLocalPlayer", () => {
 
   it("renders submarines when there is no local player context", () => {
     expect(renderable(unit({ ownerID: 2 }), [], new Set(), 0)).toBe(true);
+  });
+});
+
+describe("collectHiddenSubmarineIds", () => {
+  it("collects hidden enemy submarines so other passes can skip them", () => {
+    const hiddenSub = unit({ id: 1, ownerID: 2, pos: ref(50, 50) });
+    const revealedSub = unit({ id: 2, ownerID: 2, pos: ref(12, 10) });
+    const ownSub = unit({ id: 3, ownerID: 1, pos: ref(90, 90) });
+    const friendlyWarship = unit({
+      id: 10,
+      unitType: UT_WARSHIP,
+      ownerID: 1,
+      pos: ref(10, 10),
+    });
+
+    const units = new Map<number, UnitState>([
+      [1, hiddenSub],
+      [2, revealedSub],
+      [3, ownSub],
+      [10, friendlyWarship],
+    ]);
+
+    const hidden = collectHiddenSubmarineIds(
+      units,
+      new Map(),
+      MAP_W,
+      1,
+      new Set(),
+      REVEAL_RANGE,
+    );
+
+    expect(hidden.has(1)).toBe(true);
+    expect(hidden.has(2)).toBe(false);
+    expect(hidden.has(3)).toBe(false);
+    expect(hidden.has(10)).toBe(false);
+  });
+
+  it("uses friendly structures as reveal contacts", () => {
+    const enemySub = unit({ id: 1, ownerID: 2, pos: ref(50, 50) });
+    const ownPort = unit({
+      id: 20,
+      unitType: UT_PORT,
+      ownerID: 1,
+      pos: ref(55, 50),
+    });
+
+    const hidden = collectHiddenSubmarineIds(
+      new Map([[1, enemySub]]),
+      new Map([[20, ownPort]]),
+      MAP_W,
+      1,
+      new Set(),
+      REVEAL_RANGE,
+    );
+
+    expect(hidden.has(1)).toBe(false);
+  });
+
+  it("hides nothing without local player context", () => {
+    const enemySub = unit({ id: 1, ownerID: 2, pos: ref(50, 50) });
+    const hidden = collectHiddenSubmarineIds(
+      new Map([[1, enemySub]]),
+      new Map(),
+      MAP_W,
+      0,
+      new Set(),
+      REVEAL_RANGE,
+    );
+    expect(hidden.size).toBe(0);
   });
 });

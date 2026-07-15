@@ -253,6 +253,41 @@ export function shouldRenderSubmarineForLocalPlayer(
   return false;
 }
 
+/**
+ * IDs of enemy submarines the local player must not see this tick. Other
+ * passes (health bars, fx) consume this so a hidden submarine leaks nothing
+ * — not even its damage state.
+ */
+export function collectHiddenSubmarineIds(
+  units: ReadonlyMap<number, UnitState>,
+  structures: ReadonlyMap<number, UnitState>,
+  mapW: number,
+  localPlayerID: number,
+  friendlyOwners: ReadonlySet<number>,
+  revealRange: number,
+): Set<number> {
+  const hidden = new Set<number>();
+  if (localPlayerID <= 0) return hidden;
+
+  const revealContacts = [...units.values(), ...structures.values()];
+  for (const [id, unit] of units) {
+    if (unit.unitType !== UT_SUBMARINE || !unit.isActive) continue;
+    if (
+      !shouldRenderSubmarineForLocalPlayer(
+        unit,
+        revealContacts,
+        mapW,
+        localPlayerID,
+        friendlyOwners,
+        revealRange,
+      )
+    ) {
+      hidden.add(id);
+    }
+  }
+  return hidden;
+}
+
 // ---------------------------------------------------------------------------
 // Helper: create a VAO for instanced unit rendering
 // ---------------------------------------------------------------------------
@@ -343,6 +378,7 @@ export class UnitPass {
   private friendlyOwners = new Set<number>();
   private structures: Map<number, UnitState> = new Map();
   private submarineRevealRange: number;
+  private hiddenSubmarines: Set<number> = new Set();
 
   constructor(
     gl: WebGL2RenderingContext,
@@ -519,6 +555,11 @@ export class UnitPass {
     this.missileCount++;
   }
 
+  /** Submarines hidden from the local player this tick — set by updateUnits. */
+  hiddenSubmarineIds(): ReadonlySet<number> {
+    return this.hiddenSubmarines;
+  }
+
   updateUnits(units: Map<number, UnitState>, tick: number): void {
     this.frameTick = tick;
     this.groundCount = 0;
@@ -526,22 +567,18 @@ export class UnitPass {
     this.smoothSegs.length = 0;
     this.lastUnitsUpdateMs = performance.now();
 
-    const submarineRevealContacts = [...units.values(), ...this.structures.values()];
+    this.hiddenSubmarines = collectHiddenSubmarineIds(
+      units,
+      this.structures,
+      this.mapW,
+      this.localPlayerID,
+      this.friendlyOwners,
+      this.submarineRevealRange,
+    );
 
-    for (const unit of units.values()) {
+    for (const [id, unit] of units) {
       if (!unit.isActive) continue;
-      if (
-        !shouldRenderSubmarineForLocalPlayer(
-          unit,
-          submarineRevealContacts,
-          this.mapW,
-          this.localPlayerID,
-          this.friendlyOwners,
-          this.submarineRevealRange,
-        )
-      ) {
-        continue;
-      }
+      if (this.hiddenSubmarines.has(id)) continue;
 
       let atlasIdx = this.typeToAtlasCol.get(unit.unitType);
 
