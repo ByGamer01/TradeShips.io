@@ -12,14 +12,13 @@ const SUBMARINE_TARGET_TYPES = [
   UnitType.Warship,
   UnitType.AntiAirFrigate,
   UnitType.AircraftCarrier,
-  UnitType.TradeShip,
 ] as const;
 
 /**
- * Submarine: a cheap merchant raider. Patrols like a warship and fires
- * torpedoes at enemy shipping. Surface warships can only engage it inside
- * the (short) submarineEngagementRange, so its natural counters are naval
- * mines and carrier aircraft.
+ * Submarine: a cheap stealth combatant. Patrols like a warship and fires
+ * torpedoes at enemy military shipping. Surface warships can only engage it
+ * inside the (short) submarineEngagementRange, so its natural counters are
+ * naval mines and carrier aircraft.
  */
 export class SubmarineExecution implements Execution {
   private active = true;
@@ -104,16 +103,6 @@ export class SubmarineExecution implements Execution {
         !mg.hasWaterComponent(unit.tile(), subComponent)
       ) {
         continue;
-      }
-
-      if (unit.type() === UnitType.TradeShip) {
-        if (
-          unit.isSafeFromPirates() ||
-          unit.targetUnit()?.owner() === owner ||
-          unit.targetUnit()?.owner().isFriendly(owner)
-        ) {
-          continue;
-        }
       }
 
       const priority = SUBMARINE_TARGET_TYPES.indexOf(
