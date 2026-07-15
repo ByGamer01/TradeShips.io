@@ -1,3 +1,23 @@
+📦 **TradeShips v0.3.0 — Port prosperity and submarine rebalance**
+
+⚓ **Submarines**
+
+- Submarines now hunt only military ships: warships, frigates and carriers
+- Trade ships are safe from torpedoes again
+- Hidden enemy submarines no longer reveal their position through a floating health bar — you only see them (periscope and health) inside your fleet's detection range
+
+💰 **Port prosperity**
+
+- Trade routes earn extra gold for every level of the destination port
+- Upgrading a port past level 500 grants a one-time prosperity reward: all debt forgiven plus 100M gold
+- Nation bots now invest in port upgrades to chase prosperity
+
+🎮 **Lobbies**
+
+- Public lobbies rotate between FFA, team and special game configurations
+
+---
+
 📦 **TradeShips v0.2.0 — Congress and war economy**
 
 🏆 **Combined global mission**
