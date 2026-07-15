@@ -123,7 +123,7 @@ describe("MasterLobbyService.isHealthy", () => {
 });
 
 describe("MasterLobbyService public lobby scheduling", () => {
-  it("schedules one shared public lobby from the special maritime rotation", async () => {
+  it("rotates the shared public lobby evenly across every game mode", async () => {
     vi.mocked(startPolling).mockClear();
     vi.spyOn(ServerEnv, "numWorkers").mockReturnValue(1);
     vi.spyOn(ServerEnv, "workerIndex").mockReturnValue(0);
@@ -147,6 +147,8 @@ describe("MasterLobbyService public lobby scheduling", () => {
     expect(scheduleCallback).toBeDefined();
 
     await scheduleCallback!();
+    await scheduleCallback!();
+    await scheduleCallback!();
 
     const sentMessages = (
       vi.mocked((worker as any).send).mock.calls as Array<[MasterMessage]>
@@ -155,10 +157,19 @@ describe("MasterLobbyService public lobby scheduling", () => {
       (msg): msg is MasterCreateGame => msg.type === "createGame",
     );
 
-    expect(createMessages).toHaveLength(1);
-    expect(createMessages[0].publicGameType).toBe("ffa");
-    expect(createMessages[0].gameConfig).toEqual({ type: "special" });
-    expect(playlist.gameConfig).toHaveBeenCalledTimes(1);
-    expect(playlist.gameConfig).toHaveBeenCalledWith("special");
+    expect(createMessages).toHaveLength(3);
+    expect(createMessages.every((msg) => msg.publicGameType === "ffa")).toBe(
+      true,
+    );
+    expect(createMessages.map((msg) => msg.gameConfig)).toEqual([
+      { type: "ffa" },
+      { type: "team" },
+      { type: "special" },
+    ]);
+    expect(playlist.gameConfig.mock.calls).toEqual([
+      ["ffa"],
+      ["team"],
+      ["special"],
+    ]);
   });
 });

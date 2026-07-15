@@ -14,7 +14,11 @@ import { startPolling } from "./PollingLoop";
 import { ServerEnv } from "./ServerEnv";
 
 const PUBLIC_LOBBY_TYPES: readonly PublicGameType[] = ["ffa"];
-const PUBLIC_LOBBY_CONFIG_TYPE: PublicGameType = "special";
+const PUBLIC_LOBBY_CONFIG_ROTATION: readonly PublicGameType[] = [
+  "ffa",
+  "team",
+  "special",
+];
 const TARGET_PUBLIC_LOBBIES_PER_TYPE = 1;
 
 export interface MasterLobbyServiceOptions {
@@ -28,6 +32,7 @@ export class MasterLobbyService {
   private readonly workerLobbies = new Map<number, PublicGameInfo[]>();
   private readonly readyWorkers = new Set<number>();
   private started = false;
+  private publicLobbyConfigIndex = 0;
 
   constructor(
     private playlist: MapPlaylist,
@@ -158,10 +163,19 @@ export class MasterLobbyService {
       this.sendMessageToWorker({
         type: "createGame",
         gameID: generateID(),
-        gameConfig: await this.playlist.gameConfig(PUBLIC_LOBBY_CONFIG_TYPE),
+        gameConfig: await this.playlist.gameConfig(
+          this.nextPublicLobbyConfigType(),
+        ),
         publicGameType: type,
       } satisfies MasterCreateGame);
     }
+  }
+
+  private nextPublicLobbyConfigType(): PublicGameType {
+    const type = PUBLIC_LOBBY_CONFIG_ROTATION[this.publicLobbyConfigIndex];
+    this.publicLobbyConfigIndex =
+      (this.publicLobbyConfigIndex + 1) % PUBLIC_LOBBY_CONFIG_ROTATION.length;
+    return type;
   }
 
   private sendMessageToWorker(msg: MasterCreateGame | MasterUpdateGame): void {
