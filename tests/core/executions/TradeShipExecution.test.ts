@@ -92,6 +92,7 @@ describe("TradeShipExecution", () => {
       isUnderConstruction: vi.fn(() => false),
       isMarkedForDeletion: vi.fn(() => false),
       portSpecialization: vi.fn(() => undefined),
+      level: vi.fn(() => 1),
     } as any;
 
     let odometer = 0;
@@ -196,6 +197,23 @@ describe("TradeShipExecution", () => {
 
     expect(srcGold).toBe(dstGold);
     expect(srcGold).toBeGreaterThan(baseGold);
+  });
+
+  it("adds ten percent trade gold for each destination level above one", () => {
+    dstPort.level = vi.fn(() => 3);
+    const baseGold = game
+      .config()
+      .tradeShipGold(tradeShip.tilesTraveled(), origOwner);
+    tradeShipExecution["pathFinder"].next = vi.fn(() => ({
+      status: PathStatus.COMPLETE,
+      node: 32,
+    }));
+
+    tradeShipExecution.tick(1);
+
+    const expected = baseGold + BigInt(Math.floor(Number(baseGold) * 0.2));
+    expect(origOwner.addGold).toHaveBeenCalledWith(expected, srcPort.tile());
+    expect(dstOwner.addGold).toHaveBeenCalledWith(expected, dstPort.tile());
   });
 
   it("routes tariff cuts from arrival gold to the tariff issuer", () => {

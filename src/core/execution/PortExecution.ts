@@ -1,4 +1,4 @@
-import { Execution, Game, Unit, UnitType } from "../game/Game";
+import { Execution, Game, PlayerType, Unit, UnitType } from "../game/Game";
 import { PseudoRandom } from "../PseudoRandom";
 import { ShellExecution } from "./ShellExecution";
 import { TradeShipExecution } from "./TradeShipExecution";
@@ -68,7 +68,7 @@ export class PortExecution implements Execution {
       return;
     }
 
-    const port = this.random.randElement(ports);
+    const port = this.selectTradingPort(ports);
     this.mg.addExecution(
       new TradeShipExecution(this.port.owner(), this.port, port),
     );
@@ -126,7 +126,10 @@ export class PortExecution implements Execution {
     let best: Unit | undefined;
     let bestDistSquared = Infinity;
     for (const { unit, distSquared } of nearby) {
-      if (unit.owner() === owner || !owner.canAttackPlayer(unit.owner(), true)) {
+      if (
+        unit.owner() === owner ||
+        !owner.canAttackPlayer(unit.owner(), true)
+      ) {
         continue;
       }
       if (
@@ -209,5 +212,43 @@ export class PortExecution implements Execution {
       }
     }
     return weightedPorts;
+  }
+
+  /**
+   * Human ports retain varied weighted routing. Nations instead maximize
+   * estimated income per travel tick, including alliance and trade-hub bonuses.
+   */
+  selectTradingPort(ports: Unit[]): Unit {
+    if (this.port.owner().type() !== PlayerType.Nation) {
+      return this.random.randElement(ports);
+    }
+
+    const uniquePorts = Array.from(new Set(ports));
+    uniquePorts.sort((a, b) => {
+      const valueDelta =
+        this.estimatedIncomeRate(b) - this.estimatedIncomeRate(a);
+      return valueDelta || a.id() - b.id();
+    });
+    return uniquePorts[0];
+  }
+
+  private estimatedIncomeRate(destination: Unit): number {
+    const owner = this.port.owner();
+    const distance = Math.max(
+      1,
+      this.mg.manhattanDist(this.port.tile(), destination.tile()),
+    );
+    let income = Number(this.mg.config().tradeShipGold(distance, owner));
+    income *= 1 + this.mg.config().portLevelTradeGoldBonus(destination.level());
+    if (destination.portSpecialization() === "trade") {
+      income *= 1 + this.mg.config().portTradeSpecGoldBonus();
+    }
+    if (
+      owner.isFriendly(destination.owner()) ||
+      destination.owner().isFriendly(owner)
+    ) {
+      income *= 1 + this.mg.config().alliedTradeGoldBonus();
+    }
+    return income / distance;
   }
 }

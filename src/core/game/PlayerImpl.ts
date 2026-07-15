@@ -1398,9 +1398,19 @@ export class PlayerImpl implements Player {
 
   upgradeUnit(unit: Unit) {
     const cost = this.mg.unitInfo(unit.type()).cost(this.mg, this);
+    const previousLevel = unit.level();
     this.removeGold(cost);
     unit.increaseLevel();
     this.recordUnitConstructed(unit.type());
+    if (
+      unit.type() === UnitType.Port &&
+      previousLevel <= this.mg.config().portProsperityThreshold() &&
+      unit.level() > this.mg.config().portProsperityThreshold()
+    ) {
+      this._debt = 0n;
+      this.updateBankruptcy();
+      this.addGold(this.mg.config().portProsperityGoldReward(), unit.tile());
+    }
   }
 
   public buildableUnits(

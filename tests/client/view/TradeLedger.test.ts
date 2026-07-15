@@ -92,11 +92,17 @@ describe("TradeLedger", () => {
       tiles: number;
       ownerID: number;
       destinationOwnerID?: number | null;
+      destinationPortID?: number | null;
     }> = [];
     const l = new TradeLedger({
       localPlayerID: () => 1,
-      estimateGold: (tiles, ownerID, destinationOwnerID) => {
-        estimates.push({ tiles, ownerID, destinationOwnerID });
+      estimateGold: (tiles, ownerID, destinationOwnerID, destinationPortID) => {
+        estimates.push({
+          tiles,
+          ownerID,
+          destinationOwnerID,
+          destinationPortID,
+        });
         return destinationOwnerID === 2 ? 1500 : 1000;
       },
       portOwnerID: (unitId) => (unitId === 20 ? 2 : null),
@@ -116,7 +122,12 @@ describe("TradeLedger", () => {
     );
 
     expect(estimates).toEqual([
-      { tiles: 12, ownerID: 1, destinationOwnerID: 2 },
+      {
+        tiles: 12,
+        ownerID: 1,
+        destinationOwnerID: 2,
+        destinationPortID: 20,
+      },
     ]);
     expect(l.summary().goldFromMyShips).toBe(1500);
   });

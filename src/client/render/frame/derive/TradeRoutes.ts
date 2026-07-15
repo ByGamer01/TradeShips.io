@@ -19,6 +19,7 @@ export type { TradeRouteData, TradeRouteRelation, TradeRouteRiskLevel };
 export type EstimateTradeRouteGold = (
   distanceTiles: number,
   ownerID: number,
+  destinationPortID: number,
 ) => number;
 
 // Must match RelationMatrix.ts
@@ -273,6 +274,7 @@ export function deriveTradeRoutes(
       route.estimatedGold = estimateGold(
         (unit.tilesTraveled ?? 0) + routeDistanceTiles,
         unit.ownerID,
+        target.id,
       );
     }
     routes.push(route);
