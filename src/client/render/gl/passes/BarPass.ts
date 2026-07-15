@@ -118,12 +118,16 @@ export class BarPass {
     mobileUnits: Map<number, UnitState>,
     structures: Map<number, UnitState>,
     gameTick: number,
+    hiddenUnitIds?: ReadonlySet<number>,
   ): void {
     this.healthCount = 0;
     this.progressCount = 0;
 
     // --- Health bars (damaged mobile units) ---
-    for (const unit of mobileUnits.values()) {
+    // Skip units the local player must not see (stealthed enemy submarines):
+    // a floating health bar would leak their position.
+    for (const [id, unit] of mobileUnits) {
+      if (hiddenUnitIds?.has(id)) continue;
       const progress = healthProgressForUnit(unit, this.config);
       if (progress !== null) this.pushHealth(unit, progress);
     }
