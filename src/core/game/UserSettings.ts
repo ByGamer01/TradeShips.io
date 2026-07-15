@@ -66,11 +66,14 @@ export const GRAPHICS_KEY = "settings.graphics";
 export class UserSettings {
   private static cache = new Map<string, string | null>();
 
-  private emitChange(key: string, value: any): void {
+  private emitChange(key: string, value: unknown): void {
     try {
-      const maybeDispatch = (globalThis as any)?.dispatchEvent;
-      if (typeof maybeDispatch !== "function") return;
-      (globalThis as any).dispatchEvent(
+      // Core runs in a worker where dispatchEvent may not exist on globalThis.
+      const dispatcher = globalThis as {
+        dispatchEvent?: (event: Event) => boolean;
+      };
+      if (typeof dispatcher.dispatchEvent !== "function") return;
+      dispatcher.dispatchEvent(
         new CustomEvent(`${USER_SETTINGS_CHANGED_EVENT}:${key}`, {
           detail: value,
         }),
