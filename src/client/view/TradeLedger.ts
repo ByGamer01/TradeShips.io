@@ -38,6 +38,7 @@ export interface TradeLedgerDeps {
     tilesTraveled: number,
     ownerID: number,
     destinationOwnerID?: number | null,
+    destinationPortID?: number | null,
   ) => number;
   /** Owner smallID of a port unit, or null if unknown / not a port. */
   portOwnerID: (unitId: number) => number | null;
@@ -104,6 +105,7 @@ export class TradeLedger {
       update.tilesTraveled ?? 0,
       update.ownerID,
       destinationOwnerID,
+      update.targetUnitId,
     );
 
     if (update.ownerID === me) {

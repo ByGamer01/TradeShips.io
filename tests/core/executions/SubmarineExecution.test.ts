@@ -124,7 +124,7 @@ describe("SubmarineExecution", () => {
     expect(Number(enemyWarship.health())).toBeLessThan(1000);
   });
 
-  test("sinks enemy trade ships instead of capturing them", () => {
+  test("does not attack enemy trade ships", () => {
     game.config().submarineTorpedoAttackRate = () => 1;
 
     const enemyPortTile = game.ref(coastX, 13);
@@ -140,13 +140,11 @@ describe("SubmarineExecution", () => {
       new SubmarineExecution(player1, game.ref(coastX + 2, 10)),
     );
 
-    // Trade ships spawn safe from pirates for safeFromPiratesCooldownMax
-    // ticks; run past the cooldown plus torpedo travel time.
     for (let i = 0; i < 60; i++) {
       game.executeNextTick();
     }
 
-    expect(tradeShip.isActive()).toBe(false);
+    expect(tradeShip.isActive()).toBe(true);
     expect(tradeShip.owner()).toBe(player2);
   });
 

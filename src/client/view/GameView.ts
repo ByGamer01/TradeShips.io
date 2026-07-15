@@ -121,11 +121,29 @@ export class GameView implements GameMap {
   /** Session-long trade accounting for the local player (HUD consumer). */
   private readonly _tradeLedger = new TradeLedger({
     localPlayerID: () => this._myPlayer?.smallID() ?? 0,
-    estimateGold: (tilesTraveled, ownerID, destinationOwnerID) => {
+    estimateGold: (
+      tilesTraveled,
+      ownerID,
+      destinationOwnerID,
+      destinationPortID,
+    ) => {
       const owner = this.playerViewBySmallID(ownerID);
       if (owner === null) return 0;
 
       let gold = Number(this._config.tradeShipGold(tilesTraveled, owner));
+      const destinationPort =
+        destinationPortID !== undefined && destinationPortID !== null
+          ? this._units.get(destinationPortID)
+          : undefined;
+      if (destinationPort !== undefined) {
+        gold += Math.floor(
+          gold *
+            this._config.portLevelTradeGoldBonus(destinationPort.state.level),
+        );
+        if (destinationPort.state.portSpecialization === "trade") {
+          gold += Math.floor(gold * this._config.portTradeSpecGoldBonus());
+        }
+      }
       const destinationOwner =
         destinationOwnerID !== undefined && destinationOwnerID !== null
           ? this.playerViewBySmallID(destinationOwnerID)
@@ -673,12 +691,23 @@ export class GameView implements GameMap {
         f.relationSize,
         this._myPlayer?.smallID() ?? 0,
       ),
-      (distanceTiles, ownerID) => {
+      (distanceTiles, ownerID, destinationPortID) => {
         const owner = this.playerViewBySmallID(ownerID);
         if (owner === null) {
           return 0;
         }
-        return Number(this._config.tradeShipGold(distanceTiles, owner));
+        let gold = Number(this._config.tradeShipGold(distanceTiles, owner));
+        const destinationPort = this._units.get(destinationPortID);
+        if (destinationPort !== undefined) {
+          gold += Math.floor(
+            gold *
+              this._config.portLevelTradeGoldBonus(destinationPort.state.level),
+          );
+          if (destinationPort.state.portSpecialization === "trade") {
+            gold += Math.floor(gold * this._config.portTradeSpecGoldBonus());
+          }
+        }
+        return gold;
       },
     );
     this._maritimeObjective =

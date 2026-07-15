@@ -95,6 +95,30 @@ describe("PortExecution", () => {
     expect(ports.length).toBe(1);
   });
 
+  test("nations select the route with the highest estimated income rate", async () => {
+    game = await setup("half_land_half_ocean", { instantBuild: true }, [
+      new PlayerInfo("nation", PlayerType.Nation, null, "nation_id"),
+      new PlayerInfo("partner", PlayerType.Human, null, "partner_id"),
+    ]);
+    const nation = game.player("nation_id");
+    const partner = game.player("partner_id");
+    nation.conquer(game.ref(7, 10));
+    partner.conquer(game.ref(7, 11));
+    const source = nation.buildUnit(UnitType.Port, game.ref(7, 10), {});
+    const near = partner.buildUnit(UnitType.Port, game.ref(7, 11), {});
+    const far = partner.buildUnit(UnitType.Port, game.ref(7, 14), {});
+    game.config().proximityBonusPortsNb = () => 0;
+    game.config().tradeShipShortRangeDebuff = () => 0;
+    game.config().tradeShipGold = (distance) => BigInt(distance * distance);
+    const execution = new PortExecution(source);
+    execution.init(game, 0);
+
+    const selected = execution.selectTradingPort(execution.tradingPorts());
+
+    expect(selected).toBe(far);
+    expect(selected).not.toBe(near);
+  });
+
   test("naval batteries use shells while torpedoes remain submarine-only", () => {
     game.config().portNavalBatteryAttackRate = () => 0;
     player.conquer(game.ref(7, 10));

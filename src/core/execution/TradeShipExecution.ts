@@ -206,6 +206,12 @@ export class TradeShipExecution implements Execution {
     let gold = this.mg
       .config()
       .tradeShipGold(this.tradeShip!.tilesTraveled(), this.tradeShip!.owner());
+    if (this._dstPort.isActive()) {
+      const levelBonus = this.mg
+        .config()
+        .portLevelTradeGoldBonus(this._dstPort.level());
+      gold += BigInt(Math.floor(Number(gold) * levelBonus));
+    }
     // Trade hubs pay a bonus on arrivals. Destination-only on purpose: the
     // client trade ledger can mirror it exactly (it knows the target port),
     // and it rewards routing commerce INTO specialized hubs.
