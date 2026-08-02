@@ -2,6 +2,7 @@ import { LitElement, html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { assetUrl } from "../../core/AssetUrls";
 import "./NewsBox";
+import "./PartyBar";
 
 @customElement("play-page")
 export class PlayPage extends LitElement {
@@ -113,6 +114,8 @@ export class PlayPage extends LitElement {
             ></flag-input>
           </div>
         </div>
+
+        <party-bar></party-bar>
 
         <game-mode-selector></game-mode-selector>
       </div>

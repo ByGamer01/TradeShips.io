@@ -447,6 +447,7 @@ export class Transport {
       cosmetics: this.lobbyConfig.cosmetics,
       turnstileToken: this.lobbyConfig.turnstileToken,
       token: await getPlayToken(),
+      partyId: this.lobbyConfig.partyId,
     } satisfies ClientJoinMessage);
   }
 

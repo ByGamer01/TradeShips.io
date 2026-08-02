@@ -22,6 +22,7 @@ export class SpawnExecution implements Execution {
   active: boolean = true;
   private mg: Game;
   private static readonly MAX_SPAWN_TRIES = 1_000;
+  private static readonly MAX_FRIEND_SPAWN_TRIES = 200;
 
   constructor(
     gameID: GameID,
@@ -102,6 +103,11 @@ export class SpawnExecution implements Execution {
       return { center, tiles };
     }
 
+    const friendSpawn = this.getSpawnNearFriends();
+    if (friendSpawn !== undefined) {
+      return friendSpawn;
+    }
+
     const spawnArea = this.getTeamSpawnArea();
     let tries = 0;
 
@@ -109,45 +115,97 @@ export class SpawnExecution implements Execution {
       tries++;
 
       const center = this.randTile(spawnArea);
-
-      if (
-        !this.mg.isLand(center) ||
-        this.mg.hasOwner(center) ||
-        this.mg.isBorder(center)
-      ) {
-        continue;
+      const spawn = this.trySpawnCenter(center);
+      if (spawn !== undefined) {
+        return spawn;
       }
-
-      const isOtherPlayerSpawnedNearby = this.mg
-        .allPlayers()
-        .filter((player) => player.id() !== this.playerInfo.id)
-        .some((player) => {
-          const spawnTile = player.spawnTile();
-
-          if (spawnTile === undefined) {
-            return false;
-          }
-
-          return (
-            this.mg.manhattanDist(spawnTile, center) <
-            this.mg.config().minDistanceBetweenPlayers()
-          );
-        });
-
-      if (isOtherPlayerSpawnedNearby) {
-        continue;
-      }
-
-      const tiles = getSpawnTiles(this.mg, center, true);
-      if (!tiles) {
-        // if some of the spawn tile is outside of the land, we want to find another spawn tile
-        continue;
-      }
-
-      return { center, tiles };
     }
 
     return;
+  }
+
+  /**
+   * Friends (party members or accepted friends) spawn next to each other:
+   * sample tiles inside a box around an already-spawned friend, keeping the
+   * regular minimum-distance rule. Falls back to a fully random spawn when
+   * nothing fits.
+   */
+  private getSpawnNearFriends(): Spawn | undefined {
+    if (this.playerInfo.friends.length === 0) {
+      return;
+    }
+    const friendIDs = new Set(this.playerInfo.friends);
+    const anchors: TileRef[] = [];
+    for (const player of this.mg.allPlayers()) {
+      const clientID = player.clientID();
+      const spawnTile = player.spawnTile();
+      if (
+        clientID !== null &&
+        friendIDs.has(clientID) &&
+        spawnTile !== undefined
+      ) {
+        anchors.push(spawnTile);
+      }
+    }
+    if (anchors.length === 0) {
+      return;
+    }
+
+    const radius = 2 * this.mg.config().minDistanceBetweenPlayers();
+    for (let tries = 0; tries < SpawnExecution.MAX_FRIEND_SPAWN_TRIES; tries++) {
+      const anchor = anchors[this.random.nextInt(0, anchors.length)];
+      const x =
+        this.mg.x(anchor) + this.random.nextInt(-radius, radius + 1);
+      const y =
+        this.mg.y(anchor) + this.random.nextInt(-radius, radius + 1);
+      if (x < 0 || x >= this.mg.width() || y < 0 || y >= this.mg.height()) {
+        continue;
+      }
+      const spawn = this.trySpawnCenter(this.mg.ref(x, y));
+      if (spawn !== undefined) {
+        return spawn;
+      }
+    }
+    return;
+  }
+
+  /** Validate a candidate spawn center; returns the spawn when usable. */
+  private trySpawnCenter(center: TileRef): Spawn | undefined {
+    if (
+      !this.mg.isLand(center) ||
+      this.mg.hasOwner(center) ||
+      this.mg.isBorder(center)
+    ) {
+      return;
+    }
+
+    const isOtherPlayerSpawnedNearby = this.mg
+      .allPlayers()
+      .filter((player) => player.id() !== this.playerInfo.id)
+      .some((player) => {
+        const spawnTile = player.spawnTile();
+
+        if (spawnTile === undefined) {
+          return false;
+        }
+
+        return (
+          this.mg.manhattanDist(spawnTile, center) <
+          this.mg.config().minDistanceBetweenPlayers()
+        );
+      });
+
+    if (isOtherPlayerSpawnedNearby) {
+      return;
+    }
+
+    const tiles = getSpawnTiles(this.mg, center, true);
+    if (!tiles) {
+      // if some of the spawn tile is outside of the land, we want to find another spawn tile
+      return;
+    }
+
+    return { center, tiles };
   }
 
   private randTile(area?: SpawnArea): TileRef {

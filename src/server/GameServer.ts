@@ -1147,19 +1147,34 @@ export class GameServer {
   }
 
   // Maps each active client's publicId-based friends list to in-game
-  // clientIDs, dropping friends not present in this game. Returns undefined
-  // when no friends are present so the field can be omitted from the wire
-  // payload.
+  // clientIDs, dropping friends not present in this game, and merges in
+  // squad-queue partymates (same partyId). Returns undefined when no friends
+  // are present so the field can be omitted from the wire payload.
   private buildFriendsLookup(): (client: Client) => ClientID[] | undefined {
     const publicIdToClientID = new Map<string, ClientID>();
+    const partyMembers = new Map<string, ClientID[]>();
     for (const c of this.activeClients) {
       if (c.publicId) publicIdToClientID.set(c.publicId, c.clientID);
+      if (c.partyId !== undefined) {
+        const members = partyMembers.get(c.partyId) ?? [];
+        members.push(c.clientID);
+        partyMembers.set(c.partyId, members);
+      }
     }
     return (client: Client) => {
-      const friendClientIDs = client.friends
-        .map((pid) => publicIdToClientID.get(pid))
-        .filter((id): id is ClientID => id !== undefined);
-      return friendClientIDs.length > 0 ? friendClientIDs : undefined;
+      const friendClientIDs = new Set<ClientID>(
+        client.friends
+          .map((pid) => publicIdToClientID.get(pid))
+          .filter((id): id is ClientID => id !== undefined),
+      );
+      if (client.partyId !== undefined) {
+        for (const id of partyMembers.get(client.partyId) ?? []) {
+          if (id !== client.clientID) {
+            friendClientIDs.add(id);
+          }
+        }
+      }
+      return friendClientIDs.size > 0 ? [...friendClientIDs] : undefined;
     };
   }
 

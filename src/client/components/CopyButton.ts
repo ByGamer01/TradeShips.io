@@ -12,6 +12,9 @@ export class CopyButton extends LitElement {
   @property({ type: Boolean, attribute: "include-lobby-query" })
   includeLobbyQuery = false;
   @property({ type: String, attribute: "copy-text" }) copyText = "";
+  // Traffic-source tag appended as ?ref=<tag> so invite channels are
+  // measurable in server access logs.
+  @property({ type: String, attribute: "ref-tag" }) refTag = "";
   @property({ type: String, attribute: "display-text" }) displayText = "";
   @property({ type: Boolean, attribute: "show-visibility-toggle" })
   showVisibilityToggle = true;
@@ -66,6 +69,9 @@ export class CopyButton extends LitElement {
     let url = `${window.location.origin}/${ClientEnv.workerPath(this.lobbyId)}/game/${this.lobbyId}`;
     if (this.includeLobbyQuery) {
       url += `?lobby&s=${encodeURIComponent(this.lobbySuffix)}`;
+    }
+    if (this.refTag) {
+      url += `${url.includes("?") ? "&" : "?"}ref=${encodeURIComponent(this.refTag)}`;
     }
     return url;
   }

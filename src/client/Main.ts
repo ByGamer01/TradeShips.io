@@ -41,6 +41,7 @@ import "./Matchmaking";
 import { MatchmakingModal } from "./Matchmaking";
 import { modalRouter } from "./ModalRouter";
 import { initNavigation } from "./Navigation";
+import { partyClient } from "./PartyClient";
 import "./NewsModal";
 import "./PatternInput";
 import "./SinglePlayerModal";
@@ -60,6 +61,7 @@ import {
   getDiscordAvatarUrl,
   incrementGamesPlayed,
   isInIframe,
+  showToast,
   translateText,
 } from "./Utils";
 import { installSafariPinchZoomBlocker } from "./utilities/DisableSafariPinchZoom";
@@ -239,7 +241,13 @@ export interface JoinLobbyEvent {
   gameStartInfo?: GameStartInfo;
   // GameRecord exists when replaying an archived game.
   gameRecord?: GameRecord;
-  source?: "public" | "private" | "host" | "matchmaking" | "singleplayer";
+  source?:
+    | "public"
+    | "private"
+    | "host"
+    | "matchmaking"
+    | "singleplayer"
+    | "party";
   publicLobbyInfo?: GameInfo | PublicGameInfo;
 }
 
@@ -377,6 +385,17 @@ class Client {
 
     document.addEventListener("join-lobby", this.handleJoinLobby.bind(this));
     document.addEventListener("leave-lobby", this.handleLeaveLobby.bind(this));
+    // Squad queue: follow the party leader into public lobbies.
+    window.addEventListener("party-target", (e: Event) => {
+      const gameID = (e as CustomEvent<{ gameID: string }>).detail.gameID;
+      if (this.lobbyHandle !== null) {
+        // Mid-game — don't yank the player out; they'll follow next time.
+        return;
+      }
+      window.showPage?.("page-join-lobby");
+      this.joinModal?.open({ lobbyId: gameID });
+    });
+    partyClient.resume();
     document.addEventListener("kick-player", this.handleKickPlayer.bind(this));
     document.addEventListener(
       "toggle_game_start_timer",
@@ -767,6 +786,14 @@ class Client {
     if (modalRouter.routeFromHash()) {
       return;
     }
+    if (decodedHash.startsWith("#party=")) {
+      const partyId = decodedHash.replace("#party=", "");
+      strip();
+      if (partyId) {
+        void this.joinPartyFromLink(partyId);
+      }
+      return;
+    }
     if (decodedHash.startsWith("#affiliate=")) {
       const affiliateCode = decodedHash.replace("#affiliate=", "");
       strip();
@@ -778,18 +805,31 @@ class Client {
       window.location.href = "/";
     }
 
-    if (this.consumeRequeueUrl()) {
+    if (this.consumeUrlFlag("requeue")) {
       document.dispatchEvent(new CustomEvent("open-matchmaking"));
+    }
+
+    if (this.consumeUrlFlag("rematch")) {
+      this.hostModal.open({ rematch: true });
     }
   }
 
-  private consumeRequeueUrl(): boolean {
+  private async joinPartyFromLink(partyId: string): Promise<void> {
+    const name = this.usernameInput?.getUsername() ?? genAnonUsername();
+    const joined = await partyClient.join(partyId, name);
+    showToast(
+      translateText(joined ? "party.joined" : "party.join_failed"),
+      joined ? "green" : "red",
+    );
+  }
+
+  private consumeUrlFlag(flag: string): boolean {
     const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.has("requeue")) {
+    if (!searchParams.has(flag)) {
       return false;
     }
 
-    searchParams.delete("requeue");
+    searchParams.delete(flag);
     const newUrl =
       window.location.pathname +
       (searchParams.toString() ? `?${searchParams.toString()}` : "") +
@@ -821,6 +861,11 @@ class Client {
     if (lobby.source !== "public") {
       this.updateJoinUrlForShare(lobby.gameID);
     }
+    // Squad queue: the leader picking a public lobby drags the party along.
+    if (lobby.source === "public" && partyClient.isLeader()) {
+      void partyClient.setTarget(lobby.gameID);
+    }
+
     const auth = await userAuth();
     const playerRole = auth !== false ? (auth.claims.role ?? null) : null;
     const newLobbyHandle = joinLobby(this.eventBus, {
@@ -831,6 +876,7 @@ class Client {
       playerClanTag: this.usernameInput?.getClanTag() ?? null,
       clanTagCheck: this.usernameInput?.getClanCheck(),
       playerRole,
+      partyId: partyClient.partyId() ?? undefined,
       gameStartInfo: lobby.gameStartInfo ?? lobby.gameRecord?.info,
       gameRecord: lobby.gameRecord,
     });

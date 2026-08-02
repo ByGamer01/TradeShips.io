@@ -348,6 +348,7 @@
     "paste": "Paste",
     "preset_max": "Max",
     "send": "Send",
+    "share": "Share",
     "summary_keep": "Keep",
     "summary_send": "Send",
     "target_dead": "Target eliminated",
@@ -730,6 +731,8 @@
     "infinite_gold": "Infinite gold",
     "infinite_troops": "Infinite troops",
     "instant_build": "Instant build",
+    "invite_friends": "Invite your friends",
+    "invite_hint": "Share the link or let them scan the QR code to jump straight into this lobby.",
     "leave_confirmation": "Are you sure you want to leave the lobby?",
     "max_timer": "Game length (minutes)",
     "mins_placeholder": "Mins",
@@ -1019,6 +1022,18 @@
     "tutorial": "TUTORIAL",
     "warning": "WARNING"
   },
+  "party": {
+    "create_failed": "Could not create the party. Try again.",
+    "invite": "Invite",
+    "invite_text": "Join my TradeShips party and let's play together!",
+    "join_failed": "Could not join the party. It may be full or expired.",
+    "joined": "You joined the party!",
+    "leader_hint": "Join a public game and your party will follow you in.",
+    "leave": "Leave",
+    "member_hint": "Waiting for the party leader to pick a game…",
+    "play_with_friends": "Play with friends",
+    "title": "Party ({count})"
+  },
   "performance_overlay": {
     "avg_60s": "Avg (60s):",
     "collapse": "Collapse",
@@ -1219,6 +1234,11 @@
     "capacity_note": "Receiver can accept only {amount} right now.",
     "slider_tooltip": "{percent}% • {amount}",
     "title_with_name": "Send Troops to {name}"
+  },
+  "share": {
+    "failed": "Could not copy the link.",
+    "link_copied": "Invite link copied!",
+    "lobby_invite_text": "Join my TradeShips lobby!"
   },
   "single_modal": {
     "bots": "Tribes: ",
@@ -1534,7 +1554,11 @@
     "nation_won": "Nation {nation} has won!",
     "other_team": "{team} team has won!",
     "other_won": "{player} has won!",
+    "rematch": "Rematch",
     "requeue": "Play Again",
+    "share_text_loss": "I just fought an epic battle in TradeShips. Think you can do better?",
+    "share_text_win": "I just won a game in TradeShips! Think you can beat me?",
+    "share_victory": "Share",
     "spectate": "Spectate",
     "support_openfront": "Support TradeShips!",
     "territory_pattern": "Purchase a territory skin to go ad-free!",

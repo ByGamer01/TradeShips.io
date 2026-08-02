@@ -763,6 +763,12 @@ export const ClientJoinMessageSchema = z.object({
   // Server replaces the refs with the actual cosmetic data.
   cosmetics: PlayerCosmeticRefsSchema.optional(),
   turnstileToken: z.string().nullable(),
+  // Squad-queue party this player belongs to; partymates are treated as
+  // friends by the game server (team assignment, adjacent spawns).
+  partyId: z
+    .string()
+    .regex(/^[a-z0-9]{8}$/)
+    .optional(),
 });
 
 export const ClientRejoinMessageSchema = z.object({

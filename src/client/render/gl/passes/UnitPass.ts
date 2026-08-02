@@ -178,6 +178,10 @@ const SUBMARINE_REVEAL_TYPES: ReadonlySet<string> = new Set([
   UT_ANTI_AIR_FRIGATE,
   UT_NAVAL_MINE,
   UT_PORT,
+  // Carrier aircraft strike submarines from beyond the naval reveal range —
+  // the inbound aircraft is the sensor, so its target surfaces (periscope +
+  // health bar) while under attack instead of eating invisible hits.
+  UT_AIRCRAFT,
 ]);
 
 /** Values per smoothing segment in the flat `smoothSegs` array:

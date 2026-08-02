@@ -7,7 +7,9 @@ import {
   TUTORIAL_VIDEO_URL,
 } from "../../../client/Utils";
 import { EventBus } from "../../../core/EventBus";
-import { RankedType } from "../../../core/game/Game";
+import { GameType, RankedType } from "../../../core/game/Game";
+import { lastHostedGameID } from "../../utilities/RematchStorage";
+import { shareInvite, withRefParam } from "../../utilities/ShareInvite";
 import { GameUpdateType } from "../../../core/game/GameUpdates";
 import { getUserMe } from "../../Api";
 import "../../components/CosmeticButton";
@@ -101,8 +103,60 @@ export class WinModal extends LitElement implements Controller {
             @click=${this.hide}
           ></o-button>
         </div>
+        ${this.renderViralRow()}
       </div>
     `;
+  }
+
+  private renderViralRow(): TemplateResult {
+    if (!this.showButtons) return html``;
+    const canRematch = this.canOfferRematch();
+    return html`
+      <div class="flex justify-between gap-2.5 mt-2.5">
+        <o-button
+          variant="secondary"
+          width="block"
+          class="flex-1"
+          .title=${translateText("win_modal.share_victory")}
+          @click=${this._handleShare}
+        ></o-button>
+        ${canRematch
+          ? html`
+              <o-button
+                variant="secondary"
+                width="block"
+                class="flex-1"
+                .title=${translateText("win_modal.rematch")}
+                @click=${this._handleRematch}
+              ></o-button>
+            `
+          : null}
+      </div>
+    `;
+  }
+
+  /** Rematch is offered to the host of the private game that just ended. */
+  private canOfferRematch(): boolean {
+    if (this.game === undefined) return false;
+    if (this.game.config().gameConfig().gameType !== GameType.Private) {
+      return false;
+    }
+    return lastHostedGameID() === this.game.gameID();
+  }
+
+  private async _handleShare(): Promise<void> {
+    const text = this.isWin
+      ? translateText("win_modal.share_text_win")
+      : translateText("win_modal.share_text_loss");
+    await shareInvite({
+      text,
+      url: withRefParam(window.location.origin, "win"),
+    });
+  }
+
+  private _handleRematch(): void {
+    this.hide();
+    window.location.href = "/?rematch";
   }
 
   innerHtml() {

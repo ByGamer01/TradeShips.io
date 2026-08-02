@@ -90,6 +90,9 @@ export interface LobbyConfig {
   playerRole: string | null;
   gameID: GameID;
   turnstileToken: string | null;
+  // Squad-queue party id; forwarded in the join message so the server groups
+  // partymates as friends.
+  partyId?: string;
   // GameStartInfo only exists when playing a singleplayer game.
   gameStartInfo?: GameStartInfo;
   // GameRecord exists when replaying an archived game.

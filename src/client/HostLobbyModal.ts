@@ -1,4 +1,5 @@
 import { html } from "lit";
+import { z } from "zod";
 import { customElement, property, state } from "lit/decorators.js";
 import { ClientEnv } from "src/client/ClientEnv";
 import {
@@ -11,9 +12,13 @@ import { EventBus } from "../core/EventBus";
 import {
   Difficulty,
   DISABLED_ARSENAL,
+  Duos,
   GameMapSize,
   GameMapType,
   GameMode,
+  HumansVsNations,
+  Quads,
+  Trios,
   UnitType,
 } from "../core/game/Game";
 import { UserSettings } from "../core/game/UserSettings";
@@ -32,12 +37,15 @@ import { BaseModal } from "./components/BaseModal";
 import { CopyButton } from "./components/CopyButton";
 import "./components/GameConfigSettings";
 import "./components/InputCard";
+import "./components/InviteQrCode";
 import "./components/LobbyPlayerView";
 import "./components/ToggleInputCard";
 import { modalHeader } from "./components/ui/ModalHeader";
 import { crazyGamesSDK } from "./CrazyGamesSDK";
 import { JoinLobbyEvent } from "./Main";
 import { terrainMapFileLoader } from "./TerrainMapFileLoader";
+import { REMATCH_CONFIG_KEY } from "./utilities/RematchStorage";
+import { shareInvite } from "./utilities/ShareInvite";
 import {
   boostedNationCount,
   getBotsForCompactMap,
@@ -85,6 +93,7 @@ export class HostLobbyModal extends BaseModal {
   @state() private waterNukes: boolean = false;
   @state() private lobbyId = "";
   @state() private lobbyUrlSuffix = "";
+  @state() private inviteUrl = "";
   @state() private clients: ClientInfo[] = [];
   @state() private useRandomMap: boolean = false;
   @state() private disabledUnits: UnitType[] = [...DISABLED_ARSENAL];
@@ -131,19 +140,31 @@ export class HostLobbyModal extends BaseModal {
     ).join("");
   }
 
-  private async buildLobbyUrl(): Promise<string> {
+  private async buildLobbyUrl(ref: string = "lobby"): Promise<string> {
     if (crazyGamesSDK.isOnCrazyGames()) {
       const link = crazyGamesSDK.createInviteLink(this.lobbyId);
       if (link !== null) {
         return link;
       }
     }
-    return `${window.location.origin}/${ClientEnv.workerPath(this.lobbyId)}/game/${this.lobbyId}?lobby&s=${encodeURIComponent(this.lobbyUrlSuffix)}`;
+    return `${window.location.origin}/${ClientEnv.workerPath(this.lobbyId)}/game/${this.lobbyId}?lobby&s=${encodeURIComponent(this.lobbyUrlSuffix)}&ref=${ref}`;
   }
 
   private async constructUrl(): Promise<string> {
     this.lobbyUrlSuffix = this.getRandomString();
     return await this.buildLobbyUrl();
+  }
+
+  private async refreshInviteUrl(): Promise<void> {
+    this.inviteUrl = await this.buildLobbyUrl("qr");
+  }
+
+  private async handleShareInvite(): Promise<void> {
+    const url = await this.buildLobbyUrl("lobby");
+    await shareInvite({
+      text: translateText("share.lobby_invite_text"),
+      url,
+    });
   }
 
   private updateHistory(url: string): void {
@@ -189,6 +210,7 @@ export class HostLobbyModal extends BaseModal {
           .lobbyId=${this.lobbyId}
           .lobbySuffix=${this.lobbyUrlSuffix}
           include-lobby-query
+          ref-tag="lobby"
         ></copy-button>
       `,
     });
@@ -336,6 +358,29 @@ export class HostLobbyModal extends BaseModal {
         <div
           class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-6 mr-1 mx-auto w-full max-w-5xl"
         >
+          <div
+            class="mb-10 p-4 rounded-xl border border-white/10 bg-white/5 flex items-center gap-4"
+          >
+            <invite-qr-code
+              class="w-24 h-24 shrink-0 hidden sm:block"
+              .url=${this.inviteUrl}
+            ></invite-qr-code>
+            <div class="flex flex-col gap-2 min-w-0">
+              <span class="text-sm font-bold text-white">
+                ${translateText("host_modal.invite_friends")}
+              </span>
+              <span class="text-xs text-white/60">
+                ${translateText("host_modal.invite_hint")}
+              </span>
+              <o-button
+                variant="secondary"
+                size="sm"
+                .title=${translateText("common.share")}
+                @click=${this.handleShareInvite}
+              ></o-button>
+            </div>
+          </div>
+
           <game-config-settings
             class="block"
             .sectionGapClass=${"space-y-10"}
@@ -472,16 +517,19 @@ export class HostLobbyModal extends BaseModal {
     `;
   }
 
-  protected onOpen(): void {
+  protected onOpen(args?: Record<string, unknown>): void {
     this.startLobbyUpdates();
     this.lobbyId = generateID();
     // Note: clientID will be assigned by server when we join the lobby
     // lobbyCreatorClientID stays empty until then
 
+    const restoredRematch = args?.rematch === true && this.restoreRematchConfig();
+
     // Copy immediately so the host can share the link without waiting for the
     // server. If lobby creation fails, clear the clipboard to avoid a dead link.
     void this.constructUrl().then(async (url) => {
       this.updateLobbyHistory(url);
+      void this.refreshInviteUrl();
       await this.updateComplete;
       void (this.querySelector("copy-button") as CopyButton)?.handleCopy();
     });
@@ -493,6 +541,7 @@ export class HostLobbyModal extends BaseModal {
         if (!isValidGameID(this.lobbyId)) {
           throw new Error(`Invalid lobby ID format: ${this.lobbyId}`);
         }
+        void this.refreshInviteUrl();
         crazyGamesSDK.showInviteButton(this.lobbyId);
       })
       .then(() => {
@@ -506,6 +555,12 @@ export class HostLobbyModal extends BaseModal {
             composed: true,
           }),
         );
+        if (restoredRematch) {
+          // Push the restored settings once the join settles; the start
+          // button re-sends the config anyway, so this only affects the
+          // preview joiners see before start.
+          window.setTimeout(() => void this.putGameConfig(), 1000);
+        }
       })
       .catch(() => {
         // Clear clipboard so the host doesn't accidentally share a dead link
@@ -516,7 +571,9 @@ export class HostLobbyModal extends BaseModal {
         this.close();
       };
     }
-    this.loadNationCount();
+    if (!restoredRematch) {
+      this.loadNationCount();
+    }
   }
 
   private leaveLobby() {
@@ -1062,8 +1119,110 @@ export class HostLobbyModal extends BaseModal {
     );
   }
 
+  private saveRematchConfig(): void {
+    const snapshot: RematchSnapshot = {
+      gameID: this.lobbyId,
+      selectedMap: this.selectedMap,
+      selectedDifficulty: this.selectedDifficulty,
+      gameMode: this.gameMode,
+      teamCount: this.teamCount,
+      bots: this.bots,
+      nations: this.nations,
+      defaultNationCount: this.defaultNationCount,
+      useRandomMap: this.useRandomMap,
+      spawnImmunity: this.spawnImmunity,
+      spawnImmunityDurationMinutes: this.spawnImmunityDurationMinutes,
+      infiniteGold: this.infiniteGold,
+      donateGold: this.donateGold,
+      infiniteTroops: this.infiniteTroops,
+      donateTroops: this.donateTroops,
+      maxTimer: this.maxTimer,
+      maxTimerValue: this.maxTimerValue,
+      startDelayValue: this.startDelayValue,
+      instantBuild: this.instantBuild,
+      randomSpawn: this.randomSpawn,
+      compactMap: this.compactMap,
+      goldMultiplier: this.goldMultiplier,
+      goldMultiplierValue: this.goldMultiplierValue,
+      startingGold: this.startingGold,
+      startingGoldValue: this.startingGoldValue,
+      disableAlliances: this.disableAlliances,
+      waterNukes: this.waterNukes,
+      hostCheatsEnabled: this.hostCheatsEnabled,
+      hostCheatInfiniteGold: this.hostCheatInfiniteGold,
+      hostCheatInfiniteTroops: this.hostCheatInfiniteTroops,
+      hostCheatGoldMultiplier: this.hostCheatGoldMultiplier,
+      hostCheatGoldMultiplierValue: this.hostCheatGoldMultiplierValue,
+      hostCheatStartingGold: this.hostCheatStartingGold,
+      hostCheatStartingGoldValue: this.hostCheatStartingGoldValue,
+      disabledUnits: this.disabledUnits,
+    };
+    try {
+      localStorage.setItem(REMATCH_CONFIG_KEY, JSON.stringify(snapshot));
+    } catch (err) {
+      console.warn("Failed to save rematch config", err);
+    }
+  }
+
+  /** Restore settings from the last hosted game. Returns true on success. */
+  private restoreRematchConfig(): boolean {
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(REMATCH_CONFIG_KEY);
+    } catch (err) {
+      console.warn("Failed to read rematch config", err);
+    }
+    if (raw === null) return false;
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(raw);
+    } catch {
+      return false;
+    }
+    const parsed = RematchSnapshotSchema.safeParse(parsedJson);
+    if (!parsed.success) return false;
+
+    const s = parsed.data;
+    this.selectedMap = s.selectedMap;
+    this.selectedDifficulty = s.selectedDifficulty;
+    this.gameMode = s.gameMode;
+    this.teamCount = s.teamCount;
+    this.bots = s.bots;
+    this.nations = s.nations;
+    this.defaultNationCount = s.defaultNationCount;
+    this.useRandomMap = s.useRandomMap;
+    this.spawnImmunity = s.spawnImmunity;
+    this.spawnImmunityDurationMinutes = s.spawnImmunityDurationMinutes;
+    this.infiniteGold = s.infiniteGold;
+    this.donateGold = s.donateGold;
+    this.infiniteTroops = s.infiniteTroops;
+    this.donateTroops = s.donateTroops;
+    this.maxTimer = s.maxTimer;
+    this.maxTimerValue = s.maxTimerValue;
+    this.startDelayValue = s.startDelayValue;
+    this.instantBuild = s.instantBuild;
+    this.randomSpawn = s.randomSpawn;
+    this.compactMap = s.compactMap;
+    this.goldMultiplier = s.goldMultiplier;
+    this.goldMultiplierValue = s.goldMultiplierValue;
+    this.startingGold = s.startingGold;
+    this.startingGoldValue = s.startingGoldValue;
+    this.disableAlliances = s.disableAlliances;
+    this.waterNukes = s.waterNukes;
+    this.hostCheatsEnabled = s.hostCheatsEnabled;
+    this.hostCheatInfiniteGold = s.hostCheatInfiniteGold;
+    this.hostCheatInfiniteTroops = s.hostCheatInfiniteTroops;
+    this.hostCheatGoldMultiplier = s.hostCheatGoldMultiplier;
+    this.hostCheatGoldMultiplierValue = s.hostCheatGoldMultiplierValue;
+    this.hostCheatStartingGold = s.hostCheatStartingGold;
+    this.hostCheatStartingGoldValue = s.hostCheatStartingGoldValue;
+    this.disabledUnits = [...s.disabledUnits];
+    return true;
+  }
+
   private async toggleGameStartTimer() {
     await this.putGameConfig();
+    this.saveRematchConfig();
     console.log(
       `Starting private game with map: ${GameMapType[this.selectedMap as keyof typeof GameMapType]} ${this.useRandomMap ? " (Randomly selected)" : ""}`,
     );
@@ -1109,6 +1268,52 @@ export class HostLobbyModal extends BaseModal {
     }
   }
 }
+
+const RematchSnapshotSchema = z.object({
+  gameID: z.string(),
+  selectedMap: z.enum(GameMapType),
+  selectedDifficulty: z.enum(Difficulty),
+  gameMode: z.enum(GameMode),
+  teamCount: z.union([
+    z.number(),
+    z.literal(Duos),
+    z.literal(Trios),
+    z.literal(Quads),
+    z.literal(HumansVsNations),
+  ]),
+  bots: z.number(),
+  nations: z.number(),
+  defaultNationCount: z.number(),
+  useRandomMap: z.boolean(),
+  spawnImmunity: z.boolean(),
+  spawnImmunityDurationMinutes: z.number().optional(),
+  infiniteGold: z.boolean(),
+  donateGold: z.boolean(),
+  infiniteTroops: z.boolean(),
+  donateTroops: z.boolean(),
+  maxTimer: z.boolean(),
+  maxTimerValue: z.number().optional(),
+  startDelayValue: z.number().optional(),
+  instantBuild: z.boolean(),
+  randomSpawn: z.boolean(),
+  compactMap: z.boolean(),
+  goldMultiplier: z.boolean(),
+  goldMultiplierValue: z.number().optional(),
+  startingGold: z.boolean(),
+  startingGoldValue: z.number().optional(),
+  disableAlliances: z.boolean(),
+  waterNukes: z.boolean(),
+  hostCheatsEnabled: z.boolean(),
+  hostCheatInfiniteGold: z.boolean(),
+  hostCheatInfiniteTroops: z.boolean(),
+  hostCheatGoldMultiplier: z.boolean(),
+  hostCheatGoldMultiplierValue: z.number().optional(),
+  hostCheatStartingGold: z.boolean(),
+  hostCheatStartingGoldValue: z.number().optional(),
+  disabledUnits: z.array(z.enum(UnitType)),
+});
+
+type RematchSnapshot = z.infer<typeof RematchSnapshotSchema>;
 
 async function createLobby(gameID: string): Promise<GameInfo> {
   // Send JWT token for creator identification - server extracts persistentID from it

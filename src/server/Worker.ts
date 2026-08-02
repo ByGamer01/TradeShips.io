@@ -494,6 +494,7 @@ export async function startWorker() {
           cosmeticResult.cosmetics,
           publicId,
           friends,
+          clientMsg.partyId,
         );
 
         const joinResult = gm.joinClient(client, clientMsg.gameID);

@@ -5,6 +5,7 @@ import {
 } from "../../../../src/client/render/gl/passes/UnitPass";
 import type { UnitState } from "../../../../src/client/render/types";
 import {
+  UT_AIRCRAFT,
   UT_PORT,
   UT_SUBMARINE,
   UT_TRADE_SHIP,
@@ -99,6 +100,28 @@ describe("shouldRenderSubmarineForLocalPlayer", () => {
 
     expect(renderable(enemySub, [friendlyWarship])).toBe(true);
     expect(renderable(enemySub, [alliedPort], new Set([3]))).toBe(true);
+  });
+
+  it("reveals enemy submarines under friendly aircraft strike runs", () => {
+    // Carrier aircraft engage submarines from well beyond the naval reveal
+    // range — the strike (and its health damage) must not land on an
+    // invisible hull, so the inbound aircraft itself acts as a sensor.
+    const enemySub = unit({ ownerID: 2, pos: ref(50, 50) });
+    const friendlyAircraft = unit({
+      id: 10,
+      unitType: UT_AIRCRAFT,
+      ownerID: 1,
+      pos: ref(60, 50),
+    });
+    const enemyAircraft = unit({
+      id: 11,
+      unitType: UT_AIRCRAFT,
+      ownerID: 2,
+      pos: ref(60, 50),
+    });
+
+    expect(renderable(enemySub, [friendlyAircraft])).toBe(true);
+    expect(renderable(enemySub, [enemyAircraft])).toBe(false);
   });
 
   it("does not let civilian trade ships reveal submarines", () => {

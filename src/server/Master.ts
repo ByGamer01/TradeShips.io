@@ -5,11 +5,14 @@ import rateLimit from "express-rate-limit";
 import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
+import { z } from "zod";
 import { GameEnv } from "../core/configuration/Config";
+import { GAME_ID_REGEX } from "../core/Schemas";
 import { logger } from "./Logger";
 import { MapPlaylist } from "./MapPlaylist";
 import { MasterLobbyService } from "./MasterLobbyService";
 import { setNoStoreHeaders } from "./NoStoreHeaders";
+import { PARTY_ID_REGEX, PartyRegistry } from "./PartyRegistry";
 import { renderAppShell } from "./RenderHtml";
 import { ServerEnv } from "./ServerEnv";
 import { applyStaticAssetCacheControl } from "./StaticAssetCache";
@@ -148,6 +151,108 @@ app.get("/api/health", (_req, res) => {
   } else {
     res.status(503).json({ status: "unavailable" });
   }
+});
+
+//
+// Squad-queue parties (rendezvous for friends joining public lobbies together)
+//
+
+const partyRegistry = new PartyRegistry();
+setInterval(() => partyRegistry.sweep(), 60_000).unref();
+
+const PartyNameSchema = z.string().min(1).max(64);
+const PartyCreateBodySchema = z.object({ name: PartyNameSchema });
+const PartyJoinBodySchema = z.object({ name: PartyNameSchema });
+const PartyMemberBodySchema = z.object({ memberId: z.string().max(64) });
+const PartyTargetBodySchema = z.object({
+  memberId: z.string().max(64),
+  gameID: z.string().regex(GAME_ID_REGEX),
+});
+
+function parsePartyId(raw: string): string | null {
+  return PARTY_ID_REGEX.test(raw) ? raw : null;
+}
+
+app.post("/api/party", (req, res) => {
+  const body = PartyCreateBodySchema.safeParse(req.body);
+  if (!body.success) {
+    res.status(400).json({ error: "invalid_body" });
+    return;
+  }
+  const created = partyRegistry.create(body.data.name);
+  if (created === null) {
+    res.status(503).json({ error: "party_capacity" });
+    return;
+  }
+  res.json(created);
+});
+
+app.get("/api/party/:id", (req, res) => {
+  const partyId = parsePartyId(req.params.id);
+  const info = partyId === null ? null : partyRegistry.get(partyId);
+  if (partyId === null || info === null) {
+    res.status(404).json({ error: "not_found" });
+    return;
+  }
+  // With a memberId the caller learns its own role (leader promotion after
+  // the original leader leaves is only knowable server-side).
+  const memberId = req.query.memberId;
+  const youAreLeader =
+    typeof memberId === "string"
+      ? partyRegistry.isLeader(partyId, memberId)
+      : undefined;
+  res.json({ ...info, youAreLeader });
+});
+
+app.post("/api/party/:id/join", (req, res) => {
+  const partyId = parsePartyId(req.params.id);
+  const body = PartyJoinBodySchema.safeParse(req.body);
+  if (partyId === null || !body.success) {
+    res.status(400).json({ error: "invalid_body" });
+    return;
+  }
+  const result = partyRegistry.join(partyId, body.data.name);
+  switch (result.status) {
+    case "ok":
+      res.json({ memberId: result.memberId });
+      return;
+    case "full":
+      res.status(409).json({ error: "party_full" });
+      return;
+    case "not_found":
+      res.status(404).json({ error: "not_found" });
+      return;
+  }
+});
+
+app.post("/api/party/:id/leave", (req, res) => {
+  const partyId = parsePartyId(req.params.id);
+  const body = PartyMemberBodySchema.safeParse(req.body);
+  if (partyId === null || !body.success) {
+    res.status(400).json({ error: "invalid_body" });
+    return;
+  }
+  partyRegistry.leave(partyId, body.data.memberId);
+  res.json({ ok: true });
+});
+
+app.post("/api/party/:id/target", (req, res) => {
+  const partyId = parsePartyId(req.params.id);
+  const body = PartyTargetBodySchema.safeParse(req.body);
+  if (partyId === null || !body.success) {
+    res.status(400).json({ error: "invalid_body" });
+    return;
+  }
+  const ok = partyRegistry.setTarget(
+    partyId,
+    body.data.memberId,
+    body.data.gameID,
+  );
+  if (!ok) {
+    res.status(403).json({ error: "not_leader" });
+    return;
+  }
+  res.json({ ok: true });
 });
 
 // SPA fallback route
