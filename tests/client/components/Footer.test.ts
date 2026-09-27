@@ -53,17 +53,35 @@ describe("page-footer attribution", () => {
     expect(line!.classList.contains("text-white/70")).toBe(true);
   });
 
-  test("on phones the OpenFront notice gets a row of its own", () => {
-    // Below Tailwind's sm breakpoint the line wraps; keep the notice whole
-    // and avoid a dangling "·" separator at the start of the second row.
-    const openfront = notice("openfront");
-    expect(openfront.classList.contains("basis-full")).toBe(true);
-    expect(openfront.classList.contains("sm:basis-auto")).toBe(true);
+  test("on phones every notice gets a row of its own, with no separators", () => {
+    // Below Tailwind's sm breakpoint the line wraps. Whether the first two
+    // items share a row depends on locale and width (e.g. English at 360px
+    // does not fit), so stack all three and hide every "·" to avoid one
+    // dangling at a row edge. jsdom has no layout, so assert the classes.
+    const line = notice("openfront").closest("p")!;
+    const items = Array.from(line.children) as HTMLElement[];
+    const separators = items.filter(
+      (el) => el.getAttribute("aria-hidden") === "true",
+    );
+    const texts = items.filter((el) => !separators.includes(el));
 
-    const separatorBefore = openfront.previousElementSibling as HTMLElement;
-    expect(separatorBefore.getAttribute("aria-hidden")).toBe("true");
-    expect(separatorBefore.classList.contains("hidden")).toBe(true);
-    expect(separatorBefore.classList.contains("sm:inline")).toBe(true);
+    expect(separators).toHaveLength(2);
+    for (const sep of separators) {
+      expect(sep.textContent?.trim()).toBe("·");
+      expect(sep.classList.contains("hidden")).toBe(true);
+      expect(sep.classList.contains("sm:inline")).toBe(true);
+    }
+
+    expect(texts).toHaveLength(3);
+    expect(texts[0]).toBe(notice("tradeships"));
+    expect(texts[1].getAttribute("data-i18n")).toBe(
+      "game_starting_modal.based_on",
+    );
+    expect(texts[2]).toBe(notice("openfront"));
+    for (const text of texts) {
+      expect(text.classList.contains("basis-full")).toBe(true);
+      expect(text.classList.contains("sm:basis-auto")).toBe(true);
+    }
   });
 
   test("links the AGPL-3.0 license next to the legal links", () => {

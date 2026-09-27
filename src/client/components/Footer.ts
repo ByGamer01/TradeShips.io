@@ -84,13 +84,16 @@ export class Footer extends LitElement {
           <p
             class="text-sm text-white/70 flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5"
           >
-            <span data-attribution="tradeships" class="whitespace-nowrap"
+            <!-- Below sm: one notice per row, separators hidden -->
+            <span
+              data-attribution="tradeships"
+              class="whitespace-nowrap basis-full sm:basis-auto"
               >${TRADESHIPS_COPYRIGHT_NOTICE}</span
             >
-            <span aria-hidden="true">·</span>
+            <span aria-hidden="true" class="hidden sm:inline">·</span>
             <span
               data-i18n="game_starting_modal.based_on"
-              class="whitespace-nowrap"
+              class="whitespace-nowrap basis-full sm:basis-auto"
             ></span>
             <span aria-hidden="true" class="hidden sm:inline">·</span>
             <span
