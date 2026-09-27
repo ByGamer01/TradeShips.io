@@ -72,7 +72,7 @@ export class Footer extends LitElement {
           </div>
           <!-- Notices are hardcoded on purpose: see src/client/Attribution.ts -->
           <p
-            class="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5"
+            class="text-sm text-white/70 flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5"
           >
             <span data-attribution="tradeships" class="whitespace-nowrap"
               >${TRADESHIPS_COPYRIGHT_NOTICE}</span

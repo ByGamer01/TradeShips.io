@@ -45,6 +45,14 @@ describe("page-footer attribution", () => {
     expect(notice("tradeships").closest("[data-i18n]")).toBeNull();
   });
 
+  test("the copyright line is one size step larger and high-contrast", () => {
+    const line = notice("openfront").closest("p");
+    expect(line).not.toBeNull();
+    // Previously text-xs (12px) at the footer's text-white/50.
+    expect(line!.classList.contains("text-sm")).toBe(true);
+    expect(line!.classList.contains("text-white/70")).toBe(true);
+  });
+
   test("a translation pass cannot overwrite the OpenFront notice", () => {
     // Mimic LangSelector.translatePage(): it replaces the textContent of
     // every [data-i18n] element with the translated string.
