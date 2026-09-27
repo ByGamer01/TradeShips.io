@@ -53,6 +53,19 @@ describe("page-footer attribution", () => {
     expect(line!.classList.contains("text-white/70")).toBe(true);
   });
 
+  test("on phones the OpenFront notice gets a row of its own", () => {
+    // Below Tailwind's sm breakpoint the line wraps; keep the notice whole
+    // and avoid a dangling "·" separator at the start of the second row.
+    const openfront = notice("openfront");
+    expect(openfront.classList.contains("basis-full")).toBe(true);
+    expect(openfront.classList.contains("sm:basis-auto")).toBe(true);
+
+    const separatorBefore = openfront.previousElementSibling as HTMLElement;
+    expect(separatorBefore.getAttribute("aria-hidden")).toBe("true");
+    expect(separatorBefore.classList.contains("hidden")).toBe(true);
+    expect(separatorBefore.classList.contains("sm:inline")).toBe(true);
+  });
+
   test("links the AGPL-3.0 license next to the legal links", () => {
     const link = footer.querySelector<HTMLAnchorElement>(
       '[data-attribution="license"]',

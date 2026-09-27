@@ -92,8 +92,10 @@ export class Footer extends LitElement {
               data-i18n="game_starting_modal.based_on"
               class="whitespace-nowrap"
             ></span>
-            <span aria-hidden="true">·</span>
-            <span data-attribution="openfront" class="whitespace-nowrap"
+            <span aria-hidden="true" class="hidden sm:inline">·</span>
+            <span
+              data-attribution="openfront"
+              class="whitespace-nowrap basis-full sm:basis-auto"
               >${OPENFRONT_COPYRIGHT_NOTICE}</span
             >
           </p>
