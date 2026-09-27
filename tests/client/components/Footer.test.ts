@@ -53,6 +53,18 @@ describe("page-footer attribution", () => {
     expect(line!.classList.contains("text-white/70")).toBe(true);
   });
 
+  test("links the AGPL-3.0 license next to the legal links", () => {
+    const link = footer.querySelector<HTMLAnchorElement>(
+      '[data-attribution="license"]',
+    );
+    expect(link).not.toBeNull();
+    expect(link!.textContent?.trim()).toBe("AGPL-3.0");
+    expect(link!.href).toBe(
+      "https://github.com/ByGamer01/TradeShips.io/blob/main/LICENSE",
+    );
+    expect(link!.rel).toContain("noopener");
+  });
+
   test("a translation pass cannot overwrite the OpenFront notice", () => {
     // Mimic LangSelector.translatePage(): it replaces the textContent of
     // every [data-i18n] element with the translated string.

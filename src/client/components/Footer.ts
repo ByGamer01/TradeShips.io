@@ -3,6 +3,8 @@ import { customElement } from "lit/decorators.js";
 import { assetUrl } from "../../core/AssetUrls";
 import {
   OPENFRONT_COPYRIGHT_NOTICE,
+  SOURCE_LICENSE_ID,
+  SOURCE_LICENSE_URL,
   TRADESHIPS_COPYRIGHT_NOTICE,
 } from "../Attribution";
 
@@ -63,6 +65,14 @@ export class Footer extends LitElement {
               target="_blank"
               class="hover:text-white transition-colors"
             ></a>
+            <a
+              href=${SOURCE_LICENSE_URL}
+              data-attribution="license"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-white transition-colors"
+              >${SOURCE_LICENSE_ID}</a
+            >
             <a
               href="/privacy-policy.html"
               data-i18n="main.privacy_policy"

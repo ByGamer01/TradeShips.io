@@ -11,3 +11,8 @@ export const OPENFRONT_COPYRIGHT_NOTICE = "© OpenFront and Contributors";
 
 /** TradeShips' own notice for its modifications. Never add a "™" sign. */
 export const TRADESHIPS_COPYRIGHT_NOTICE = "© TradeShips and Contributors";
+
+/** SPDX identifier of the source code license (AGPL-3.0 Section 5(d)). */
+export const SOURCE_LICENSE_ID = "AGPL-3.0";
+export const SOURCE_LICENSE_URL =
+  "https://github.com/ByGamer01/TradeShips.io/blob/main/LICENSE";
