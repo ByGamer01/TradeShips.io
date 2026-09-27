@@ -1,6 +1,10 @@
 import { LitElement, html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { assetUrl } from "../../core/AssetUrls";
+import {
+  OPENFRONT_COPYRIGHT_NOTICE,
+  TRADESHIPS_COPYRIGHT_NOTICE,
+} from "../Attribution";
 
 @customElement("page-footer")
 export class Footer extends LitElement {
@@ -50,21 +54,39 @@ export class Footer extends LitElement {
           ></lang-selector>
         </div>
         <div
-          class="text-xs mt-1 lg:mt-2 flex items-center justify-center gap-4 px-4"
+          class="text-xs mt-1 lg:mt-2 flex flex-col items-center gap-1 px-4 text-center"
         >
-          <a
-            href="/terms-of-service.html"
-            data-i18n="main.terms_of_service"
-            target="_blank"
-            class="hover:text-white transition-colors"
-          ></a>
-          <span data-i18n="main.copyright"></span>
-          <a
-            href="/privacy-policy.html"
-            data-i18n="main.privacy_policy"
-            target="_blank"
-            class="hover:text-white transition-colors"
-          ></a>
+          <div class="flex items-center justify-center gap-4">
+            <a
+              href="/terms-of-service.html"
+              data-i18n="main.terms_of_service"
+              target="_blank"
+              class="hover:text-white transition-colors"
+            ></a>
+            <a
+              href="/privacy-policy.html"
+              data-i18n="main.privacy_policy"
+              target="_blank"
+              class="hover:text-white transition-colors"
+            ></a>
+          </div>
+          <!-- Notices are hardcoded on purpose: see src/client/Attribution.ts -->
+          <p
+            class="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5"
+          >
+            <span data-attribution="tradeships" class="whitespace-nowrap"
+              >${TRADESHIPS_COPYRIGHT_NOTICE}</span
+            >
+            <span aria-hidden="true">·</span>
+            <span
+              data-i18n="game_starting_modal.based_on"
+              class="whitespace-nowrap"
+            ></span>
+            <span aria-hidden="true">·</span>
+            <span data-attribution="openfront" class="whitespace-nowrap"
+              >${OPENFRONT_COPYRIGHT_NOTICE}</span
+            >
+          </p>
         </div>
       </footer>
     `;
