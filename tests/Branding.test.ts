@@ -8,7 +8,10 @@ import {
 const ROOT = path.join(__dirname, "..");
 
 // Every screen where upstream OpenFront shows its copyright notice.
-const ATTRIBUTION_SURFACES = ["src/client/components/Footer.ts"];
+const ATTRIBUTION_SURFACES = [
+  "src/client/components/Footer.ts",
+  "src/client/GameStartingModal.ts",
+];
 
 function readText(relativePath: string): string {
   return fs.readFileSync(path.join(ROOT, relativePath), "utf8");

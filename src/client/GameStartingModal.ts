@@ -1,5 +1,6 @@
 import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { OPENFRONT_COPYRIGHT_NOTICE } from "./Attribution";
 import { translateText } from "./Utils";
 
 @customElement("game-starting-modal")
@@ -24,14 +25,10 @@ export class GameStartingModal extends LitElement {
           ? "opacity-100 visible -translate-y-1/2"
           : "opacity-0 invisible -translate-y-[48%]"}"
       >
-        <div
-          class="text-xl font-bold tracking-wider uppercase text-white mb-1"
-        >
+        <div class="text-xl font-bold tracking-wider uppercase text-white mb-1">
           TradeShips.io
         </div>
-        <div
-          class="text-sm font-medium tracking-wider text-white/40 mb-3"
-        >
+        <div class="text-sm font-medium tracking-wider text-white/40 mb-1">
           ${translateText("game_starting_modal.based_on")} —
           <a
             href="https://github.com/ByGamer01/TradeShips.io/blob/main/CREDITS.md"
@@ -41,6 +38,13 @@ export class GameStartingModal extends LitElement {
             >${translateText("game_starting_modal.credits")}</a
           >
         </div>
+        <!-- Hardcoded on purpose: see src/client/Attribution.ts -->
+        <p
+          data-attribution="openfront"
+          class="text-base font-medium tracking-wider text-white/70 mb-3"
+        >
+          ${OPENFRONT_COPYRIGHT_NOTICE}
+        </p>
         <p class="text-base text-white/40 mb-4">
           ${translateText("game_starting_modal.code_license")}
         </p>
